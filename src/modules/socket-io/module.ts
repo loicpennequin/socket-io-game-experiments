@@ -27,7 +27,6 @@ export default defineNuxtModule({
       socketIoHandler(io);
 
       nuxt.hook('builder:watch', (_event, path) => {
-        console.log(path, IO_HANDLER_CHOKIDAR_PATH);
         if (path === IO_HANDLER_CHOKIDAR_PATH) {
           io.removeAllListeners();
 
