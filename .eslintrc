@@ -1,0 +1,54 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true
+  },
+  "extends": [
+    "@nuxtjs/eslint-config-typescript",
+    "plugin:nuxt/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "vue", "nuxt"],
+  "rules": {
+    "curly": "off",
+    "import/default": "off",
+    "import/no-named-as-default-member": "off",
+    "no-redeclare": "off",
+    "@typescript-eslint/no-redeclare": [
+      "error",
+      { "ignoreDeclarationMerge": true }
+    ],
+
+    "vue/no-multiple-template-root": "off",
+    "vue/no-v-model-argument": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error", { "typedefs": false }],
+    "@typescript-eslint/no-explicit-any": "off",
+    "vue/multi-word-component-names": "off",
+    "vue/attributes-order": [
+      "warn",
+      {
+        "order": [
+          "DEFINITION",
+          "LIST_RENDERING",
+          "CONDITIONALS",
+          "RENDER_MODIFIERS",
+          "TWO_WAY_BINDING",
+          "GLOBAL",
+          ["UNIQUE", "SLOT"],
+          "OTHER_DIRECTIVES",
+          "OTHER_ATTR",
+          "EVENTS",
+          "CONTENT"
+        ]
+      }
+    ]
+  }
+}
