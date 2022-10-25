@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Player } from '~~/src/modules/socket-io/server/io';
+import type { PlayerDto } from '~~/src/modules/socket-io/server/io';
 
-const props = defineProps<{ player: Player }>();
+const props = defineProps<{ player: PlayerDto }>();
 </script>
 
 <template>
