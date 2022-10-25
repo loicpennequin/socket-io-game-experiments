@@ -16,7 +16,6 @@ export default defineNuxtPlugin(() => {
     }
   });
 
-  console.log(socket);
   return {
     provide: { socket }
   };
