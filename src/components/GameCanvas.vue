@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Coordinates, createMatrix } from '../utils';
 import {
   GRID_SIZE,
   CELL_SIZE,
@@ -19,17 +20,13 @@ const canvasSize = GRID_SIZE * CELL_SIZE;
 const rowsCount = canvasSize / CELL_SIZE;
 const colsCount = rowsCount;
 
-const rows = Array.from({ length: rowsCount })
-  .fill(undefined)
-  .map((_, rowIndex) =>
-    Array.from({ length: colsCount })
-      .fill(undefined)
-      .map((_, colIndex) => ({
-        x: colIndex * CELL_SIZE,
-        y: rowIndex * CELL_SIZE
-      }))
-  );
-
+const rows = createMatrix<Coordinates>(
+  { w: colsCount, h: rowsCount },
+  ({ x, y }) => ({
+    x: x * CELL_SIZE,
+    y: y * CELL_SIZE
+  })
+);
 const fps = ref(0);
 let lastTick = 0;
 const updateFps = () => {
@@ -44,9 +41,19 @@ const drawGrid = () => {
   const ctx = getContext();
 
   ctx.strokeStyle = 'rgb(255,255,255,0.2)';
-  rows.forEach(row => {
-    row.forEach(cell => {
+  rows.forEach((row, rowIndex) => {
+    row.forEach((cell, cellIndex) => {
       ctx.strokeRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE);
+      ctx.font = '12px Helvetica';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgb(255,255,255,0.2)';
+
+      ctx.fillText(
+        `${cellIndex}.${rowIndex}`,
+        cell.x + CELL_SIZE / 2,
+        cell.y + CELL_SIZE / 2
+      );
     });
   });
 };
