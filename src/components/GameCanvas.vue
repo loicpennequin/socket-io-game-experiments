@@ -35,21 +35,25 @@ const draw = () => {
   lastTick = performance.now();
 
   ctx.clearRect(0, 0, canvasSize, canvasSize);
-  ctx.strokeStyle = '#444';
+  ctx.save();
+  ctx.strokeStyle = 'white';
   rows.forEach(row => {
     row.forEach(cell => {
-      ctx.rect(cell.x, cell.y, CELL_SIZE, CELL_SIZE);
+      ctx.strokeRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE);
     });
-    ctx.stroke();
   });
+  ctx.restore();
 
+  ctx.save();
   players.value.forEach(player => {
     ctx.beginPath();
     ctx.arc(player.x, player.y, PLAYER_SIZE / 2, 0, 2 * Math.PI, false);
-    ctx.fillStyle = 'green';
+    ctx.lineWidth = 0;
     ctx.fillStyle = '#A66';
+    ctx.closePath();
     ctx.fill();
   });
+  ctx.restore();
 };
 
 const drawLoop = useRafFn(draw, { immediate: false });
