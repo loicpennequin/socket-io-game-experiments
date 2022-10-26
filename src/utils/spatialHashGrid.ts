@@ -1,36 +1,48 @@
 import { sat } from './math';
-import type { Boundaries, Coordinates, Dimensions, Nullable } from './index';
+import type {
+  Boundaries,
+  SpatialObject,
+  Coordinates,
+  Dimensions,
+  Nullable
+} from './index';
 import { createMatrix } from './index';
 
-export type SpatialHashGridItem = {
-  position: Coordinates;
-  dimensions: Dimensions;
+export type SpatialHashGridItem<TMeta> = SpatialObject & {
   cells: {
     min: Nullable<Coordinates>;
     max: Nullable<Coordinates>;
     nodes: Nullable<Coordinates[]>;
   };
   queryId: Nullable<number>;
+  meta: TMeta;
 };
 
-export type SpatialHashGridNode = {
-  next: Nullable<SpatialHashGridNode>;
-  prev: Nullable<SpatialHashGridNode>;
-  item: SpatialHashGridItem;
+export type SpatialHashGridNode<TMeta> = {
+  next: Nullable<SpatialHashGridNode<TMeta>>;
+  prev: Nullable<SpatialHashGridNode<TMeta>>;
+  item: SpatialHashGridItem<TMeta>;
 };
 
-export const makeSpatialHashGrid = (
-  dimensions: Dimensions,
-  bounds: [Coordinates, Coordinates]
-) => {
-  const [startBound, endBound] = bounds;
-  const cells = createMatrix<Nullable<SpatialHashGridNode>>(
-    dimensions,
-    () => null
-  );
+export type SpatialHashGridOptions = {
+  dimensions: Dimensions;
+  bounds: { start: Coordinates; end: Coordinates };
+};
+
+export type SpatialHashGrid<T> = ReturnType<typeof makeSpatialHashGrid<T>>;
+
+export const makeSpatialHashGrid = <TMeta = unknown>({
+  dimensions,
+  bounds
+}: SpatialHashGridOptions) => {
+  type GridItem = SpatialHashGridItem<TMeta>;
+  type GridNode = SpatialHashGridNode<TMeta>;
+
+  const { start: startBound, end: endBound } = bounds;
+  const cells = createMatrix<Nullable<GridNode>>(dimensions, () => null);
   let currentQueryId = 0;
 
-  const getCellCoordinates = (position: Coordinates): Coordinates => {
+  const getCellIndex = (position: Coordinates): Coordinates => {
     const xPos = sat((position.x - startBound.x) / (endBound.x - startBound.x));
     const yPos = sat((position.y - startBound.y) / (endBound.y - startBound.y));
 
@@ -43,37 +55,34 @@ export const makeSpatialHashGrid = (
   const getBoundaries = ({
     position,
     dimensions
-  }: Pick<
-    SpatialHashGridItem,
-    'position' | 'dimensions'
-  >): Boundaries<Coordinates> => {
+  }: SpatialObject): Boundaries<Coordinates> => {
     return {
-      min: getCellCoordinates({
+      min: getCellIndex({
         x: position.x - dimensions.w / 2,
         y: position.y - dimensions.h / 2
       }),
-      max: getCellCoordinates({
+      max: getCellIndex({
         x: position.x + dimensions.w / 2,
         y: position.y + dimensions.h / 2
       })
     };
   };
 
-  const insert = (item: SpatialHashGridItem) => {
+  const insert = (item: GridItem) => {
     const { min, max } = getBoundaries(item);
     const nodes = [];
 
-    for (let x = min.x, xn = max.x; x <= xn; ++x) {
+    for (let x = min.x; x <= max.x; ++x) {
       nodes.push([]);
 
-      for (let y = min.y, yn = max.y; y <= yn; ++y) {
-        const head: SpatialHashGridNode = {
+      for (let y = min.y; y <= max.y; ++y) {
+        const head: GridNode = {
           next: null,
           prev: null,
           item
         };
 
-        nodes[x - max.x].push(head);
+        nodes[x - min.x].push(head);
 
         head.next = cells[x][y];
         if (head.next) {
@@ -89,8 +98,8 @@ export const makeSpatialHashGrid = (
     item.cells.nodes = nodes;
   };
 
-  const add = (position: Coordinates, dimensions: Dimensions) => {
-    const item = {
+  const add = ({ position, dimensions }: SpatialObject, meta: TMeta) => {
+    const item: GridItem = {
       position,
       dimensions,
       cells: {
@@ -98,7 +107,8 @@ export const makeSpatialHashGrid = (
         max: null,
         nodes: null
       },
-      queryId: null
+      queryId: null,
+      meta
     };
 
     insert(item);
@@ -106,11 +116,11 @@ export const makeSpatialHashGrid = (
     return item;
   };
 
-  const remove = (item: SpatialHashGridItem) => {
+  const remove = (item: GridItem) => {
     const { min, max } = item.cells;
 
-    for (let x = min.x, xn = max.x; x <= xn; ++x) {
-      for (let y = min.y, yn = max.y; y <= yn; ++y) {
+    for (let x = min.x; x <= max.x; ++x) {
+      for (let y = min.y; y <= max.y; ++y) {
         const xi = x - min.x;
         const yi = y - min.y;
         const node = item.cells.nodes[xi][yi];
@@ -133,7 +143,7 @@ export const makeSpatialHashGrid = (
     item.cells.nodes = null;
   };
 
-  const update = (item: SpatialHashGridItem) => {
+  const update = (item: GridItem) => {
     const { min, max } = getBoundaries(item);
 
     const hasChangedCell =
@@ -151,11 +161,11 @@ export const makeSpatialHashGrid = (
   const findNearby = (position: Coordinates, bounds: Dimensions) => {
     const { min, max } = getBoundaries({ position, dimensions: bounds });
 
-    const items: SpatialHashGridItem[] = [];
+    const items: GridItem[] = [];
     currentQueryId++;
 
-    for (let x = min.x, xn = max.x; x <= xn; ++x) {
-      for (let y = min.y, yn = max.y; y <= yn; ++y) {
+    for (let x = min.x; x <= max.x; ++x) {
+      for (let y = min.y; y <= max.y; ++y) {
         let head = cells[x][y];
 
         while (head) {

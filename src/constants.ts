@@ -1,14 +1,16 @@
-export const GRID_SIZE = 30;
-export const CELL_SIZE = 25;
+export const GRID_SIZE = 50;
+export const CELL_SIZE = 15;
 export const TICK_RATE = 20;
 export const PLAYER_SIZE = 15;
 export const PLAYER_SPEED = 3;
+export const PLAYER_FIELD_OF_VIEW = CELL_SIZE * 12;
 
 export const PLAYER_ACTIONS = Object.freeze({
   MOVE_UP: 'MOVE_UP',
   MOVE_DOWN: 'MOVE_DOWN',
   MOVE_LEFT: 'MOVE_LEFT',
-  MOVE_RIGHT: 'MOVE_RIGHT'
+  MOVE_RIGHT: 'MOVE_RIGHT',
+  QUIT: 'QUIT'
 });
 
 export type PlayerAction = typeof PLAYER_ACTIONS[keyof typeof PLAYER_ACTIONS];

@@ -10,14 +10,24 @@ import {
   PLAYER_ACTIONS,
   PlayerAction,
   TICK_RATE,
-  PLAYER_SPEED
+  PLAYER_SPEED,
+  PLAYER_SIZE,
+  PLAYER_FIELD_OF_VIEW
 } from '../../../constants';
 import { clamp } from '../../../utils/math';
+import {
+  makeSpatialHashGrid,
+  SpatialHashGrid,
+  SpatialHashGridItem
+} from '../../../utils/spatialHashGrid';
+
+export type PlayerMeta = {
+  id: string;
+};
 
 export type Player = {
   id: string;
-  x: number;
-  y: number;
+  gridItem: SpatialHashGridItem<PlayerMeta>;
   ongoingActions: Set<PlayerAction>;
 };
 
@@ -29,38 +39,83 @@ export type PlayerDto = {
 
 export type GameState = {
   players: Record<string, Player>;
+  grid: SpatialHashGrid<PlayerMeta>;
 };
 
 export type GameStateDto = {
   players: PlayerDto[];
 };
 
+const gameState: GameState = {
+  players: {},
+  grid: makeSpatialHashGrid<PlayerMeta>({
+    dimensions: { w: GRID_SIZE, h: GRID_SIZE },
+    bounds: {
+      start: { x: 0, y: 0 },
+      end: { x: GRID_SIZE * CELL_SIZE, y: GRID_SIZE * CELL_SIZE }
+    }
+  })
+};
+
 const clampToGrid = (n: number) =>
   clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
-const makePlayer = (socketId): Player => ({
-  id: socketId,
-  x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
-  y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
-  ongoingActions: new Set()
-});
+const makePlayer = (socketId: string): Player => {
+  const meta = { id: socketId };
 
-const gameState: GameState = {
-  players: {}
+  return {
+    ...meta,
+    gridItem: gameState.grid.add(
+      {
+        position: {
+          x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
+          y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE)
+        },
+        dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE }
+      },
+      meta
+    ),
+    ongoingActions: new Set()
+  };
 };
 
-const sendStateUpdate = (io: Server) => {
-  const dto: GameStateDto = {
-    ...gameState,
-    players: Object.values(gameState.players)
-  };
+const getSocketByPlayerId = (io: Server, id: string) =>
+  io.sockets.sockets.get(id);
 
-  io.emit(GAME_STATE_UPDATE, dto);
+const sendStateUpdate = (io: Server) => {
+  Object.values(gameState.players).forEach(player => {
+    const socket = getSocketByPlayerId(io, player.id);
+
+    const dto: GameStateDto = {
+      players: gameState.grid
+        .findNearby(player.gridItem.position, {
+          w: PLAYER_FIELD_OF_VIEW,
+          h: PLAYER_FIELD_OF_VIEW
+        })
+        .map(gridItem => ({
+          ...gridItem.position,
+          id: gridItem.meta.id
+        }))
+    };
+    socket.emit(GAME_STATE_UPDATE, dto);
+  });
 };
 
 const movePlayer = (player: Player, { x = 0, y = 0 }) => {
-  player.x = clampToGrid(player.x + x * PLAYER_SPEED);
-  player.y = clampToGrid(player.y + y * PLAYER_SPEED);
+  if (x === 0 && y === 0) return;
+
+  player.gridItem.position.x = clampToGrid(
+    player.gridItem.position.x + x * PLAYER_SPEED
+  );
+  player.gridItem.position.y = clampToGrid(
+    player.gridItem.position.y + y * PLAYER_SPEED
+  );
+  gameState.grid.update(player.gridItem);
+};
+
+const removePlayer = (player: Player) => {
+  gameState.grid.remove(player.gridItem);
+  delete gameState.players[player.id];
 };
 
 const updateGameState = () => {
@@ -75,6 +130,8 @@ const updateGameState = () => {
           return movePlayer(player, { x: -1 });
         case PLAYER_ACTIONS.MOVE_RIGHT:
           return movePlayer(player, { x: 1 });
+        case PLAYER_ACTIONS.QUIT:
+          removePlayer(player);
       }
     });
   });
@@ -95,7 +152,8 @@ export const socketIoHandler = (io: Server) => {
     gameState.players[socket.id] = player;
 
     socket.on('disconnect', () => {
-      delete gameState.players[socket.id];
+      gameState.players[socket.id].ongoingActions.clear();
+      gameState.players[socket.id].ongoingActions.add(PLAYER_ACTIONS.QUIT);
     });
 
     socket.on(PLAYER_ACTION_START, ({ action }) => {

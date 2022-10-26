@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { GRID_SIZE, CELL_SIZE, PLAYER_SIZE } from '~/constants';
+import {
+  GRID_SIZE,
+  CELL_SIZE,
+  PLAYER_SIZE,
+  PLAYER_FIELD_OF_VIEW
+} from '~/constants';
+import { pushPop, fillCircle, fillRectCentered } from '~/utils/canvasUtils';
 import { interpolateEntity } from '~~/src/utils/entityInterpolation';
 
 const canvasEl = ref<HTMLCanvasElement>();
 const [state, prevState] = useGameState();
+const socket = useSocket();
 
 const { getContext } = useCanvasProvider(canvasEl);
 
@@ -24,28 +31,27 @@ const rows = Array.from({ length: rowsCount })
 
 const fps = ref(0);
 let lastTick = 0;
-
-const draw = () => {
-  const ctx = getContext();
-  if (!ctx) return;
-
+const updateFps = () => {
   if (lastTick) {
     const delta = (performance.now() - lastTick) / 1000;
     fps.value = Math.round(1 / delta);
   }
   lastTick = performance.now();
+};
 
-  ctx.clearRect(0, 0, canvasSize, canvasSize);
-  ctx.save();
+const drawGrid = () => {
+  const ctx = getContext();
+
   ctx.strokeStyle = 'rgb(255,255,255,0.2)';
   rows.forEach(row => {
     row.forEach(cell => {
       ctx.strokeRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE);
     });
   });
-  ctx.restore();
+};
 
-  ctx.save();
+const drawPlayers = () => {
+  const ctx = getContext();
   state.players.value.forEach(player => {
     interpolateEntity<typeof player>(
       { value: player, timestamp: state.timestamp.value },
@@ -54,19 +60,44 @@ const draw = () => {
         timestamp: prevState.timestamp.value
       },
       entity => {
-        ctx.beginPath();
-        ctx.arc(entity.x, entity.y, PLAYER_SIZE / 2, 0, 2 * Math.PI, false);
         ctx.lineWidth = 0;
         ctx.fillStyle = '#A66';
-        ctx.closePath();
-        ctx.fill();
+        fillCircle(ctx, {
+          x: entity.x,
+          y: entity.y,
+          radius: PLAYER_SIZE / 2
+        });
       }
     );
   });
-  ctx.restore();
+};
+
+const drawFieldOfViewIndicator = () => {
+  const ctx = getContext();
+  const player = state.playersById.value[socket.id];
+  if (!player) return;
+
+  ctx.lineWidth = 0;
+  ctx.fillStyle = 'rgb(255,255,255,0.2)';
+  fillRectCentered(ctx, {
+    x: player.x,
+    y: player.y,
+    w: PLAYER_FIELD_OF_VIEW,
+    h: PLAYER_FIELD_OF_VIEW
+  });
+};
+
+const draw = () => {
+  const ctx = getContext();
+
+  ctx.clearRect(0, 0, canvasSize, canvasSize);
+  pushPop(ctx, drawGrid);
+  pushPop(ctx, drawFieldOfViewIndicator);
+  pushPop(ctx, drawPlayers);
 };
 
 const drawLoop = useRafFn(draw, { immediate: false });
+useRafFn(updateFps);
 onMounted(() => {
   drawLoop.resume();
 });
