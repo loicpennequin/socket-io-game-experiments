@@ -1,27 +1,23 @@
 import { sat } from './math';
-import type {
+import { pointRectCollision } from './collision';
+import {
+  createMatrix,
   Boundaries,
   SpatialObject,
   Coordinates,
   Dimensions,
   Nullable
 } from './index';
-import { createMatrix } from './index';
 
 export type SpatialHashGridItem<TMeta> = SpatialObject & {
-  cells: {
-    min: Nullable<Coordinates>;
-    max: Nullable<Coordinates>;
-    nodes: Nullable<Coordinates[]>;
-  };
+  cellsIndices: Coordinates[];
+  boundaries: Boundaries<Coordinates>;
   queryId: Nullable<number>;
   meta: TMeta;
 };
 
 export type SpatialHashGridNode<TMeta> = {
-  next: Nullable<SpatialHashGridNode<TMeta>>;
-  prev: Nullable<SpatialHashGridNode<TMeta>>;
-  item: SpatialHashGridItem<TMeta>;
+  items: SpatialHashGridItem<TMeta>[];
 };
 
 export type SpatialHashGridOptions = {
@@ -39,7 +35,9 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
   type GridNode = SpatialHashGridNode<TMeta>;
 
   const { start: startBound, end: endBound } = bounds;
-  const cells = createMatrix<Nullable<GridNode>>(dimensions, () => null);
+  const cells = createMatrix<Nullable<GridNode>>(dimensions, () => ({
+    items: []
+  }));
   let currentQueryId = 0;
 
   const getCellIndex = (position: Coordinates): Coordinates => {
@@ -69,44 +67,24 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
   };
 
   const insert = (item: GridItem) => {
-    const { min, max } = getBoundaries(item);
-    const nodes = [];
-
+    const { min, max } = item.boundaries;
+    const itemCells: Coordinates[] = [];
     for (let x = min.x; x <= max.x; ++x) {
-      nodes.push([]);
-
       for (let y = min.y; y <= max.y; ++y) {
-        const head: GridNode = {
-          next: null,
-          prev: null,
-          item
-        };
-
-        nodes[x - min.x].push(head);
-
-        head.next = cells[x][y];
-        if (head.next) {
-          head.next.prev = head;
-        }
-
-        cells[x][y] = head;
+        itemCells.push({ x, y });
+        cells[x][y].items.push(item);
       }
     }
 
-    item.cells.min = min;
-    item.cells.max = max;
-    item.cells.nodes = nodes;
+    item.cellsIndices = itemCells;
   };
 
   const add = ({ position, dimensions }: SpatialObject, meta: TMeta) => {
     const item: GridItem = {
       position,
       dimensions,
-      cells: {
-        min: null,
-        max: null,
-        nodes: null
-      },
+      cellsIndices: [],
+      boundaries: getBoundaries({ position, dimensions }),
       queryId: null,
       meta
     };
@@ -117,69 +95,51 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
   };
 
   const remove = (item: GridItem) => {
-    const { min, max } = item.cells;
-
-    for (let x = min.x; x <= max.x; ++x) {
-      for (let y = min.y; y <= max.y; ++y) {
-        const xi = x - min.x;
-        const yi = y - min.y;
-        const node = item.cells.nodes[xi][yi];
-
-        if (node.next) {
-          node.next.prev = node.prev;
-        }
-        if (node.prev) {
-          node.prev.next = node.next;
-        }
-
-        if (!node.prev) {
-          cells[x][y] = node.next;
-        }
-      }
-    }
-
-    item.cells.min = null;
-    item.cells.max = null;
-    item.cells.nodes = null;
+    item.cellsIndices.forEach(cell => {
+      const { items } = cells[cell.x][cell.y];
+      items.splice(items.indexOf(item), 1);
+    });
   };
 
   const update = (item: GridItem) => {
     const { min, max } = getBoundaries(item);
 
     const hasChangedCell =
-      item.cells.min.x !== min.x ||
-      item.cells.min.y !== min.y ||
-      item.cells.max.x !== max.x ||
-      item.cells.max.y !== max.y;
+      item.boundaries.min.x !== min.x ||
+      item.boundaries.min.y !== min.y ||
+      item.boundaries.max.x !== max.x ||
+      item.boundaries.max.y !== max.y;
 
     if (!hasChangedCell) return;
-
+    item.boundaries = { min, max };
     remove(item);
     insert(item);
   };
 
   const findNearby = (position: Coordinates, bounds: Dimensions) => {
     const { min, max } = getBoundaries({ position, dimensions: bounds });
-
-    const items: GridItem[] = [];
+    const nearby: GridItem[] = [];
     currentQueryId++;
 
     for (let x = min.x; x <= max.x; ++x) {
       for (let y = min.y; y <= max.y; ++y) {
-        let head = cells[x][y];
+        const cell = cells[x][y];
+        cell.items.forEach(item => {
+          const isWithinBounds = pointRectCollision(item.position, {
+            x: position.x - bounds.w / 2,
+            y: position.y - bounds.h / 2,
+            ...bounds
+          });
 
-        while (head) {
-          const v = head.item;
-          head = head.next;
+          if (!isWithinBounds) return;
+          if (item.queryId === currentQueryId) return;
 
-          if (v.queryId !== currentQueryId) {
-            v.queryId = currentQueryId;
-            items.push(v);
-          }
-        }
+          item.queryId = currentQueryId;
+          nearby.push(item);
+        });
       }
     }
-    return items;
+    return nearby;
   };
 
   return {

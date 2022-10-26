@@ -13,6 +13,7 @@ type SavedState = GameStateDto & {
 const makeEmptyState = (): SavedState => ({
   players: [],
   playersById: {},
+  playerCount: 0,
   timestamp: performance.now()
 });
 

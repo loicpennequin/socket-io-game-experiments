@@ -10,6 +10,7 @@ import { interpolateEntity } from '~~/src/utils/entityInterpolation';
 
 const canvasEl = ref<HTMLCanvasElement>();
 const [state, prevState] = useGameState();
+const { playerCount, players } = state;
 const socket = useSocket();
 
 const { getContext } = useCanvasProvider(canvasEl);
@@ -77,14 +78,23 @@ const drawFieldOfViewIndicator = () => {
   const player = state.playersById.value[socket.id];
   if (!player) return;
 
-  ctx.lineWidth = 0;
-  ctx.fillStyle = 'rgb(255,255,255,0.2)';
-  fillRectCentered(ctx, {
-    x: player.x,
-    y: player.y,
-    w: PLAYER_FIELD_OF_VIEW,
-    h: PLAYER_FIELD_OF_VIEW
-  });
+  interpolateEntity<typeof player>(
+    { value: player, timestamp: state.timestamp.value },
+    {
+      value: prevState.playersById.value[player.id],
+      timestamp: prevState.timestamp.value
+    },
+    entity => {
+      ctx.lineWidth = 0;
+      ctx.fillStyle = 'rgb(255,255,255,0.2)';
+      fillRectCentered(ctx, {
+        x: entity.x,
+        y: entity.y,
+        w: PLAYER_FIELD_OF_VIEW,
+        h: PLAYER_FIELD_OF_VIEW
+      });
+    }
+  );
 };
 
 const draw = () => {
@@ -106,6 +116,7 @@ onMounted(() => {
 <template>
   <canvas ref="canvasEl" :width="canvasSize" :height="canvasSize" />
   <div>FPS: {{ fps }}</div>
+  <div>Seeing {{ players.length }} out of {{ playerCount }} players</div>
 </template>
 
 <style scoped>

@@ -44,6 +44,7 @@ export type GameState = {
 
 export type GameStateDto = {
   players: PlayerDto[];
+  playerCount: number;
 };
 
 const gameState: GameState = {
@@ -83,10 +84,11 @@ const getSocketByPlayerId = (io: Server, id: string) =>
   io.sockets.sockets.get(id);
 
 const sendStateUpdate = (io: Server) => {
-  Object.values(gameState.players).forEach(player => {
+  Object.values(gameState.players).forEach((player, _, arr) => {
     const socket = getSocketByPlayerId(io, player.id);
 
     const dto: GameStateDto = {
+      playerCount: arr.length,
       players: gameState.grid
         .findNearby(player.gridItem.position, {
           w: PLAYER_FIELD_OF_VIEW,
