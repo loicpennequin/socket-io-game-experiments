@@ -1,6 +1,12 @@
+<script setup lang="ts">
+useKeyboardControls();
+</script>
+
 <template>
   <main>
-    <GameGrid />
+    <ClientOnly>
+      <GameCanvas />
+    </ClientOnly>
   </main>
 </template>
 

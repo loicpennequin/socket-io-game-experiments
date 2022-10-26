@@ -6,10 +6,12 @@ import {
   PLAYER_ACTION_END
 } from '../../../events';
 import {
-  GAME_GRID_SIZE,
+  GRID_SIZE,
+  CELL_SIZE,
   PLAYER_ACTIONS,
   PlayerAction,
-  TICK_RATE
+  TICK_RATE,
+  PLAYER_SPEED
 } from '../../../constants';
 import { clamp } from '../../../utils';
 
@@ -35,12 +37,12 @@ export type GameStateDto = {
 };
 
 const clampToGrid = (n: number) =>
-  clamp(n, { min: 0, max: GAME_GRID_SIZE - 1 });
+  clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
 const makePlayer = (): Player => ({
   id: nanoid(6),
-  x: Math.round(Math.random() * GAME_GRID_SIZE),
-  y: Math.round(Math.random() * GAME_GRID_SIZE),
+  x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
+  y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
   ongoingActions: new Set()
 });
 
@@ -58,8 +60,8 @@ const sendStateUpdate = (io: Server) => {
 };
 
 const movePlayer = (player: Player, { x = 0, y = 0 }) => {
-  player.x = clampToGrid(player.x + x);
-  player.y = clampToGrid(player.y + y);
+  player.x = clampToGrid(player.x + x * PLAYER_SPEED);
+  player.y = clampToGrid(player.y + y * PLAYER_SPEED);
 };
 
 const updateGameState = () => {
