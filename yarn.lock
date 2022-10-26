@@ -281,6 +281,11 @@
   dependencies:
     mime "^3.0.0"
 
+"@datastructures-js/linked-list@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/@datastructures-js/linked-list/-/linked-list-5.2.4.tgz#0d91c4184b7e45e222837d5b678cb95cb0a6ec19"
+  integrity sha512-bCrDMBblU53Z2ayFKMCDgCd82wEE0ncItDwhfv25KNHWHPLAm2exeJkXUt99tnZ/o6kpHWBRom0XnppsJ/ZjTg==
+
 "@esbuild/android-arm@0.15.12":
   version "0.15.12"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm/-/android-arm-0.15.12.tgz#e548b10a5e55b9e10537a049ebf0bc72c453b769"

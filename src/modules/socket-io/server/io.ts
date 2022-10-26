@@ -12,7 +12,7 @@ import {
   TICK_RATE,
   PLAYER_SPEED
 } from '../../../constants';
-import { clamp } from '../../../utils';
+import { clamp } from '../../../utils/math';
 
 export type Player = {
   id: string;

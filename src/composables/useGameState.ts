@@ -3,7 +3,7 @@ import type {
   GameStateDto,
   PlayerDto
 } from '~~/src/modules/socket-io/server/io';
-import { indexBy } from '~~/src/utils';
+import { indexBy } from '~/utils';
 
 type SavedState = GameStateDto & {
   timestamp: number;

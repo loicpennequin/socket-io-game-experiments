@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { GRID_SIZE, CELL_SIZE, PLAYER_SIZE } from '~/constants';
-import { interpolateEntity } from '~~/src/utils';
+import { interpolateEntity } from '~~/src/utils/entityInterpolation';
 
 const canvasEl = ref<HTMLCanvasElement>();
 const [state, prevState] = useGameState();
@@ -47,7 +47,7 @@ const draw = () => {
 
   ctx.save();
   state.players.value.forEach(player => {
-    interpolateEntity(
+    interpolateEntity<typeof player>(
       { value: player, timestamp: state.timestamp.value },
       {
         value: prevState.playersById.value[player.id],
