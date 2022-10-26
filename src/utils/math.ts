@@ -1,9 +1,5 @@
 import { Boundaries, Coordinates } from './index';
 
-export const randomInRange = (a: number, b: number) => {
-  return Math.random() * (b - a) + a;
-};
-
 export const lerp = (start: number, end: number, amount: number) => {
   return (1 - amount) * start + amount * end;
 };

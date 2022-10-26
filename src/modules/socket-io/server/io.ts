@@ -90,10 +90,7 @@ const sendStateUpdate = (io: Server) => {
     const dto: GameStateDto = {
       playerCount: arr.length,
       players: gameState.grid
-        .findNearby(player.gridItem.position, {
-          w: PLAYER_FIELD_OF_VIEW,
-          h: PLAYER_FIELD_OF_VIEW
-        })
+        .findNearbyRadius(player.gridItem.position, PLAYER_FIELD_OF_VIEW)
         .map(gridItem => ({
           ...gridItem.position,
           id: gridItem.meta.id

@@ -5,7 +5,7 @@ import {
   PLAYER_SIZE,
   PLAYER_FIELD_OF_VIEW
 } from '~/constants';
-import { pushPop, fillCircle, fillRectCentered } from '~/utils/canvasUtils';
+import { pushPop, fillCircle } from '~/utils/canvasUtils';
 import { interpolateEntity } from '~~/src/utils/entityInterpolation';
 
 const canvasEl = ref<HTMLCanvasElement>();
@@ -87,11 +87,10 @@ const drawFieldOfViewIndicator = () => {
     entity => {
       ctx.lineWidth = 0;
       ctx.fillStyle = 'rgb(255,255,255,0.2)';
-      fillRectCentered(ctx, {
+      fillCircle(ctx, {
         x: entity.x,
         y: entity.y,
-        w: PLAYER_FIELD_OF_VIEW,
-        h: PLAYER_FIELD_OF_VIEW
+        radius: PLAYER_FIELD_OF_VIEW
       });
     }
   );

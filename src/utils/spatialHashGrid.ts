@@ -1,5 +1,5 @@
 import { sat } from './math';
-import { pointRectCollision } from './collision';
+import { pointCircleCollision, pointRectCollision } from './collision';
 import {
   createMatrix,
   Boundaries,
@@ -142,10 +142,39 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
     return nearby;
   };
 
+  const findNearbyRadius = (position: Coordinates, radius: number) => {
+    const { min, max } = getBoundaries({
+      position,
+      dimensions: { w: radius * 2, h: radius * 2 }
+    });
+    const nearby: GridItem[] = [];
+    currentQueryId++;
+
+    for (let x = min.x; x <= max.x; ++x) {
+      for (let y = min.y; y <= max.y; ++y) {
+        const cell = cells[x][y];
+        cell.items.forEach(item => {
+          const isWithinBounds = pointCircleCollision(item.position, {
+            ...position,
+            r: radius
+          });
+
+          if (!isWithinBounds) return;
+          if (item.queryId === currentQueryId) return;
+
+          item.queryId = currentQueryId;
+          nearby.push(item);
+        });
+      }
+    }
+    return nearby;
+  };
+
   return {
     add,
     remove,
     update,
-    findNearby
+    findNearby,
+    findNearbyRadius
   };
 };

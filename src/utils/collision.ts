@@ -1,3 +1,4 @@
+import { dist } from './math';
 import { Coordinates, Dimensions } from './index';
 
 export const pointRectCollision = (
@@ -8,3 +9,8 @@ export const pointRectCollision = (
   point.x <= rect.x + rect.w &&
   point.y >= rect.y &&
   point.y <= rect.y + rect.h;
+
+export const pointCircleCollision = (
+  point: Coordinates,
+  circle: Coordinates & { r: number }
+) => dist(point, circle) <= circle.r;
