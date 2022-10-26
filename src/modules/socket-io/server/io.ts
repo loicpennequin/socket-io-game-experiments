@@ -1,5 +1,4 @@
 import { Server } from 'socket.io';
-import { nanoid } from 'nanoid';
 import {
   GAME_STATE_UPDATE,
   PLAYER_ACTION_START,
@@ -39,8 +38,8 @@ export type GameStateDto = {
 const clampToGrid = (n: number) =>
   clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
-const makePlayer = (): Player => ({
-  id: nanoid(6),
+const makePlayer = (socketId): Player => ({
+  id: socketId,
   x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
   y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
   ongoingActions: new Set()
@@ -92,7 +91,7 @@ export const socketIoHandler = (io: Server) => {
   }, 1000 / TICK_RATE);
 
   io.on('connection', socket => {
-    const player = makePlayer();
+    const player = makePlayer(socket.id);
     gameState.players[socket.id] = player;
 
     socket.on('disconnect', () => {

@@ -1,8 +1,8 @@
 export const GRID_SIZE = 15;
 export const CELL_SIZE = 50;
-export const TICK_RATE = 10;
+export const TICK_RATE = 15;
 export const PLAYER_SIZE = 15;
-export const PLAYER_SPEED = 8;
+export const PLAYER_SPEED = 5;
 
 export const PLAYER_ACTIONS = Object.freeze({
   MOVE_UP: 'MOVE_UP',

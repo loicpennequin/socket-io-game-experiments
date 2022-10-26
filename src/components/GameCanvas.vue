@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { GRID_SIZE, CELL_SIZE, PLAYER_SIZE } from '~/constants';
+import { interpolateEntity } from '~~/src/utils';
 
 const canvasEl = ref<HTMLCanvasElement>();
-const { players } = useGameState();
+const [state, prevState] = useGameState();
 
 const { getContext } = useCanvasProvider(canvasEl);
 
@@ -36,7 +37,7 @@ const draw = () => {
 
   ctx.clearRect(0, 0, canvasSize, canvasSize);
   ctx.save();
-  ctx.strokeStyle = 'white';
+  ctx.strokeStyle = 'rgb(255,255,255,0.2)';
   rows.forEach(row => {
     row.forEach(cell => {
       ctx.strokeRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE);
@@ -45,13 +46,22 @@ const draw = () => {
   ctx.restore();
 
   ctx.save();
-  players.value.forEach(player => {
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, PLAYER_SIZE / 2, 0, 2 * Math.PI, false);
-    ctx.lineWidth = 0;
-    ctx.fillStyle = '#A66';
-    ctx.closePath();
-    ctx.fill();
+  state.players.value.forEach(player => {
+    interpolateEntity(
+      { value: player, timestamp: state.timestamp.value },
+      {
+        value: prevState.playersById.value[player.id],
+        timestamp: prevState.timestamp.value
+      },
+      entity => {
+        ctx.beginPath();
+        ctx.arc(entity.x, entity.y, PLAYER_SIZE / 2, 0, 2 * Math.PI, false);
+        ctx.lineWidth = 0;
+        ctx.fillStyle = '#A66';
+        ctx.closePath();
+        ctx.fill();
+      }
+    );
   });
   ctx.restore();
 };

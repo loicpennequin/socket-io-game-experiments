@@ -18,6 +18,7 @@
   "plugins": ["@typescript-eslint", "vue", "nuxt"],
   "rules": {
     "curly": "off",
+    "n/no-callback-literal": "off",
     "import/default": "off",
     "import/no-named-as-default-member": "off",
     "no-redeclare": "off",
