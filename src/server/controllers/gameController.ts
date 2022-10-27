@@ -1,4 +1,4 @@
-import { Matrix } from '../../utils';
+import { Coordinates, createMatrix, Matrix } from '../../utils';
 import {
   GRID_SIZE,
   CELL_SIZE,
@@ -9,7 +9,7 @@ import {
   TICK_RATE,
   PLAYER_FIELD_OF_VIEW
 } from '../../constants';
-import { clamp } from '../../utils/math';
+import { clamp, nerdPerlin, perlinMatrix, randomInt } from '../../utils/math';
 import {
   makeSpatialHashGrid,
   SpatialHashGrid,
@@ -26,24 +26,40 @@ export type Player = {
   ongoingActions: Set<PlayerAction>;
 };
 
-export type GameMapCell = {
+export type GameMapCell = Coordinates & {
   lightness: number;
 };
 
 export type GameMap = {
   hue: number;
-  cells: Matrix<GameMapCell>;
+  grid: Matrix<GameMapCell>;
 };
 
 export type GameState = {
+  map: GameMap;
   players: Record<string, Player>;
   grid: SpatialHashGrid<PlayerMeta>;
 };
 
 export type StateUpdateCallback = (state: Readonly<GameState>) => void;
 
+const mapDimensions = { w: GRID_SIZE, h: GRID_SIZE };
+const noiseSeed = perlinMatrix(mapDimensions);
+nerdPerlin.seed();
+
 const gameState: GameState = {
   players: {},
+  map: {
+    hue: randomInt(360),
+    grid: createMatrix(mapDimensions, ({ x, y }) => {
+      console.log({ x, y, good: noiseSeed[x][y], nerd: nerdPerlin.get(x, y) });
+      return {
+        x,
+        y,
+        lightness: Math.round(nerdPerlin.get(x, y) * 100) / 100
+      };
+    })
+  },
   grid: makeSpatialHashGrid<PlayerMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },
     bounds: {

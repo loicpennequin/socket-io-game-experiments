@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {
   Boundaries,
   Coordinates,
@@ -21,11 +22,7 @@ export const mapRange = (num: number, inRange: Range, outRange: Range) => {
   return clamp(mapped, { min: outRange.min, max: outRange.max });
 };
 
-export const lerp = (start: number, end: number, amount: number) => {
-  return (1 - amount) * start + amount * end;
-};
-
-export const linearInterp = (num: number, range: Range) =>
+export const lerp = (num: number, range: Range) =>
   mapRange(smootherStep(num), { min: 0, max: 1 }, range);
 
 export const sat = (num: number) => clamp(num, { min: 0, max: 1 });
@@ -52,28 +49,81 @@ export const randomVector = (): Coordinates => {
 };
 
 export const dotProduct = (point1: Coordinates, point2: Coordinates) => {
-  const gVect = randomVector();
-  const dVect = { x: point1.x - point2.x, y: point1.y - point2.y };
+  const vect = randomVector();
 
-  return dVect.x * gVect.x + dVect.y * gVect.y;
+  return vect.x * (point1.x - point2.x) + vect.y * (point1.y - point2.y);
 };
 
-export const perlin = (dimensions: Dimensions) =>
+export const perlinMatrix = (dimensions: Dimensions) =>
   createMatrix(dimensions, ({ x, y }) => {
-    const floored = {
-      x: Math.floor(x),
-      y: Math.floor(y)
+    const boundaries = {
+      x: {
+        min: Math.floor(x),
+        max: Math.floor(x) + 1
+      },
+      y: {
+        min: Math.floor(y),
+        max: Math.floor(y) + 1
+      }
     };
 
-    const min = linearInterp(x - floored.x, {
-      min: dotProduct({ x, y }, { x: floored.x, y: floored.y }),
-      max: dotProduct({ x, y }, { x: floored.x + 1, y: floored.y })
+    const min = lerp(x - boundaries.x.min, {
+      min: dotProduct({ x, y }, { x: boundaries.x.min, y: boundaries.y.min }),
+      max: dotProduct({ x, y }, { x: boundaries.x.max, y: boundaries.y.max })
     });
 
-    const max = linearInterp(x - floored.x, {
-      min: dotProduct({ x, y }, { x: floored.x, y: floored.y + 1 }),
-      max: dotProduct({ x, y }, { x: floored.x + 1, y: floored.y + 1 })
+    const max = lerp(x - boundaries.x.min, {
+      min: dotProduct({ x, y }, { x: boundaries.x.min, y: boundaries.y.max }),
+      max: dotProduct({ x, y }, { x: boundaries.x.max, y: boundaries.y.max })
     });
 
-    return linearInterp(y - floored.y, { min, max });
+    return lerp(y - boundaries.y.min, { min, max });
   });
+
+export const nerdPerlin = {
+  rand_vect: function () {
+    const theta = Math.random() * 2 * Math.PI;
+    return { x: Math.cos(theta), y: Math.sin(theta) };
+  },
+  dot_prod_grid: function (x, y, vx, vy) {
+    let g_vect;
+    const d_vect = { x: x - vx, y: y - vy };
+    // @ts-ignore
+    if (this.gradients[[vx, vy]]) {
+      // @ts-ignore
+      g_vect = this.gradients[[vx, vy]];
+    } else {
+      g_vect = this.rand_vect();
+      // @ts-ignore
+      this.gradients[[vx, vy]] = g_vect;
+    }
+    return d_vect.x * g_vect.x + d_vect.y * g_vect.y;
+  },
+  smootherstep: function (x) {
+    return 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+  },
+  interp: function (x, a, b) {
+    return a + this.smootherstep(x) * (b - a);
+  },
+  seed: function () {
+    this.gradients = {};
+    this.memory = {};
+  },
+  get: function (x: number, y: number) {
+    // @ts-ignore
+    // eslint-disable-next-line no-prototype-builtins
+    if (this.memory.hasOwnProperty([x, y])) return this.memory[[x, y]];
+    const xf = Math.floor(x);
+    const yf = Math.floor(y);
+    const tl = this.dot_prod_grid(x, y, xf, yf);
+    const tr = this.dot_prod_grid(x, y, xf + 1, yf);
+    const bl = this.dot_prod_grid(x, y, xf, yf + 1);
+    const br = this.dot_prod_grid(x, y, xf + 1, yf + 1);
+    const xt = this.interp(x - xf, tl, tr);
+    const xb = this.interp(x - xf, bl, br);
+    const v = this.interp(y - yf, xt, xb);
+    // @ts-ignore
+    this.memory[[x, y]] = v;
+    return v;
+  }
+};

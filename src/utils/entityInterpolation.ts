@@ -30,8 +30,8 @@ export const interpolateEntity = <T extends Coordinates = Coordinates>(
 
     cb({
       ...newState.value,
-      x: lerp(oldState.value.x, newState.value.x, ratio),
-      y: lerp(oldState.value.y, newState.value.y, ratio)
+      x: lerp(ratio, { min: oldState.value.x, max: newState.value.x }),
+      y: lerp(ratio, { min: oldState.value.y, max: newState.value.y })
     });
   } else {
     cb(newState.value);

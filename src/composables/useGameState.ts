@@ -1,16 +1,21 @@
-import { GAME_STATE_UPDATE } from '~~/src/events';
+import { GAME_INIT, GAME_STATE_UPDATE } from '~~/src/events';
 import type {
+  GameInitDto,
   GameStateDto,
   PlayerDto
 } from '~~/src/modules/socket-io/server/io';
 import { indexBy } from '~/utils';
 
-type SavedState = GameStateDto & {
-  timestamp: number;
-  playersById: Record<string, PlayerDto>;
-};
+type SavedState = GameStateDto &
+  Partial<GameInitDto> & {
+    isReady: boolean;
+    timestamp: number;
+    playersById: Record<string, PlayerDto>;
+  };
 
 const makeEmptyState = (): SavedState => ({
+  map: undefined,
+  isReady: false,
   players: [],
   playersById: {},
   playerCount: 0,
@@ -29,6 +34,11 @@ export const useGameState = () => {
       timestamp: performance.now(),
       playersById: indexBy(payload.players, 'id')
     });
+  });
+
+  useSocketEvent<GameInitDto>(GAME_INIT, payload => {
+    console.log('game init received', payload);
+    Object.assign(gameState, payload, { isReady: true });
   });
 
   return [toRefs(gameState), toRefs(prevState)];

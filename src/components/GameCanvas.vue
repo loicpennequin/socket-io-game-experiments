@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Coordinates, createMatrix } from '../utils';
 import {
   GRID_SIZE,
   CELL_SIZE,
@@ -17,16 +16,7 @@ const socket = useSocket();
 const { getContext } = useCanvasProvider(canvasEl);
 
 const canvasSize = GRID_SIZE * CELL_SIZE;
-const rowsCount = canvasSize / CELL_SIZE;
-const colsCount = rowsCount;
 
-const rows = createMatrix<Coordinates>(
-  { w: colsCount, h: rowsCount },
-  ({ x, y }) => ({
-    x: x * CELL_SIZE,
-    y: y * CELL_SIZE
-  })
-);
 const fps = ref(0);
 let lastTick = 0;
 const updateFps = () => {
@@ -39,20 +29,26 @@ const updateFps = () => {
 
 const drawGrid = () => {
   const ctx = getContext();
+  const { grid, hue } = unref(state.map);
 
-  ctx.strokeStyle = 'rgb(255,255,255,0.2)';
-  rows.forEach((row, rowIndex) => {
-    row.forEach((cell, cellIndex) => {
-      ctx.strokeRect(cell.x, cell.y, CELL_SIZE, CELL_SIZE);
+  grid.forEach(row => {
+    row.forEach(cell => {
+      ctx.fillStyle = `hsl(${hue}, 60%, ${cell.lightness * 100}%)`;
+      ctx.fillRect(
+        cell.x * CELL_SIZE,
+        cell.y * CELL_SIZE,
+        CELL_SIZE,
+        CELL_SIZE
+      );
+
       ctx.font = '12px Helvetica';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'rgb(255,255,255,0.2)';
-
+      ctx.fillStyle = 'rgb(255,255,255,0.5)';
       ctx.fillText(
-        `${cellIndex}.${rowIndex}`,
-        cell.x + CELL_SIZE / 2,
-        cell.y + CELL_SIZE / 2
+        `${cell.x}.${cell.y}`,
+        cell.x * CELL_SIZE + CELL_SIZE / 2,
+        cell.y * CELL_SIZE + CELL_SIZE / 2
       );
     });
   });
@@ -114,8 +110,24 @@ const draw = () => {
 
 const drawLoop = useRafFn(draw, { immediate: false });
 useRafFn(updateFps);
+
+const isWindowFocused = useWindowFocus();
+watch(isWindowFocused, focused => {
+  if (focused && state.isReady.value) {
+    drawLoop.resume();
+  } else {
+    drawLoop.pause();
+  }
+});
+
 onMounted(() => {
-  drawLoop.resume();
+  if (state.isReady.value) {
+    drawLoop.resume();
+  }
+
+  watchOnce(state.isReady, isReady => {
+    if (isReady) drawLoop.resume();
+  });
 });
 </script>
 

@@ -2,10 +2,14 @@ import { Server } from 'socket.io';
 import {
   GAME_STATE_UPDATE,
   PLAYER_ACTION_START,
-  PLAYER_ACTION_END
+  PLAYER_ACTION_END,
+  GAME_INIT
 } from '../../../events';
 import { PlayerAction } from '../../../constants';
-import { gameController } from '../../../server/controllers/gameController';
+import {
+  gameController,
+  GameMap
+} from '../../../server/controllers/gameController';
 
 export type PlayerDto = {
   id: string;
@@ -16,6 +20,10 @@ export type PlayerDto = {
 export type GameStateDto = {
   players: PlayerDto[];
   playerCount: number;
+};
+
+export type GameInitDto = {
+  map: GameMap;
 };
 
 type PlayerActionStartPayload = {
@@ -45,6 +53,12 @@ export const socketIoHandler = (io: Server) => {
 
   io.on('connection', socket => {
     const player = gameController.addPlayer(socket.id);
+
+    // setTimeout(() => {
+    socket.emit(GAME_INIT, {
+      map: gameController.gameState.map
+    });
+    // }, 1000);
 
     socket.on('disconnect', () => {
       gameController.removePlayer(player);
