@@ -1,5 +1,6 @@
 export const GRID_SIZE = 20;
 export const CELL_SIZE = 40;
+export const MAP_HUE = 120;
 export const TICK_RATE = 30;
 export const PLAYER_SIZE = 15;
 export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 3;

@@ -65,7 +65,7 @@ const drawPlayers = () => {
       },
       entity => {
         ctx.lineWidth = 0;
-        ctx.fillStyle = '#A66';
+        ctx.fillStyle = '#844';
         fillCircle(ctx, {
           x: entity.x,
           y: entity.y,
