@@ -5,7 +5,9 @@ export type Coordinates = { x: number; y: number };
 export type Dimensions = { w: number; h: number };
 export type SpatialObject = { dimensions: Dimensions; position: Coordinates };
 export type Boundaries<T = number> = { min: T; max: T };
+export type Range = Boundaries<number>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
+export type Matrix<T> = T[][];
 
 export function objectEntries<T extends object>(t: T): Entries<T>[] {
   return Object.entries(t) as any;
@@ -19,7 +21,7 @@ export const indexBy = <T extends Record<string, any>>(
 export const createMatrix = <T>(
   dimensions: Dimensions,
   initialValue: (coords: Coordinates) => T
-): T[][] =>
+): Matrix<T> =>
   Array.from<T[]>({
     length: dimensions.w
   })

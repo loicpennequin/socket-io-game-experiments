@@ -5,7 +5,7 @@ import {
   PLAYER_ACTION_END
 } from '../../../events';
 import { PlayerAction } from '../../../constants';
-import { gameController } from '../../../server/controllers/gameStateController';
+import { gameController } from '../../../server/controllers/gameController';
 
 export type PlayerDto = {
   id: string;

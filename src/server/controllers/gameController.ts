@@ -1,3 +1,4 @@
+import { Matrix } from '../../utils';
 import {
   GRID_SIZE,
   CELL_SIZE,
@@ -23,6 +24,15 @@ export type Player = {
   id: string;
   gridItem: SpatialHashGridItem<PlayerMeta>;
   ongoingActions: Set<PlayerAction>;
+};
+
+export type GameMapCell = {
+  lightness: number;
+};
+
+export type GameMap = {
+  hue: number;
+  cells: Matrix<GameMapCell>;
 };
 
 export type GameState = {
@@ -96,6 +106,7 @@ const updateGameState = () => {
 
 const updateCallbacks = new Set<StateUpdateCallback>();
 let isRunning = false;
+
 export const gameController = {
   get gameState() {
     return gameState as Readonly<GameState>;
