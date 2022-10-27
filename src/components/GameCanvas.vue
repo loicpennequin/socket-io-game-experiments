@@ -27,19 +27,27 @@ const updateFps = () => {
   lastTick = performance.now();
 };
 
-const drawGrid = () => {
+const drawMap = ({
+  opacity,
+  showCoordinates = false
+}: {
+  opacity: number;
+  showCoordinates?: boolean;
+}) => {
   const ctx = getContext();
   const { grid, hue } = unref(state.map);
 
   grid.forEach(row => {
     row.forEach(cell => {
-      ctx.fillStyle = `hsl(${hue}, 60%, ${cell.lightness * 100}%)`;
+      ctx.fillStyle = `hsla(${hue}, 45%, ${cell.lightness * 100}%, ${opacity})`;
       ctx.fillRect(
         cell.x * CELL_SIZE,
         cell.y * CELL_SIZE,
         CELL_SIZE,
         CELL_SIZE
       );
+
+      if (!showCoordinates) return;
 
       ctx.font = '12px Helvetica';
       ctx.textAlign = 'center';
@@ -65,7 +73,7 @@ const drawPlayers = () => {
       },
       entity => {
         ctx.lineWidth = 0;
-        ctx.fillStyle = '#844';
+        ctx.fillStyle = 'hsl(15, 80%, 50%)';
         fillCircle(ctx, {
           x: entity.x,
           y: entity.y,
@@ -76,61 +84,42 @@ const drawPlayers = () => {
   });
 };
 
-const drawFieldOfViewIndicator = () => {
+const applyFogOfWar = (cb: () => void) => {
   const ctx = getContext();
   const player = state.playersById.value[socket.id];
   if (!player) return;
 
-  interpolateEntity<typeof player>(
-    { value: player, timestamp: state.timestamp.value },
-    {
-      value: prevState.playersById.value[player.id],
-      timestamp: prevState.timestamp.value
-    },
-    entity => {
-      ctx.lineWidth = 0;
-      ctx.fillStyle = 'rgb(255,255,255,0.2)';
-      fillCircle(ctx, {
-        x: entity.x,
-        y: entity.y,
-        radius: PLAYER_FIELD_OF_VIEW
-      });
-    }
-  );
-};
+  pushPop(ctx, () => {
+    interpolateEntity<typeof player>(
+      { value: player, timestamp: state.timestamp.value },
+      // prettier-ignore
+      { value: prevState.playersById.value[player.id],timestamp: prevState.timestamp.value },
+      entity => {
+        ctx.beginPath();
+        ctx.arc(
+          entity.x,
+          entity.y,
+          PLAYER_FIELD_OF_VIEW,
+          PLAYER_FIELD_OF_VIEW,
+          Math.PI * 2,
+          true
+        );
+        ctx.clip();
+      }
+    );
 
-const applyFogOfWar = () => {
-  const ctx = getContext();
-  const player = state.playersById.value[socket.id];
-  if (!player) return;
-
-  interpolateEntity<typeof player>(
-    { value: player, timestamp: state.timestamp.value },
-    // prettier-ignore
-    { value: prevState.playersById.value[player.id],timestamp: prevState.timestamp.value },
-    entity => {
-      ctx.beginPath();
-      ctx.arc(
-        entity.x,
-        entity.y,
-        PLAYER_FIELD_OF_VIEW,
-        PLAYER_FIELD_OF_VIEW,
-        Math.PI * 2,
-        true
-      );
-      ctx.clip();
-    }
-  );
+    cb();
+  });
 };
 
 const draw = () => {
   const ctx = getContext();
 
   ctx.clearRect(0, 0, canvasSize, canvasSize);
-  pushPop(ctx, () => {
-    applyFogOfWar();
-    pushPop(ctx, drawGrid);
-    pushPop(ctx, drawFieldOfViewIndicator);
+  pushPop(ctx, () => drawMap({ opacity: 0.2 }));
+
+  applyFogOfWar(() => {
+    pushPop(ctx, () => drawMap({ opacity: 1, showCoordinates: true }));
     pushPop(ctx, drawPlayers);
   });
 };
@@ -140,7 +129,7 @@ useRafFn(updateFps);
 
 const isWindowFocused = useWindowFocus();
 watch(isWindowFocused, focused => {
-  if (focused && state.isReady.value) {
+  if (focused) {
     drawLoop.resume();
   } else {
     drawLoop.pause();
@@ -148,13 +137,7 @@ watch(isWindowFocused, focused => {
 });
 
 onMounted(() => {
-  if (state.isReady.value) {
-    drawLoop.resume();
-  }
-
-  watchOnce(state.isReady, isReady => {
-    if (isReady) drawLoop.resume();
-  });
+  drawLoop.resume();
 });
 </script>
 

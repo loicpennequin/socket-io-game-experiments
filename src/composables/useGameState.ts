@@ -14,7 +14,11 @@ type SavedState = GameStateDto &
   };
 
 const makeEmptyState = (): SavedState => ({
-  map: undefined,
+  discoveredTiles: [],
+  map: {
+    hue: 0,
+    grid: []
+  },
   isReady: false,
   players: [],
   playersById: {},

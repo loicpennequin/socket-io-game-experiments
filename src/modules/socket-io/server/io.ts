@@ -10,6 +10,7 @@ import {
   gameController,
   GameMap
 } from '../../../server/controllers/gameController';
+import { Coordinates } from '~~/src/utils';
 
 export type PlayerDto = {
   id: string;
@@ -20,6 +21,7 @@ export type PlayerDto = {
 export type GameStateDto = {
   players: PlayerDto[];
   playerCount: number;
+  discoveredTiles: Coordinates[];
 };
 
 export type GameInitDto = {
@@ -43,7 +45,8 @@ export const socketIoHandler = (io: Server) => {
 
       const dto: GameStateDto = {
         playerCount: arr.length,
-        players: gameController.getPlayerFieldOFView(player)
+        players: gameController.getPlayerFieldOFView(player),
+        discoveredTiles: []
       };
       socket.emit(GAME_STATE_UPDATE, dto);
     });
