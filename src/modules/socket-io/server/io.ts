@@ -2,14 +2,10 @@ import { Server } from 'socket.io';
 import {
   GAME_STATE_UPDATE,
   PLAYER_ACTION_START,
-  PLAYER_ACTION_END,
-  GAME_INIT
+  PLAYER_ACTION_END
 } from '../../../events';
 import { PlayerAction } from '../../../constants';
-import {
-  gameController,
-  GameMap
-} from '../../../server/controllers/gameController';
+import { gameController } from '../../../server/controllers/gameController';
 import { Coordinates } from '~~/src/utils';
 
 export type PlayerDto = {
@@ -21,11 +17,7 @@ export type PlayerDto = {
 export type GameStateDto = {
   players: PlayerDto[];
   playerCount: number;
-  discoveredTiles: Coordinates[];
-};
-
-export type GameInitDto = {
-  map: GameMap;
+  discoveredCells: Coordinates[];
 };
 
 type PlayerActionStartPayload = {
@@ -46,7 +38,7 @@ export const socketIoHandler = (io: Server) => {
       const dto: GameStateDto = {
         playerCount: arr.length,
         players: gameController.getPlayerFieldOFView(player),
-        discoveredTiles: []
+        discoveredCells: Array.from(player.newDiscoveredCells.values())
       };
       socket.emit(GAME_STATE_UPDATE, dto);
     });
@@ -56,12 +48,6 @@ export const socketIoHandler = (io: Server) => {
 
   io.on('connection', socket => {
     const player = gameController.addPlayer(socket.id);
-
-    // setTimeout(() => {
-    socket.emit(GAME_INIT, {
-      map: gameController.gameState.map
-    });
-    // }, 1000);
 
     socket.on('disconnect', () => {
       gameController.removePlayer(player);

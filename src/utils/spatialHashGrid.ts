@@ -45,8 +45,8 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
     const yPos = sat((position.y - startBound.y) / (endBound.y - startBound.y));
 
     return {
-      x: Math.floor(xPos * (dimensions.w - 1)),
-      y: Math.floor(yPos * (dimensions.h - 1))
+      x: Math.floor(xPos * dimensions.w),
+      y: Math.floor(yPos * dimensions.h)
     };
   };
 
@@ -175,6 +175,7 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
     remove,
     update,
     findNearby,
-    findNearbyRadius
+    findNearbyRadius,
+    getCellIndex
   };
 };

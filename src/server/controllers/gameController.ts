@@ -7,8 +7,7 @@ import {
   PLAYER_SPEED,
   PLAYER_SIZE,
   TICK_RATE,
-  PLAYER_FIELD_OF_VIEW,
-  MAP_HUE
+  PLAYER_FIELD_OF_VIEW
 } from '../../constants';
 import { clamp, mapRange, perlinMatrix } from '../../utils/math';
 import {
@@ -24,6 +23,8 @@ export type PlayerMeta = {
 export type Player = {
   id: string;
   gridItem: SpatialHashGridItem<PlayerMeta>;
+  allDiscoveredCells: Map<string, GameMapCell>;
+  newDiscoveredCells: Map<string, GameMapCell>;
   ongoingActions: Set<PlayerAction>;
 };
 
@@ -32,7 +33,6 @@ export type GameMapCell = Coordinates & {
 };
 
 export type GameMap = {
-  hue: number;
   grid: Matrix<GameMapCell>;
 };
 
@@ -47,10 +47,11 @@ export type StateUpdateCallback = (state: Readonly<GameState>) => void;
 const mapDimensions = { w: GRID_SIZE, h: GRID_SIZE };
 const noiseSeed = perlinMatrix(mapDimensions);
 
+let isRunning = false;
+
 const gameState: GameState = {
   players: {},
   map: {
-    hue: MAP_HUE,
     grid: createMatrix(mapDimensions, ({ x, y }) => {
       const noise = Math.round(noiseSeed[x][y] * 100) / 100;
       return {
@@ -72,20 +73,51 @@ const gameState: GameState = {
 const clampToGrid = (n: number) =>
   clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
+const getVisibleCells = (point: Coordinates) => {
+  const coords = {
+    min: {
+      x: point.x - PLAYER_FIELD_OF_VIEW,
+      y: point.y - PLAYER_FIELD_OF_VIEW
+    },
+    max: {
+      x: point.x + PLAYER_FIELD_OF_VIEW, // why + CELL_SIZE tho
+      y: point.y + PLAYER_FIELD_OF_VIEW
+    }
+  };
+
+  const indices = {
+    min: gameState.grid.getCellIndex(coords.min),
+    max: gameState.grid.getCellIndex(coords.max)
+  };
+
+  const entries: [string, GameMapCell][] = [];
+  for (let x = indices.min.x; x <= indices.max.x; x++) {
+    for (let y = indices.min.y; y <= indices.max.y; y++) {
+      entries.push([`${x}.${y}`, gameState.map.grid[x][y]]);
+    }
+  }
+
+  return new Map(entries);
+};
+
 const makePlayer = (id: string): Player => {
-  const meta = { id };
+  const position = {
+    x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
+    y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE)
+  };
+
+  const dimensions = { w: PLAYER_SIZE, h: PLAYER_SIZE };
 
   return {
-    ...meta,
+    id,
+    allDiscoveredCells: getVisibleCells(position),
+    newDiscoveredCells: getVisibleCells(position),
     gridItem: gameState.grid.add(
       {
-        position: {
-          x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
-          y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE)
-        },
-        dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE }
+        position,
+        dimensions
       },
-      meta
+      { id }
     ),
     ongoingActions: new Set()
   };
@@ -100,6 +132,15 @@ const movePlayer = (player: Player, { x = 0, y = 0 }) => {
   player.gridItem.position.y = clampToGrid(
     player.gridItem.position.y + y * PLAYER_SPEED
   );
+
+  const visibleCells = getVisibleCells(player.gridItem.position);
+  for (const [key, cell] of visibleCells) {
+    if (!player.allDiscoveredCells.has(key)) {
+      player.allDiscoveredCells.set(key, cell);
+      player.newDiscoveredCells.set(key, cell);
+    }
+  }
+
   gameState.grid.update(player.gridItem);
 };
 
@@ -120,8 +161,13 @@ const updateGameState = () => {
   });
 };
 
+const cleanupState = () => {
+  Object.values(gameState.players).forEach(player => {
+    player.newDiscoveredCells.clear();
+  });
+};
+
 const updateCallbacks = new Set<StateUpdateCallback>();
-let isRunning = false;
 
 export const gameController = {
   get gameState() {
@@ -148,6 +194,7 @@ export const gameController = {
     setInterval(() => {
       updateGameState();
       updateCallbacks.forEach(cb => cb(gameState));
+      cleanupState();
     }, 1000 / TICK_RATE);
     isRunning = true;
   },

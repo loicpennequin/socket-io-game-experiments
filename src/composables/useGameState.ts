@@ -1,25 +1,19 @@
-import { GAME_INIT, GAME_STATE_UPDATE } from '~~/src/events';
+import { GAME_STATE_UPDATE } from '~~/src/events';
 import type {
-  GameInitDto,
   GameStateDto,
   PlayerDto
 } from '~~/src/modules/socket-io/server/io';
 import { indexBy } from '~/utils';
+import type { GameMapCell } from '~/server/controllers/gameController';
 
-type SavedState = GameStateDto &
-  Partial<GameInitDto> & {
-    isReady: boolean;
-    timestamp: number;
-    playersById: Record<string, PlayerDto>;
-  };
+type SavedState = GameStateDto & {
+  discoveredCells: GameMapCell[];
+  timestamp: number;
+  playersById: Record<string, PlayerDto>;
+};
 
 const makeEmptyState = (): SavedState => ({
-  discoveredTiles: [],
-  map: {
-    hue: 0,
-    grid: []
-  },
-  isReady: false,
+  discoveredCells: [],
   players: [],
   playersById: {},
   playerCount: 0,
@@ -34,14 +28,14 @@ export const useGameState = () => {
   useSocketEvent<GameStateDto>(GAME_STATE_UPDATE, payload => {
     Object.assign(prevState, gameState);
 
-    Object.assign(gameState, payload, {
+    const { players, playerCount, discoveredCells } = payload;
+    Object.assign(gameState, {
+      players,
+      playerCount,
+      discoveredCells: gameState.discoveredCells.concat(discoveredCells),
       timestamp: performance.now(),
       playersById: indexBy(payload.players, 'id')
     });
-  });
-
-  useSocketEvent<GameInitDto>(GAME_INIT, payload => {
-    Object.assign(gameState, payload, { isReady: true });
   });
 
   return [toRefs(gameState), toRefs(prevState)];

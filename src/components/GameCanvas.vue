@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { GameMapCell } from '../server/controllers/gameController';
 import {
   GRID_SIZE,
   CELL_SIZE,
   PLAYER_SIZE,
-  PLAYER_FIELD_OF_VIEW
+  PLAYER_FIELD_OF_VIEW,
+  MAP_HUE
 } from '~/constants';
 import { pushPop, fillCircle } from '~/utils/canvasUtils';
 import { interpolateEntity } from '~~/src/utils/entityInterpolation';
@@ -35,30 +37,22 @@ const drawMap = ({
   showCoordinates?: boolean;
 }) => {
   const ctx = getContext();
-  const { grid, hue } = unref(state.map);
-
-  grid.forEach(row => {
-    row.forEach(cell => {
-      ctx.fillStyle = `hsla(${hue}, 45%, ${cell.lightness * 100}%, ${opacity})`;
-      ctx.fillRect(
-        cell.x * CELL_SIZE,
-        cell.y * CELL_SIZE,
-        CELL_SIZE,
-        CELL_SIZE
-      );
-
-      if (!showCoordinates) return;
-
-      ctx.font = '12px Helvetica';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = 'rgb(255,255,255,0.5)';
-      ctx.fillText(
-        `${cell.x}.${cell.y}`,
-        cell.x * CELL_SIZE + CELL_SIZE / 2,
-        cell.y * CELL_SIZE + CELL_SIZE / 2
-      );
-    });
+  const cells = state.discoveredCells.value as GameMapCell[]; // typescript issue because of toRefs ? it says cell is Coordinates
+  cells.forEach(cell => {
+    ctx.fillStyle = `hsla(${MAP_HUE}, 45%, ${
+      cell.lightness * 100
+    }%, ${opacity})`;
+    ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+    if (!showCoordinates) return;
+    ctx.font = '12px Helvetica';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgb(255,255,255,0.5)';
+    ctx.fillText(
+      `${cell.x}.${cell.y}`,
+      cell.x * CELL_SIZE + CELL_SIZE / 2,
+      cell.y * CELL_SIZE + CELL_SIZE / 2
+    );
   });
 };
 
@@ -149,6 +143,6 @@ onMounted(() => {
 
 <style scoped>
 canvas {
-  border: solid 1px white;
+  outline: solid 1px white;
 }
 </style>
