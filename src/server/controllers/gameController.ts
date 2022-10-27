@@ -9,7 +9,13 @@ import {
   TICK_RATE,
   PLAYER_FIELD_OF_VIEW
 } from '../../constants';
-import { clamp, nerdPerlin, perlinMatrix, randomInt } from '../../utils/math';
+import {
+  clamp,
+  mapRange,
+  nerdPerlin,
+  // perlinMatrix,
+  randomInt
+} from '../../utils/math';
 import {
   makeSpatialHashGrid,
   SpatialHashGrid,
@@ -44,7 +50,7 @@ export type GameState = {
 export type StateUpdateCallback = (state: Readonly<GameState>) => void;
 
 const mapDimensions = { w: GRID_SIZE, h: GRID_SIZE };
-const noiseSeed = perlinMatrix(mapDimensions);
+// const noiseSeed = perlinMatrix(mapDimensions);
 nerdPerlin.seed();
 
 const gameState: GameState = {
@@ -52,11 +58,13 @@ const gameState: GameState = {
   map: {
     hue: randomInt(360),
     grid: createMatrix(mapDimensions, ({ x, y }) => {
-      console.log({ x, y, good: noiseSeed[x][y], nerd: nerdPerlin.get(x, y) });
+      const offset = Math.random();
+      const noise =
+        Math.round(nerdPerlin.get(x + offset, y + offset) * 100) / 100;
       return {
         x,
         y,
-        lightness: Math.round(nerdPerlin.get(x, y) * 100) / 100
+        lightness: mapRange(noise, { min: 0, max: 1 }, { min: 0.3, max: 0.75 })
       };
     })
   },

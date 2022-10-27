@@ -37,7 +37,6 @@ export const useGameState = () => {
   });
 
   useSocketEvent<GameInitDto>(GAME_INIT, payload => {
-    console.log('game init received', payload);
     Object.assign(gameState, payload, { isReady: true });
   });
 

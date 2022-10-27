@@ -99,13 +99,40 @@ const drawFieldOfViewIndicator = () => {
   );
 };
 
+const applyFogOfWar = () => {
+  const ctx = getContext();
+  const player = state.playersById.value[socket.id];
+  if (!player) return;
+
+  interpolateEntity<typeof player>(
+    { value: player, timestamp: state.timestamp.value },
+    // prettier-ignore
+    { value: prevState.playersById.value[player.id],timestamp: prevState.timestamp.value },
+    entity => {
+      ctx.beginPath();
+      ctx.arc(
+        entity.x,
+        entity.y,
+        PLAYER_FIELD_OF_VIEW,
+        PLAYER_FIELD_OF_VIEW,
+        Math.PI * 2,
+        true
+      );
+      ctx.clip();
+    }
+  );
+};
+
 const draw = () => {
   const ctx = getContext();
 
   ctx.clearRect(0, 0, canvasSize, canvasSize);
-  pushPop(ctx, drawGrid);
-  pushPop(ctx, drawFieldOfViewIndicator);
-  pushPop(ctx, drawPlayers);
+  pushPop(ctx, () => {
+    applyFogOfWar();
+    pushPop(ctx, drawGrid);
+    pushPop(ctx, drawFieldOfViewIndicator);
+    pushPop(ctx, drawPlayers);
+  });
 };
 
 const drawLoop = useRafFn(draw, { immediate: false });

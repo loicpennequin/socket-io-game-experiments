@@ -67,16 +67,25 @@ export const perlinMatrix = (dimensions: Dimensions) =>
       }
     };
 
-    const min = lerp(x - boundaries.x.min, {
+    const minRange = {
       min: dotProduct({ x, y }, { x: boundaries.x.min, y: boundaries.y.min }),
+      max: dotProduct({ x, y }, { x: boundaries.x.max, y: boundaries.y.min })
+    };
+
+    const maxRange = {
+      min: dotProduct({ x, y }, { x: boundaries.x.min, y: boundaries.y.max }),
       max: dotProduct({ x, y }, { x: boundaries.x.max, y: boundaries.y.max })
+    };
+
+    const min = lerp(x - boundaries.x.min, {
+      min: minRange.min,
+      max: minRange.max
     });
 
     const max = lerp(x - boundaries.x.min, {
-      min: dotProduct({ x, y }, { x: boundaries.x.min, y: boundaries.y.max }),
-      max: dotProduct({ x, y }, { x: boundaries.x.max, y: boundaries.y.max })
+      min: maxRange.min,
+      max: maxRange.max
     });
-
     return lerp(y - boundaries.y.min, { min, max });
   });
 
