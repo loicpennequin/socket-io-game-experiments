@@ -153,6 +153,7 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
     for (let x = min.x; x <= max.x; ++x) {
       for (let y = min.y; y <= max.y; ++y) {
         const cell = cells[x][y];
+        if (!cell) continue;
         cell.items.forEach(item => {
           const isWithinBounds = pointCircleCollision(item.position, {
             ...position,

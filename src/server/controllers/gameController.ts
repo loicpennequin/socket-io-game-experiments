@@ -9,7 +9,7 @@ import {
   TICK_RATE,
   PLAYER_FIELD_OF_VIEW
 } from '../../constants';
-import { clamp, mapRange, perlinMatrix } from '../../utils/math';
+import { clamp, dist, mapRange, perlinMatrix } from '../../utils/math';
 import {
   makeSpatialHashGrid,
   SpatialHashGrid,
@@ -86,6 +86,7 @@ const getVisibleCells = (point: Coordinates) => {
   };
 
   const indices = {
+    point: gameState.grid.getCellIndex(point),
     min: gameState.grid.getCellIndex(coords.min),
     max: gameState.grid.getCellIndex(coords.max)
   };
@@ -93,7 +94,14 @@ const getVisibleCells = (point: Coordinates) => {
   const entries: [string, GameMapCell][] = [];
   for (let x = indices.min.x; x <= indices.max.x; x++) {
     for (let y = indices.min.y; y <= indices.max.y; y++) {
-      entries.push([`${x}.${y}`, gameState.map.grid[x][y]]);
+      const pointToCompare = {
+        x: x * CELL_SIZE + (x < indices.point.x ? CELL_SIZE : 0),
+        y: y * CELL_SIZE + (y < indices.point.y ? CELL_SIZE : 0)
+      };
+
+      if (dist(point, pointToCompare) <= PLAYER_FIELD_OF_VIEW) {
+        entries.push([`${x}.${y}`, gameState.map.grid[x][y]]);
+      }
     }
   }
 
