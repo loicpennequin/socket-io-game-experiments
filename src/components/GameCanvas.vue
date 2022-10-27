@@ -30,18 +30,14 @@ const updateFps = () => {
 };
 
 const drawMap = ({
-  opacity,
   showCoordinates = false
 }: {
-  opacity: number;
   showCoordinates?: boolean;
-}) => {
+} = {}) => {
   const ctx = getContext();
   const cells = state.discoveredCells.value as GameMapCell[]; // typescript issue because of toRefs ? it says cell is Coordinates
   cells.forEach(cell => {
-    ctx.fillStyle = `hsla(${MAP_HUE}, 45%, ${
-      cell.lightness * 100
-    }%, ${opacity})`;
+    ctx.fillStyle = `hsl(${MAP_HUE}, 45%, ${cell.lightness * 100}%)`;
     ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     if (!showCoordinates) return;
     ctx.font = '12px Helvetica';
@@ -110,10 +106,13 @@ const draw = () => {
   const ctx = getContext();
 
   ctx.clearRect(0, 0, canvasSize, canvasSize);
-  pushPop(ctx, () => drawMap({ opacity: 0.2 }));
+  pushPop(ctx, () => {
+    ctx.filter = 'opacity(25%)';
+    drawMap();
+  });
 
   applyFogOfWar(() => {
-    pushPop(ctx, () => drawMap({ opacity: 1, showCoordinates: true }));
+    pushPop(ctx, () => drawMap({ showCoordinates: true }));
     pushPop(ctx, drawPlayers);
   });
 };

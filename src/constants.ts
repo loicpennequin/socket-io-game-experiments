@@ -1,9 +1,9 @@
 export const GRID_SIZE = 20;
 export const CELL_SIZE = 40;
 export const MAP_HUE = 120;
-export const TICK_RATE = 30;
+export const TICK_RATE = 10;
 export const PLAYER_SIZE = 20;
-export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 4;
+export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 6;
 export const PLAYER_SPEED = PLAYER_SPEED_PER_SECOND / TICK_RATE;
 export const PLAYER_FIELD_OF_VIEW = CELL_SIZE * 3;
 

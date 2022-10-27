@@ -100,7 +100,10 @@ const getVisibleCells = (point: Coordinates) => {
       };
 
       if (dist(point, pointToCompare) <= PLAYER_FIELD_OF_VIEW) {
-        entries.push([`${x}.${y}`, gameState.map.grid[x][y]]);
+        const cell = gameState.map.grid[x]?.[y];
+        if (cell) {
+          entries.push([`${x}.${y}`, cell]);
+        }
       }
     }
   }
