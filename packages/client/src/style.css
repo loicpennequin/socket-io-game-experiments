@@ -4,7 +4,7 @@
 
 body {
   margin: 0;
-  background-color: hsl(240, 15%, 10%);
+  background: black;
   font-family: Helvetica;
   color: white;
 }
@@ -15,13 +15,19 @@ main {
   height: 100vh;
 }
 
-.game-renderer {
+#game-renderer {
   display: grid;
   place-items: center;
   outline: solid 1px white;
 }
 
-.game-renderer > * {
+#game-renderer > * {
   grid-column: 1;
   grid-row: 1;
+}
+
+#debug-infos {
+  position: fixed;
+  top: 0;
+  left: 0;
 }

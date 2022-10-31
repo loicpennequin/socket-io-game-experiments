@@ -3,7 +3,7 @@ import {
   PLAYER_ACTION_START,
   type Nullable
 } from '@game/shared';
-import { KEYBOARD_CONTROLS } from './constants';
+import { KEYBOARD_CONTROLS } from './utils/constants';
 import { socket } from './socket';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {

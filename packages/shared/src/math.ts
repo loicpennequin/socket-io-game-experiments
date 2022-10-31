@@ -51,6 +51,9 @@ export const dotProduct = (point1: Coordinates, point2: Coordinates) => {
   return vect.x * (point1.x - point2.x) + vect.y * (point1.y - point2.y);
 };
 
+export const sum = (...nums: number[]) =>
+  nums.reduce((total, num) => total + num, 0);
+
 export const perlinMatrix = (dimensions: Dimensions) =>
   createMatrix(dimensions, ({ x, y }) => {
     const offset = {

@@ -2,16 +2,21 @@ import './style.css';
 
 import { initKeyboardControls } from './keyboardControls';
 import { createGameRenderer } from './gameRenderer';
+import { displayDebugInfo } from './debug';
+
+const mainEl = document.querySelector('main');
 
 initKeyboardControls();
 
-const rendererEl = Object.assign(document.createElement('div'), {
-  className: 'game-renderer'
-});
-const mainEl = document.querySelector('main');
+const rendererEl = mainEl!.appendChild(
+  Object.assign(document.createElement('div'), {
+    id: 'game-renderer'
+  })
+);
 
 const playerRenderer = createGameRenderer();
 
 rendererEl.appendChild(playerRenderer.canvas);
-mainEl?.appendChild(rendererEl);
-playerRenderer.start();
+playerRenderer.resume();
+
+import.meta.env.VITE_DEBUG && displayDebugInfo();

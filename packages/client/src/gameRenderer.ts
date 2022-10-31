@@ -1,37 +1,24 @@
 import { MAP_SIZE } from '@game/shared';
-import { applyFogOfWar, drawMap, drawPlayers, runRenderer } from './renderer';
-import { createCanvas, pushPop } from './canvas';
-import { state, prevState } from './gameState';
+import { applyFieldOfView } from './renderer/applyFieldOfView';
+import { createRenderer } from './renderer/createRenderer';
+import { drawMap } from './renderer/drawMap';
+import { drawPlayers } from './renderer/drawPlayers';
 import { socket } from './socket';
 
 export const createGameRenderer = () => {
-  const { canvas, ctx } = createCanvas({
-    w: MAP_SIZE,
-    h: MAP_SIZE
-  });
+  return createRenderer({
+    render(ctx) {
+      ctx.clearRect(0, 0, MAP_SIZE, MAP_SIZE);
+      drawMap({ ctx, opacity: 0.5 });
 
-  const draw = () => {
-    ctx.clearRect(0, 0, MAP_SIZE, MAP_SIZE);
-    pushPop(ctx, () => {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, MAP_SIZE, MAP_SIZE);
-    });
-
-    drawMap({ ctx, state, prevState, isBackground: true });
-
-    applyFogOfWar({ ctx, state, prevState, playerId: socket.id }, () => {
-      drawMap({
-        ctx,
-        state,
-        prevState
-        // showCoordinates: true,
+      applyFieldOfView({ ctx, entityId: socket.id }, () => {
+        drawMap({ ctx, showCoordinates: true });
+        drawPlayers({ ctx });
       });
-      drawPlayers({ ctx, state, prevState });
-    });
-  };
-
-  return {
-    canvas,
-    start: () => runRenderer(draw, { immediate: true })
-  };
+    },
+    getDimensions: () => ({
+      w: MAP_SIZE,
+      h: MAP_SIZE
+    })
+  });
 };
