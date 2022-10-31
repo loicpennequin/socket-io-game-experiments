@@ -13,6 +13,10 @@ export const createMatrix = <T>(
   dimensions: Dimensions,
   initialValue: (coords: Coordinates) => T
 ): Matrix<T> =>
-  new Array(dimensions.w).map((_, x) =>
-    new Array(dimensions.h).map((_, y) => initialValue({ x, y }))
-  );
+  Array.from({ length: dimensions.w })
+    .fill(undefined)
+    .map((_, x) =>
+      Array.from({ length: dimensions.h })
+        .fill(undefined)
+        .map((_, y) => initialValue({ x, y }))
+    );

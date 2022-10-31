@@ -1,7 +1,7 @@
 import './style.css';
 
 import { initKeyboardControls } from './keyboardControls';
-import { createMapRenderer } from './mapRenderer';
+import { createGameRenderer } from './gameRenderer';
 
 initKeyboardControls();
 
@@ -10,8 +10,8 @@ const rendererEl = Object.assign(document.createElement('div'), {
 });
 const mainEl = document.querySelector('main');
 
-const mapRenderer = createMapRenderer();
+const playerRenderer = createGameRenderer();
 
-rendererEl.appendChild(mapRenderer.canvas);
+rendererEl.appendChild(playerRenderer.canvas);
 mainEl?.appendChild(rendererEl);
-mapRenderer.start();
+playerRenderer.start();

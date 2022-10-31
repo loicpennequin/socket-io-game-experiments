@@ -21,7 +21,7 @@ main {
   outline: solid 1px white;
 }
 
-.gameRenderer > * {
+.game-renderer > * {
   grid-column: 1;
   grid-row: 1;
 }

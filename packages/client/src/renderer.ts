@@ -1,13 +1,14 @@
 import type { SavedState } from './gameState';
 import {
   CELL_SIZE,
-  MAP_HUE,
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE,
   interpolateEntity
 } from '@game/shared';
 import type { PlayerDto, GameMapCell } from '@game/shared';
 import { fillCircle, pushPop } from './canvas';
+import { COLORS } from './constants';
+import { socket } from './socket';
 
 type RendererCommandOptions = {
   ctx: CanvasRenderingContext2D;
@@ -17,27 +18,26 @@ type RendererCommandOptions = {
 
 type DrawMapOptions = RendererCommandOptions & {
   showCoordinates?: boolean;
-  opacity?: number;
+  isBackground?: boolean;
 };
 
 export const drawMap = ({
   ctx,
   state,
   showCoordinates = false,
-  opacity = 1
+  isBackground = false
 }: DrawMapOptions) => {
   pushPop(ctx, () => {
     const cells = state.discoveredCells as GameMapCell[]; // typescript issue because of toRefs ? it says cell is Coordinates
     cells.forEach(cell => {
-      ctx.fillStyle = `hsla(${MAP_HUE}, 45%, ${
-        cell.lightness * 100
-      }%, ${opacity})`;
+      ctx.fillStyle = COLORS.mapCell(cell.lightness * 100, isBackground);
       ctx.fillRect(
         cell.x * CELL_SIZE,
         cell.y * CELL_SIZE,
         CELL_SIZE,
         CELL_SIZE
       );
+
       if (!showCoordinates) return;
       ctx.font = '12px Helvetica';
       ctx.textAlign = 'center';
@@ -48,24 +48,6 @@ export const drawMap = ({
         cell.x * CELL_SIZE + CELL_SIZE / 2,
         cell.y * CELL_SIZE + CELL_SIZE / 2
       );
-    });
-  });
-};
-
-export const drawnCells: Map<string, number> = new Map();
-
-export const drawNewCells = ({ ctx, state }: RendererCommandOptions) => {
-  pushPop(ctx, () => {
-    state.newCells.forEach(cell => {
-      const { x, y, lightness } = cell;
-      const key = `${x}.${y}`;
-      if (drawnCells.has(key)) {
-        return;
-      }
-      drawnCells.set(key, (drawnCells.get(key) ?? 0) + 1);
-
-      ctx.fillStyle = `hsla(${MAP_HUE}, 45%, ${lightness * 100}%, 0.3)`;
-      ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
     });
   });
 };
@@ -83,7 +65,7 @@ export const drawPlayers = ({ ctx, state, prevState }: DrawPlayersOptions) => {
 
         entity => {
           ctx.lineWidth = 0;
-          ctx.fillStyle = 'hsl(15, 80%, 50%)';
+          ctx.fillStyle = COLORS.player(player.id === socket.id);
           fillCircle(ctx, {
             x: entity.x,
             y: entity.y,
