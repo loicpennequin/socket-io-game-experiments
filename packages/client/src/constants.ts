@@ -1,0 +1,8 @@
+import { PLAYER_ACTIONS } from '@game/shared';
+
+export const KEYBOARD_CONTROLS = Object.freeze({
+  KeyW: PLAYER_ACTIONS.MOVE_UP,
+  KeyS: PLAYER_ACTIONS.MOVE_DOWN,
+  KeyA: PLAYER_ACTIONS.MOVE_LEFT,
+  KeyD: PLAYER_ACTIONS.MOVE_RIGHT
+});
