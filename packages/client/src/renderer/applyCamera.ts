@@ -24,11 +24,15 @@ export const applyCamera = (
       },
 
       ({ x, y }) => {
-        const halfWidth = canvas.width / 2;
-        const halfHeight = canvas.height / 2;
         const camera = {
-          x: clamp(x - halfWidth, { min: 0, max: MAP_SIZE - halfWidth }),
-          y: clamp(y - halfHeight, { min: 0, max: MAP_SIZE - halfHeight })
+          x: clamp(x - canvas.width / 2, {
+            min: 0,
+            max: MAP_SIZE - canvas.width
+          }),
+          y: clamp(y - canvas.height / 2, {
+            min: 0,
+            max: MAP_SIZE - canvas.height
+          })
         };
 
         ctx.translate(camera.x * -1, camera.y * -1);
