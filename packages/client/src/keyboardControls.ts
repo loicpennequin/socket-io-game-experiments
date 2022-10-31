@@ -10,6 +10,7 @@ import {
 import { KEYBOARD_CONTROLS } from './utils/constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
+import { gameCamera } from './gameRenderer';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   let hasFired = false;
@@ -49,7 +50,12 @@ export const initKeyboardControls = () => {
       case PLAYER_ACTIONS.FIRE_PROJECTILE:
         return socket.emit(PLAYER_ACTION, {
           action,
-          meta: { mousePosition }
+          meta: {
+            target: {
+              x: mousePosition.x + gameCamera.x,
+              y: mousePosition.y + gameCamera.y
+            }
+          }
         });
     }
   });

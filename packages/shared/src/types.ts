@@ -53,7 +53,7 @@ export type MoveActionPayload = {
 export type FireProjectileAction = Extract<PlayerAction, 'FIRE_PROJECTILE'>;
 export type FireProjectileActionPayload = {
   action: Extract<PlayerAction, 'FIRE_PROJECTILE'>;
-  meta: { mousePosition: Coordinates };
+  meta: { target: Coordinates };
 };
 
 export type ActionPayload = FireProjectileActionPayload;

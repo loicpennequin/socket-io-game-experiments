@@ -14,7 +14,7 @@ type ApplyCameraOptions = {
   ctx: CanvasRenderingContext2D;
 };
 
-type Camera = Coordinates & Dimensions;
+export type Camera = Coordinates & Dimensions;
 
 export const applyCamera = (
   { canvas, ctx }: ApplyCameraOptions,

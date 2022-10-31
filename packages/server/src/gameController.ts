@@ -23,8 +23,11 @@ import {
   EntityType,
   PROJECTILE_SIZE,
   PROJECTILE_LIFESPAN,
-  ENTITY_TYPES
+  ENTITY_TYPES,
+  PROJECTILE_SPEED,
+  getAnghleFromVector
 } from '@game/shared';
+import { cp } from 'fs';
 import { v4 as uuid } from 'uuid';
 
 export type EntityMeta = {
@@ -45,7 +48,7 @@ export type Projectile = Entity & {
   player: Player;
   gridItem: SpatialHashGridItem<EntityMeta>;
   lifeSpan: number;
-  direction: Coordinates;
+  angle: number;
 };
 
 export type GameMap = {
@@ -136,10 +139,7 @@ const getVisibleCells = (point: Coordinates) => {
   return new Map(entries);
 };
 
-const makeProjectile = (
-  player: Player,
-  mousePosition: Coordinates
-): Projectile => {
+const makeProjectile = (player: Player, target: Coordinates): Projectile => {
   const position = { ...player.gridItem.position };
 
   const dimensions = { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE };
@@ -151,7 +151,10 @@ const makeProjectile = (
   return {
     ...meta,
     player,
-    direction: mousePosition,
+    angle: getAnghleFromVector({
+      x: target.x - player.gridItem.position.x,
+      y: target.y - player.gridItem.position.y
+    }),
     lifeSpan: PROJECTILE_LIFESPAN,
     gridItem: gameState.grid.add(
       {
@@ -212,7 +215,7 @@ const fireProjectile = ({
   meta,
   player
 }: FireProjectileActionPayload & { player: Player }) => {
-  const projectile = makeProjectile(player, meta.mousePosition);
+  const projectile = makeProjectile(player, meta.target);
   gameState.entities[projectile.id] = projectile;
 };
 
@@ -228,38 +231,72 @@ const processActionQueue = () => {
   }
 };
 
-const processOngoingActions = () => {
-  Object.values(gameState.entities)
-    .filter(isPlayer)
-    .forEach(entity => {
-      if (!isPlayer(entity)) return;
+const updatePlayer = (player: Player) => {
+  player.ongoingActions.forEach(action => {
+    switch (action) {
+      case PLAYER_ACTIONS.MOVE_UP:
+        return movePlayer(player, { y: -1 });
+      case PLAYER_ACTIONS.MOVE_DOWN:
+        return movePlayer(player, { y: 1 });
+      case PLAYER_ACTIONS.MOVE_LEFT:
+        return movePlayer(player, { x: -1 });
+      case PLAYER_ACTIONS.MOVE_RIGHT:
+        return movePlayer(player, { x: 1 });
+    }
+  });
+};
 
-      entity.ongoingActions.forEach(action => {
-        switch (action) {
-          case PLAYER_ACTIONS.MOVE_UP:
-            return movePlayer(entity, { y: -1 });
-          case PLAYER_ACTIONS.MOVE_DOWN:
-            return movePlayer(entity, { y: 1 });
-          case PLAYER_ACTIONS.MOVE_LEFT:
-            return movePlayer(entity, { x: -1 });
-          case PLAYER_ACTIONS.MOVE_RIGHT:
-            return movePlayer(entity, { x: 1 });
-        }
-      });
-    });
+const updateProjectile = (projectile: Projectile) => {
+  if (projectile.lifeSpan <= 0) {
+    gameState.grid.remove(projectile.gridItem);
+    delete gameState.entities[projectile.id];
+    return;
+  }
+
+  projectile.gridItem.position.x +=
+    Math.cos(projectile.angle) * PROJECTILE_SPEED;
+  projectile.gridItem.position.y +=
+    Math.sin(projectile.angle) * PROJECTILE_SPEED;
+
+  projectile.lifeSpan--;
+};
+
+const updateEntities = () => {
+  Object.values(gameState.entities).forEach(entity => {
+    switch (entity.type) {
+      case ENTITY_TYPES.PLAYER:
+        return updatePlayer(entity as Player);
+      case ENTITY_TYPES.PROJECTILE:
+        return updateProjectile(entity as Projectile);
+    }
+  });
 };
 
 const updateGameState = () => {
-  processOngoingActions();
   processActionQueue();
+  updateEntities();
+};
+
+const cleanupPlayer = (player: Player) => {
+  player.newDiscoveredCells.clear();
+};
+
+const cleanupProjectile = (projectile: Projectile) => {
+  if (projectile.lifeSpan <= 0) {
+    gameState.grid.remove(projectile.gridItem);
+    delete gameState.entities[projectile.id];
+    return;
+  }
 };
 
 const cleanupState = () => {
-  Object.values(gameState.entities)
-    .filter(isPlayer)
-    .forEach(player => {
-      player.newDiscoveredCells.clear();
-    });
+  Object.values(gameState.entities).forEach(entity => {
+    if (isPlayer(entity)) {
+      cleanupPlayer(entity);
+    } else if (isProjectile(entity)) {
+      cleanupProjectile(entity);
+    }
+  });
 };
 
 const updateCallbacks = new Set<StateUpdateCallback>();

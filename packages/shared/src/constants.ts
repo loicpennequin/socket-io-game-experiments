@@ -31,7 +31,7 @@ export const ONGOING_ACTIONS = [
   PLAYER_ACTIONS.MOVE_RIGHT
 ] as const;
 
-export const ENTITY_TYPES: Record<string, EntityType> = {
-  PLAYER: 'player',
-  PROJECTILE: 'projectile'
+export const ENTITY_TYPES = {
+  PLAYER: 'player' as EntityType,
+  PROJECTILE: 'projectile' as EntityType
 };
