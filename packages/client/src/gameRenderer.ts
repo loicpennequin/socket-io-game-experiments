@@ -1,4 +1,4 @@
-import { MAP_SIZE } from '@game/shared';
+import { applyCamera } from './renderer/applyCamera';
 import { applyFieldOfView } from './renderer/applyFieldOfView';
 import { createRenderer } from './renderer/createRenderer';
 import { drawMap } from './renderer/drawMap';
@@ -7,18 +7,21 @@ import { socket } from './socket';
 
 export const createGameRenderer = () => {
   return createRenderer({
-    render(ctx) {
-      ctx.clearRect(0, 0, MAP_SIZE, MAP_SIZE);
-      drawMap({ ctx, opacity: 0.5 });
+    render({ canvas, ctx }) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      applyFieldOfView({ ctx, entityId: socket.id }, () => {
-        drawMap({ ctx, showCoordinates: true });
-        drawPlayers({ ctx });
+      applyCamera({ canvas, ctx }, () => {
+        drawMap({ ctx, opacity: 0.5 });
+
+        applyFieldOfView({ ctx, entityId: socket.id }, () => {
+          drawMap({ ctx, showCoordinates: true });
+          drawPlayers({ ctx });
+        });
       });
     },
     getDimensions: () => ({
-      w: MAP_SIZE,
-      h: MAP_SIZE
+      w: window.innerWidth,
+      h: window.innerHeight
     })
   });
 };

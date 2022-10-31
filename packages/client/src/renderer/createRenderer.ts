@@ -1,8 +1,13 @@
 import { createCanvas } from '@/utils/canvas';
 import type { Dimensions } from '@game/shared';
 
+export type RenderContext = {
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+};
+
 export type CreateRendererOptions = {
-  render: (ctx: CanvasRenderingContext2D) => void;
+  render: (renderContext: RenderContext) => void;
   getDimensions: () => Dimensions;
   pauseOnDocumentHidden?: boolean;
 };
@@ -23,7 +28,7 @@ export const createRenderer = ({
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
 
-      render(ctx);
+      render({ canvas, ctx });
     },
     false
   );
@@ -37,7 +42,7 @@ export const createRenderer = ({
   const loop = () => {
     if (!isRunning) return;
 
-    render(ctx);
+    render({ canvas, ctx });
     rafId = window.requestAnimationFrame(loop);
   };
 

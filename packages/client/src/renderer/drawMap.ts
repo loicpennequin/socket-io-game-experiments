@@ -30,7 +30,7 @@ export const drawMap = ({
       );
 
       if (!showCoordinates) return;
-      ctx.font = `${CELL_SIZE * 0.5}px Helvetica`;
+      ctx.font = `${CELL_SIZE * 0.3}px Helvetica`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = 'rgb(255,255,255,0.5)';

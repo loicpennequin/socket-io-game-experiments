@@ -1,4 +1,4 @@
-export const GRID_SIZE = 50;
+export const GRID_SIZE = 80;
 export const CELL_SIZE = 30;
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
 export const TICK_RATE = 15;
