@@ -13,13 +13,7 @@ export const COLORS = Object.freeze({
   player: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 50%)' : 'hsl(250, 80%, 50%)',
 
-  mapCell: ({
-    lightness,
-    alpha = 1
-  }: {
-    lightness: number;
-    alpha?: number;
-  }) => {
-    return `hsla(${MAP_HUE}, 45%, ${lightness}%, ${alpha})`;
+  mapCell: ({ lightness }: { lightness: number }) => {
+    return `hsl(${MAP_HUE}, 45%, ${lightness}%)`;
   }
 });
