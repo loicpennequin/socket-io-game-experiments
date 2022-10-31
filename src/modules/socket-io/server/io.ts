@@ -5,19 +5,20 @@ import {
   PLAYER_ACTION_END
 } from '../../../events';
 import { PlayerAction } from '../../../constants';
-import { gameController } from '../../../server/controllers/gameController';
+import {
+  gameController,
+  GameMapCell
+} from '../../../server/controllers/gameController';
 import { Coordinates } from '~~/src/utils';
 
-export type PlayerDto = {
+export type PlayerDto = Coordinates & {
   id: string;
-  x: number;
-  y: number;
 };
 
 export type GameStateDto = {
   players: PlayerDto[];
   playerCount: number;
-  discoveredCells: Coordinates[];
+  discoveredCells: GameMapCell[];
 };
 
 type PlayerActionStartPayload = {

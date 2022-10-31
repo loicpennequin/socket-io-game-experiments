@@ -9,5 +9,5 @@ const modules = readdirSync(MODULES_PATH)
 
 export default defineNuxtConfig({
   srcDir: 'src',
-  modules: [...modules, '@vueuse/nuxt']
+  modules: [...modules, '@vueuse/nuxt', '@pinia/nuxt']
 });

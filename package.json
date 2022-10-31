@@ -24,11 +24,13 @@
   },
   "dependencies": {
     "@datastructures-js/linked-list": "^5.2.4",
+    "@pinia/nuxt": "^0.4.3",
     "@types/fs-extra": "^9.0.13",
     "@vueuse/nuxt": "^9.4.0",
     "fs-extra": "^10.1.0",
     "nanoid": "^4.0.0",
     "pathe": "^0.3.9",
+    "pinia": "^2.0.23",
     "socket.io": "^4.5.3",
     "socket.io-client": "^4.5.3"
   }

@@ -1,6 +1,7 @@
 import { SavedState } from '../composables/useGameState';
 import {
   CELL_SIZE,
+  GRID_SIZE,
   MAP_HUE,
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE
@@ -9,6 +10,7 @@ import { PlayerDto } from '../modules/socket-io/server/io';
 import { GameMapCell } from '../server/controllers/gameController';
 import { fillCircle, pushPop } from './canvasUtils';
 import { interpolateEntity } from './entityInterpolation';
+import { randomInt } from './math';
 
 type RendererCommandOptions = {
   ctx: CanvasRenderingContext2D;
@@ -53,8 +55,25 @@ export const drawMap = ({
   });
 };
 
-type DrawPlayersOptions = RendererCommandOptions;
+export const drawnCells: Map<string, number> = new Map();
 
+export const drawNewCells = ({ ctx, state }: RendererCommandOptions) => {
+  pushPop(ctx, () => {
+    state.newCells.forEach(cell => {
+      const { x, y, lightness } = cell;
+      const key = `${x}.${y}`;
+      if (drawnCells.has(key)) {
+        return;
+      }
+      drawnCells.set(key, (drawnCells.get(key) ?? 0) + 1);
+
+      ctx.fillStyle = `hsla(${MAP_HUE}, 45%, ${lightness * 100}%, 0.3)`;
+      ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+    });
+  });
+};
+
+type DrawPlayersOptions = RendererCommandOptions;
 export const drawPlayers = ({ ctx, state, prevState }: DrawPlayersOptions) => {
   pushPop(ctx, () => {
     state.players.forEach(player => {

@@ -1,3 +1,4 @@
+import { defineStore } from 'pinia';
 import { GAME_STATE_UPDATE } from '~~/src/events';
 import type {
   GameStateDto,
@@ -6,7 +7,8 @@ import type {
 import { indexBy } from '~/utils';
 import type { GameMapCell } from '~/server/controllers/gameController';
 
-export type SavedState = GameStateDto & {
+export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {
+  newCells: GameMapCell[];
   discoveredCells: GameMapCell[];
   timestamp: number;
   playersById: Record<string, PlayerDto>;
@@ -14,29 +16,34 @@ export type SavedState = GameStateDto & {
 
 const makeEmptyState = (): SavedState => ({
   discoveredCells: [],
+  newCells: [],
   players: [],
   playersById: {},
   playerCount: 0,
   timestamp: performance.now()
 });
 
-export const useGameState = () => {
-  const gameState = reactive<SavedState>(makeEmptyState());
-
+export const useGameState = defineStore('gameState', () => {
+  const state = reactive<SavedState>(makeEmptyState());
   const prevState: SavedState = reactive(makeEmptyState());
 
   useSocketEvent<GameStateDto>(GAME_STATE_UPDATE, payload => {
-    Object.assign(prevState, gameState);
+    Object.assign(prevState, state);
 
     const { players, playerCount, discoveredCells } = payload;
-    Object.assign(gameState, {
+
+    Object.assign(state, {
       players,
       playerCount,
-      discoveredCells: gameState.discoveredCells.concat(discoveredCells),
+      discoveredCells: state.discoveredCells.concat(discoveredCells),
+      newCells: discoveredCells,
       timestamp: performance.now(),
       playersById: indexBy(payload.players, 'id')
     });
   });
 
-  return [gameState, prevState];
-};
+  return {
+    state,
+    prevState
+  };
+});

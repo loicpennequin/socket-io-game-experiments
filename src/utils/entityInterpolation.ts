@@ -16,7 +16,6 @@ export const interpolateEntity = <T extends Coordinates = Coordinates>(
   const past = 1000 / TICK_RATE;
 
   const targetTime = now - past;
-
   const oldT = oldState.timestamp;
   const newT = newState.timestamp;
 
