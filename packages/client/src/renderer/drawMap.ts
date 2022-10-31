@@ -24,6 +24,8 @@ const DEFAULT_BOUNDARIES = {
   h: Infinity
 };
 
+const BOUNDARIES_BUFFER = 50;
+
 export const drawMap = ({
   ctx,
   showCoordinates = false,
@@ -31,13 +33,20 @@ export const drawMap = ({
 }: DrawMapOptions) => {
   pushPop(ctx, () => {
     const cells = state.discoveredCells as GameMapCell[]; // typescript issue because of toRefs ? it says cell is Coordinates
+    const bufferedBoundaries = {
+      x: boundaries.x - BOUNDARIES_BUFFER,
+      y: boundaries.y - BOUNDARIES_BUFFER,
+      w: boundaries.w + BOUNDARIES_BUFFER,
+      h: boundaries.h + BOUNDARIES_BUFFER
+    };
+
     cells.forEach(cell => {
       const isInBounds = pointRectCollision(
         {
           x: cell.x * CELL_SIZE,
           y: cell.y * CELL_SIZE
         },
-        boundaries
+        bufferedBoundaries
       );
 
       if (!isInBounds) return;
