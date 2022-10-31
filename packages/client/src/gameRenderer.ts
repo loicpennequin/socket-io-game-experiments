@@ -3,6 +3,7 @@ import { applyFieldOfView } from './renderer/applyFieldOfView';
 import { createRenderer } from './renderer/createRenderer';
 import { drawMap } from './renderer/drawMap';
 import { drawPlayers } from './renderer/drawPlayers';
+import { drawProjectiles } from './renderer/drawProjectiles';
 import { socket } from './socket';
 import { pushPop } from './utils/canvas';
 
@@ -20,6 +21,7 @@ export const createGameRenderer = () => {
         applyFieldOfView({ ctx, entityId: socket.id }, () => {
           drawMap({ ctx, showCoordinates: true, boundaries: camera });
           drawPlayers({ ctx });
+          drawProjectiles({ ctx });
         });
       });
     },

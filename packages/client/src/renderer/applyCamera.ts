@@ -5,7 +5,6 @@ import {
   clamp,
   interpolateEntity,
   MAP_SIZE,
-  type Boundaries,
   type Coordinates,
   type Dimensions
 } from '@game/shared';
@@ -21,14 +20,14 @@ export const applyCamera = (
   { canvas, ctx }: ApplyCameraOptions,
   cb: (camera: Camera) => void
 ) => {
-  const player = state.playersById[socket.id];
+  const player = state.entitiesById[socket.id];
   if (!player) return;
 
   pushPop(ctx, () => {
     interpolateEntity<typeof player>(
       { value: player, timestamp: state.timestamp },
       {
-        value: prevState.playersById[player.id],
+        value: prevState.entitiesById[player.id],
         timestamp: prevState.timestamp
       },
 

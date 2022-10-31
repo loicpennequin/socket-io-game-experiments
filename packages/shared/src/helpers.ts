@@ -1,4 +1,13 @@
-import { Entries, Dimensions, Coordinates, Matrix } from './types';
+import { ENTITY_TYPES } from './constants';
+import {
+  Entries,
+  Dimensions,
+  Coordinates,
+  Matrix,
+  EntityDto,
+  PlayerDto,
+  ProjectileDto
+} from './types';
 
 export function objectEntries<T extends object>(t: T): Entries<T>[] {
   return Object.entries(t) as any;
@@ -20,3 +29,8 @@ export const createMatrix = <T>(
         .fill(undefined)
         .map((_, y) => initialValue({ x, y }))
     );
+
+export const isPlayerDto = (entity: EntityDto): entity is PlayerDto =>
+  entity.type === ENTITY_TYPES.PLAYER;
+export const isProjectileDto = (entity: EntityDto): entity is ProjectileDto =>
+  entity.type === ENTITY_TYPES.PROJECTILE;

@@ -2,7 +2,7 @@ import { pushPop } from '@/utils/canvas';
 import { prevState, state } from '@/gameState';
 import {
   interpolateEntity,
-  type PlayerDto,
+  type EntityDto,
   PLAYER_FIELD_OF_VIEW
 } from '@game/shared';
 
@@ -15,14 +15,14 @@ export const applyFieldOfView = (
   { ctx, entityId }: ApplyFieldOfViewOptions,
   cb: () => void
 ) => {
-  const player = state.playersById[entityId];
+  const player = state.entitiesById[entityId];
   if (!player) return;
 
   pushPop(ctx, () => {
-    interpolateEntity<PlayerDto>(
+    interpolateEntity<EntityDto>(
       { value: player, timestamp: state.timestamp },
       // prettier-ignore
-      { value: prevState.playersById[player.id],timestamp: prevState.timestamp },
+      { value: prevState.entitiesById[player.id],timestamp: prevState.timestamp },
       entity => {
         ctx.beginPath();
         ctx.arc(

@@ -1,23 +1,23 @@
-import { PLAYER_ACTIONS, type PlayerAction } from '@game/shared';
+import { PLAYER_ACTIONS, type Values } from '@game/shared';
 
-type KeyboardAction = {
-  type: PlayerAction;
-  isOngoing: boolean;
-};
-
-export const KEYBOARD_CONTROLS: Record<string, KeyboardAction> = Object.freeze({
-  KeyW: { type: PLAYER_ACTIONS.MOVE_UP, isOngoing: true },
-  KeyS: { type: PLAYER_ACTIONS.MOVE_DOWN, isOngoing: true },
-  KeyA: { type: PLAYER_ACTIONS.MOVE_LEFT, isOngoing: true },
-  KeyD: { type: PLAYER_ACTIONS.MOVE_RIGHT, isOngoing: true },
-  Space: { type: PLAYER_ACTIONS.FIRE_FLARE, isOngoing: false }
+export const KEYBOARD_CONTROLS = Object.freeze({
+  KeyW: PLAYER_ACTIONS.MOVE_UP,
+  KeyS: PLAYER_ACTIONS.MOVE_DOWN,
+  KeyA: PLAYER_ACTIONS.MOVE_LEFT,
+  KeyD: PLAYER_ACTIONS.MOVE_RIGHT,
+  Space: PLAYER_ACTIONS.FIRE_PROJECTILE
 });
+
+export type KeyboardControls = Values<typeof KEYBOARD_CONTROLS>;
 
 export const MAP_HUE = 120;
 
 export const COLORS = Object.freeze({
   player: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 50%)' : 'hsl(250, 80%, 50%)',
+
+  projectile: (isCurrentPlayer: boolean) =>
+    isCurrentPlayer ? 'hsl(15, 80%, 85%)' : 'hsl(250, 80%, 85%)',
 
   mapCell: ({ lightness }: { lightness: number }) => {
     return `hsl(${MAP_HUE}, 45%, ${lightness}%)`;

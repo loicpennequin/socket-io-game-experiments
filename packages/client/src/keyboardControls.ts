@@ -2,10 +2,14 @@ import {
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ONGOING_ACTION_START,
   PLAYER_ACTION,
-  type Nullable
+  type Nullable,
+  PLAYER_ACTIONS,
+  ONGOING_ACTIONS,
+  type OngoingAction
 } from '@game/shared';
 import { KEYBOARD_CONTROLS } from './utils/constants';
 import { socket } from './socket';
+import { mousePosition } from './mouseTracker';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   let hasFired = false;
@@ -27,21 +31,34 @@ const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   });
 };
 
+const isOngoingAction = (x: string): x is OngoingAction =>
+  ONGOING_ACTIONS.includes(x as any);
+
 export const initKeyboardControls = () => {
   useKeydownOnce(e => {
     const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
-    if (!action) return;
-    const eventName = action.isOngoing
-      ? PLAYER_ONGOING_ACTION_START
-      : PLAYER_ACTION;
 
-    socket.emit(eventName, { action: action.type });
+    if (!action) return;
+
+    switch (action) {
+      case PLAYER_ACTIONS.MOVE_UP:
+      case PLAYER_ACTIONS.MOVE_DOWN:
+      case PLAYER_ACTIONS.MOVE_LEFT:
+      case PLAYER_ACTIONS.MOVE_RIGHT:
+        return socket.emit(PLAYER_ONGOING_ACTION_START, { action });
+      case PLAYER_ACTIONS.FIRE_PROJECTILE:
+        return socket.emit(PLAYER_ACTION, {
+          action,
+          meta: { mousePosition }
+        });
+    }
   });
 
   document.addEventListener('keyup', e => {
     const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
-    if (!action || !action.isOngoing) return;
 
-    socket.emit(PLAYER_ONGOING_ACTION_END, { action: action.type });
+    if (isOngoingAction(action)) {
+      socket.emit(PLAYER_ONGOING_ACTION_END, { action });
+    }
   });
 };

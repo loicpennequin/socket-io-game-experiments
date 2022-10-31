@@ -2,17 +2,17 @@ import { pushPop, fillCircle } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
-import { interpolateEntity, PLAYER_SIZE } from '@game/shared';
+import { interpolateEntity, isPlayerDto, PLAYER_SIZE } from '@game/shared';
 
 type DrawPlayersOptions = { ctx: CanvasRenderingContext2D };
 
 export const drawPlayers = ({ ctx }: DrawPlayersOptions) => {
   pushPop(ctx, () => {
-    state.players.forEach(player => {
+    state.entities.filter(isPlayerDto).forEach(player => {
       interpolateEntity<typeof player>(
         { value: player, timestamp: state.timestamp },
         {
-          value: prevState.playersById[player.id],
+          value: prevState.entitiesById[player.id],
           timestamp: prevState.timestamp
         },
 

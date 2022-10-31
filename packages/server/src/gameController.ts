@@ -5,7 +5,6 @@ import {
   GRID_SIZE,
   CELL_SIZE,
   PLAYER_ACTIONS,
-  PlayerAction,
   PLAYER_SPEED,
   PLAYER_SIZE,
   TICK_RATE,
@@ -17,29 +16,49 @@ import {
   makeSpatialHashGrid,
   SpatialHashGrid,
   SpatialHashGridItem,
-  GameMapCell
+  GameMapCell,
+  OngoingAction,
+  ActionPayload,
+  FireProjectileActionPayload,
+  EntityType,
+  PROJECTILE_SIZE,
+  PROJECTILE_LIFESPAN,
+  ENTITY_TYPES
 } from '@game/shared';
+import { v4 as uuid } from 'uuid';
 
-export type PlayerMeta = {
+export type EntityMeta = {
   id: string;
+  type: EntityType;
 };
 
-export type Player = {
-  id: string;
-  gridItem: SpatialHashGridItem<PlayerMeta>;
+export type Entity = { id: string; type: EntityType };
+
+export type Player = Entity & {
+  gridItem: SpatialHashGridItem<EntityMeta>;
   allDiscoveredCells: Map<string, GameMapCell>;
   newDiscoveredCells: Map<string, GameMapCell>;
-  ongoingActions: Set<PlayerAction>;
+  ongoingActions: Set<OngoingAction>;
+};
+
+export type Projectile = Entity & {
+  player: Player;
+  gridItem: SpatialHashGridItem<EntityMeta>;
+  lifeSpan: number;
+  direction: Coordinates;
 };
 
 export type GameMap = {
   grid: Matrix<GameMapCell>;
 };
 
+export type GameStateAction = ActionPayload & { player: Player };
+
 export type GameState = {
   map: GameMap;
-  players: Record<string, Player>;
-  grid: SpatialHashGrid<PlayerMeta>;
+  entities: Record<string, Player | Projectile>;
+  grid: SpatialHashGrid<EntityMeta>;
+  actionsQueue: GameStateAction[];
 };
 
 export type StateUpdateCallback = (state: Readonly<GameState>) => void;
@@ -47,10 +66,15 @@ export type StateUpdateCallback = (state: Readonly<GameState>) => void;
 const mapDimensions = { w: GRID_SIZE, h: GRID_SIZE };
 const noiseSeed = perlinMatrix(mapDimensions);
 
+export const isPlayer = (entity: Entity): entity is Player =>
+  entity.type === ENTITY_TYPES.PLAYER;
+export const isProjectile = (entity: Entity): entity is Projectile =>
+  entity.type === ENTITY_TYPES.PROJECTILE;
+
 let isRunning = false;
 
 const gameState: GameState = {
-  players: {},
+  entities: {},
   map: {
     grid: createMatrix(mapDimensions, ({ x, y }) => {
       const noise = Math.round(noiseSeed[x][y] * 100) / 100;
@@ -61,13 +85,14 @@ const gameState: GameState = {
       };
     })
   },
-  grid: makeSpatialHashGrid<PlayerMeta>({
+  grid: makeSpatialHashGrid<EntityMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },
     bounds: {
       start: { x: 0, y: 0 },
       end: { x: GRID_SIZE * CELL_SIZE, y: GRID_SIZE * CELL_SIZE }
     }
-  })
+  }),
+  actionsQueue: []
 };
 
 const clampToGrid = (n: number) =>
@@ -111,26 +136,30 @@ const getVisibleCells = (point: Coordinates) => {
   return new Map(entries);
 };
 
-const makePlayer = (id: string): Player => {
-  const position = {
-    x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
-    y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE)
+const makeProjectile = (
+  player: Player,
+  mousePosition: Coordinates
+): Projectile => {
+  const position = { ...player.gridItem.position };
+
+  const dimensions = { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE };
+  const meta = {
+    id: uuid(),
+    type: ENTITY_TYPES.PROJECTILE
   };
 
-  const dimensions = { w: PLAYER_SIZE, h: PLAYER_SIZE };
-
   return {
-    id,
-    allDiscoveredCells: getVisibleCells(position),
-    newDiscoveredCells: getVisibleCells(position),
+    ...meta,
+    player,
+    direction: mousePosition,
+    lifeSpan: PROJECTILE_LIFESPAN,
     gridItem: gameState.grid.add(
       {
         position,
         dimensions
       },
-      { id }
-    ),
-    ongoingActions: new Set<PlayerAction>()
+      meta
+    )
   };
 };
 
@@ -155,27 +184,82 @@ const movePlayer = (player: Player, { x = 0, y = 0 }) => {
   gameState.grid.update(player.gridItem);
 };
 
-const updateGameState = () => {
-  Object.values(gameState.players).forEach(player => {
-    player.ongoingActions.forEach(action => {
-      switch (action) {
-        case PLAYER_ACTIONS.MOVE_UP:
-          return movePlayer(player, { y: -1 });
-        case PLAYER_ACTIONS.MOVE_DOWN:
-          return movePlayer(player, { y: 1 });
-        case PLAYER_ACTIONS.MOVE_LEFT:
-          return movePlayer(player, { x: -1 });
-        case PLAYER_ACTIONS.MOVE_RIGHT:
-          return movePlayer(player, { x: 1 });
-      }
+const makePlayer = (id: string): Player => {
+  const position = {
+    x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
+    y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE)
+  };
+
+  const dimensions = { w: PLAYER_SIZE, h: PLAYER_SIZE };
+  const meta = { id, type: ENTITY_TYPES.PLAYER };
+
+  return {
+    ...meta,
+    allDiscoveredCells: getVisibleCells(position),
+    newDiscoveredCells: getVisibleCells(position),
+    gridItem: gameState.grid.add(
+      {
+        position,
+        dimensions
+      },
+      meta
+    ),
+    ongoingActions: new Set()
+  };
+};
+
+const fireProjectile = ({
+  meta,
+  player
+}: FireProjectileActionPayload & { player: Player }) => {
+  const projectile = makeProjectile(player, meta.mousePosition);
+  gameState.entities[projectile.id] = projectile;
+};
+
+const processActionQueue = () => {
+  let action = gameState.actionsQueue.shift();
+  while (action) {
+    switch (action.action) {
+      case PLAYER_ACTIONS.FIRE_PROJECTILE:
+        fireProjectile(action);
+    }
+
+    action = gameState.actionsQueue.shift();
+  }
+};
+
+const processOngoingActions = () => {
+  Object.values(gameState.entities)
+    .filter(isPlayer)
+    .forEach(entity => {
+      if (!isPlayer(entity)) return;
+
+      entity.ongoingActions.forEach(action => {
+        switch (action) {
+          case PLAYER_ACTIONS.MOVE_UP:
+            return movePlayer(entity, { y: -1 });
+          case PLAYER_ACTIONS.MOVE_DOWN:
+            return movePlayer(entity, { y: 1 });
+          case PLAYER_ACTIONS.MOVE_LEFT:
+            return movePlayer(entity, { x: -1 });
+          case PLAYER_ACTIONS.MOVE_RIGHT:
+            return movePlayer(entity, { x: 1 });
+        }
+      });
     });
-  });
+};
+
+const updateGameState = () => {
+  processOngoingActions();
+  processActionQueue();
 };
 
 const cleanupState = () => {
-  Object.values(gameState.players).forEach(player => {
-    player.newDiscoveredCells.clear();
-  });
+  Object.values(gameState.entities)
+    .filter(isPlayer)
+    .forEach(player => {
+      player.newDiscoveredCells.clear();
+    });
 };
 
 const updateCallbacks = new Set<StateUpdateCallback>();
@@ -183,20 +267,6 @@ const updateCallbacks = new Set<StateUpdateCallback>();
 export const gameController = {
   get gameState() {
     return gameState as Readonly<GameState>;
-  },
-
-  getPlayerById: (id: string) => gameState.players[id],
-
-  addPlayer: (socketId: string) => {
-    const player = makePlayer(socketId);
-    gameState.players[socketId] = player;
-
-    return player;
-  },
-
-  removePlayer: (player: Player) => {
-    gameState.grid.remove(player.gridItem);
-    delete gameState.players[player.id];
   },
 
   start: () => {
@@ -216,12 +286,30 @@ export const gameController = {
     return () => updateCallbacks.delete(cb);
   },
 
+  getEntityById: (id: string) => gameState.entities[id],
+
+  addPlayer: (socketId: string) => {
+    const player = makePlayer(socketId);
+    gameState.entities[socketId] = player;
+
+    return player;
+  },
+
+  removePlayer: (player: Player) => {
+    gameState.grid.remove(player.gridItem);
+    delete gameState.entities[player.id];
+  },
+
   getPlayerFieldOFView: (player: Player) => {
     return gameState.grid
       .findNearbyRadius(player.gridItem.position, PLAYER_FIELD_OF_VIEW)
       .map(gridItem => ({
         ...gridItem.position,
-        id: gridItem.meta.id
+        ...gridItem.meta
       }));
+  },
+
+  addAction(action: GameStateAction) {
+    gameState.actionsQueue.push(action);
   }
 };

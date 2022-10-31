@@ -6,11 +6,12 @@ import {
   PLAYER_ONGOING_ACTION_END,
   Coordinates,
   ClientToServerEvents,
-  ServerToClientEvents
+  ServerToClientEvents,
+  PLAYER_ACTION
 } from '@game/shared';
-import { gameController } from './gameController';
+import { gameController, isPlayer } from './gameController';
 
-export type PlayerDto = Coordinates & {
+export type EntityDto = Coordinates & {
   id: string;
 };
 
@@ -25,24 +26,26 @@ export const socketIoHandler = (server: http.Server) => {
   const getSocketByPlayerId = (id: string) => io.sockets.sockets.get(id);
 
   gameController.onStateUpdate(gameState => {
-    Object.values(gameState.players).forEach((player, _, arr) => {
-      const socket = getSocketByPlayerId(player.id);
+    Object.values(gameState.entities)
+      .filter(isPlayer)
+      .forEach((player, _, arr) => {
+        const socket = getSocketByPlayerId(player.id);
 
-      if (!socket) {
-        console.warn(
-          `Player ${player.id} seems to not be tied to an active socket, something must be wrong...`
-        );
-        return;
-      }
+        if (!socket) {
+          console.warn(
+            `Player ${player.id} seems to not be tied to an active socket, something must be wrong...`
+          );
+          return;
+        }
 
-      const fov = gameController.getPlayerFieldOFView(player);
+        const fov = gameController.getPlayerFieldOFView(player);
 
-      socket.emit(GAME_STATE_UPDATE, {
-        playerCount: arr.length,
-        players: fov,
-        discoveredCells: Array.from(player.newDiscoveredCells.values())
+        socket.emit(GAME_STATE_UPDATE, {
+          playerCount: arr.length,
+          entities: fov,
+          discoveredCells: Array.from(player.newDiscoveredCells.values())
+        });
       });
-    });
   });
 
   gameController.start();
@@ -60,6 +63,14 @@ export const socketIoHandler = (server: http.Server) => {
 
     socket.on(PLAYER_ONGOING_ACTION_END, ({ action }) => {
       player.ongoingActions.delete(action);
+    });
+
+    socket.on(PLAYER_ACTION, ({ action, meta }) => {
+      gameController.addAction({
+        action,
+        meta,
+        player
+      });
     });
   });
 };
