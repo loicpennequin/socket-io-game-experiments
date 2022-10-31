@@ -42,9 +42,10 @@ export const socketIoHandler = (server: http.Server) => {
     Object.values(gameState.players).forEach((player, _, arr) => {
       const socket = getSocketByPlayerId(player.id);
 
+      const fov = gameController.getPlayerFieldOFView(player);
       const dto: GameStateDto = {
         playerCount: arr.length,
-        players: gameController.getPlayerFieldOFView(player),
+        players: fov,
         discoveredCells: Array.from(player.newDiscoveredCells.values())
       };
       socket!.emit(GAME_STATE_UPDATE, dto);

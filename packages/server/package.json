@@ -2,7 +2,7 @@
   "name": "@game/server",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon --watch src --watch ../shared/src src/index.ts"
   },
   "dependencies": {
     "@game/shared": "*",
