@@ -8,6 +8,7 @@ export type Boundaries<T = number> = { min: T; max: T };
 export type Range = Boundaries<number>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
 export type Matrix<T> = T[][];
+export type AnyObject = Record<string, any>;
 
 export function objectEntries<T extends object>(t: T): Entries<T>[] {
   return Object.entries(t) as any;

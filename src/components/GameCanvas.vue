@@ -1,143 +1,35 @@
 <script setup lang="ts">
-import type { GameMapCell } from '../server/controllers/gameController';
-import {
-  GRID_SIZE,
-  CELL_SIZE,
-  PLAYER_SIZE,
-  PLAYER_FIELD_OF_VIEW,
-  MAP_HUE
-} from '~/constants';
-import { pushPop, fillCircle } from '~/utils/canvasUtils';
-import { interpolateEntity } from '~~/src/utils/entityInterpolation';
+import { drawMap, drawPlayers, applyFogOfWar } from '../utils/renderer';
+import { MAP_SIZE } from '~/constants';
 
 const canvasEl = ref<HTMLCanvasElement>();
-const [state, prevState] = useGameState();
-const { playerCount, players } = state;
 const socket = useSocket();
+const [state, prevState] = useGameState();
 
-const { getContext } = useCanvasProvider(canvasEl);
-
-const canvasSize = GRID_SIZE * CELL_SIZE;
-
-const fps = ref(0);
-let lastTick = 0;
-const updateFps = () => {
-  if (lastTick) {
-    const delta = (performance.now() - lastTick) / 1000;
-    fps.value = Math.round(1 / delta);
-  }
-  lastTick = performance.now();
-};
-
-const drawMap = ({
-  showCoordinates = false
-}: {
-  showCoordinates?: boolean;
-} = {}) => {
-  const ctx = getContext();
-  const cells = state.discoveredCells.value as GameMapCell[]; // typescript issue because of toRefs ? it says cell is Coordinates
-  cells.forEach(cell => {
-    ctx.fillStyle = `hsl(${MAP_HUE}, 45%, ${cell.lightness * 100}%)`;
-    ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-    if (!showCoordinates) return;
-    ctx.font = '12px Helvetica';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = 'rgb(255,255,255,0.5)';
-    ctx.fillText(
-      `${cell.x}.${cell.y}`,
-      cell.x * CELL_SIZE + CELL_SIZE / 2,
-      cell.y * CELL_SIZE + CELL_SIZE / 2
-    );
-  });
-};
-
-const drawPlayers = () => {
-  const ctx = getContext();
-  state.players.value.forEach(player => {
-    interpolateEntity<typeof player>(
-      { value: player, timestamp: state.timestamp.value },
-      {
-        value: prevState.playersById.value[player.id],
-        timestamp: prevState.timestamp.value
-      },
-      entity => {
-        ctx.lineWidth = 0;
-        ctx.fillStyle = 'hsl(15, 80%, 50%)';
-        fillCircle(ctx, {
-          x: entity.x,
-          y: entity.y,
-          radius: PLAYER_SIZE / 2
-        });
-      }
-    );
-  });
-};
-
-const applyFogOfWar = (cb: () => void) => {
-  const ctx = getContext();
-  const player = state.playersById.value[socket.id];
-  if (!player) return;
-
-  pushPop(ctx, () => {
-    interpolateEntity<typeof player>(
-      { value: player, timestamp: state.timestamp.value },
-      // prettier-ignore
-      { value: prevState.playersById.value[player.id],timestamp: prevState.timestamp.value },
-      entity => {
-        ctx.beginPath();
-        ctx.arc(
-          entity.x,
-          entity.y,
-          PLAYER_FIELD_OF_VIEW,
-          PLAYER_FIELD_OF_VIEW,
-          Math.PI * 2,
-          true
-        );
-        ctx.clip();
-      }
-    );
-
-    cb();
-  });
-};
+const getContext = () => canvasEl.value.getContext('2d');
 
 const draw = () => {
   const ctx = getContext();
 
-  ctx.clearRect(0, 0, canvasSize, canvasSize);
-  pushPop(ctx, () => {
-    ctx.filter = 'opacity(25%)';
-    drawMap();
-  });
+  ctx.clearRect(0, 0, MAP_SIZE, MAP_SIZE);
+  drawMap({ ctx, state, prevState, opacity: 0.3 });
 
-  applyFogOfWar(() => {
-    pushPop(ctx, () => drawMap({ showCoordinates: true }));
-    pushPop(ctx, drawPlayers);
+  applyFogOfWar({ ctx, state, prevState, playerId: socket.id }, () => {
+    drawMap({ ctx, state, prevState, showCoordinates: true });
+    drawPlayers({ ctx, state, prevState });
   });
 };
 
-const drawLoop = useRafFn(draw, { immediate: false });
-useRafFn(updateFps);
-
-const isWindowFocused = useWindowFocus();
-watch(isWindowFocused, focused => {
-  if (focused) {
-    drawLoop.resume();
-  } else {
-    drawLoop.pause();
-  }
-});
-
-onMounted(() => {
-  drawLoop.resume();
-});
+const drawLoop = useRafFn(() => draw(), { immediate: false });
+watch(useWindowFocus(), focused =>
+  focused ? drawLoop.resume() : drawLoop.pause()
+);
+onMounted(drawLoop.resume);
 </script>
 
 <template>
-  <canvas ref="canvasEl" :width="canvasSize" :height="canvasSize" />
-  <div>FPS: {{ fps }}</div>
-  <div>Seeing {{ players.length }} out of {{ playerCount }} players</div>
+  <canvas ref="canvasEl" :width="MAP_SIZE" :height="MAP_SIZE" />
+  <Debug />
 </template>
 
 <style scoped>

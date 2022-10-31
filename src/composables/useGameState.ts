@@ -6,7 +6,7 @@ import type {
 import { indexBy } from '~/utils';
 import type { GameMapCell } from '~/server/controllers/gameController';
 
-type SavedState = GameStateDto & {
+export type SavedState = GameStateDto & {
   discoveredCells: GameMapCell[];
   timestamp: number;
   playersById: Record<string, PlayerDto>;
@@ -38,5 +38,5 @@ export const useGameState = () => {
     });
   });
 
-  return [toRefs(gameState), toRefs(prevState)];
+  return [gameState, prevState];
 };
