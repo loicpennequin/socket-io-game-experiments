@@ -11,7 +11,8 @@ export const PLAYER_ACTIONS = Object.freeze({
   MOVE_UP: 'MOVE_UP',
   MOVE_DOWN: 'MOVE_DOWN',
   MOVE_LEFT: 'MOVE_LEFT',
-  MOVE_RIGHT: 'MOVE_RIGHT'
+  MOVE_RIGHT: 'MOVE_RIGHT',
+  FIRE_FLARE: 'FIRE_FLARE'
 });
 
 export type PlayerAction = typeof PLAYER_ACTIONS[keyof typeof PLAYER_ACTIONS];

@@ -1,6 +1,7 @@
 import {
-  PLAYER_ACTION_END,
-  PLAYER_ACTION_START,
+  PLAYER_ONGOING_ACTION_END,
+  PLAYER_ONGOING_ACTION_START,
+  PLAYER_ACTION,
   type Nullable
 } from '@game/shared';
 import { KEYBOARD_CONTROLS } from './utils/constants';
@@ -30,12 +31,17 @@ export const initKeyboardControls = () => {
   useKeydownOnce(e => {
     const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
     if (!action) return;
-    socket.emit(PLAYER_ACTION_START, { action });
+    const eventName = action.isOngoing
+      ? PLAYER_ONGOING_ACTION_START
+      : PLAYER_ACTION;
+
+    socket.emit(eventName, { action: action.type });
   });
 
   document.addEventListener('keyup', e => {
     const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
-    if (!action) return;
-    socket.emit(PLAYER_ACTION_END, { action });
+    if (!action || !action.isOngoing) return;
+
+    socket.emit(PLAYER_ONGOING_ACTION_END, { action: action.type });
   });
 };
