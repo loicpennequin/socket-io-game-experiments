@@ -25,7 +25,9 @@ import {
   PROJECTILE_LIFESPAN,
   ENTITY_TYPES,
   PROJECTILE_SPEED,
-  getAnghleFromVector
+  getAnghleFromVector,
+  PROJECTILE_FIELD_OF_VIEW,
+  uniqBy
 } from '@game/shared';
 import { cp } from 'fs';
 import { v4 as uuid } from 'uuid';
@@ -35,10 +37,13 @@ export type EntityMeta = {
   type: EntityType;
 };
 
-export type Entity = { id: string; type: EntityType };
+export type Entity = {
+  id: string;
+  type: EntityType;
+  gridItem: SpatialHashGridItem<EntityMeta>;
+};
 
 export type Player = Entity & {
-  gridItem: SpatialHashGridItem<EntityMeta>;
   allDiscoveredCells: Map<string, GameMapCell>;
   newDiscoveredCells: Map<string, GameMapCell>;
   ongoingActions: Set<OngoingAction>;
@@ -46,7 +51,6 @@ export type Player = Entity & {
 
 export type Projectile = Entity & {
   player: Player;
-  gridItem: SpatialHashGridItem<EntityMeta>;
   lifeSpan: number;
   angle: number;
 };
@@ -258,6 +262,8 @@ const updateProjectile = (projectile: Projectile) => {
   projectile.gridItem.position.y +=
     Math.sin(projectile.angle) * PROJECTILE_SPEED;
 
+  gameState.grid.update(projectile.gridItem);
+
   projectile.lifeSpan--;
 };
 
@@ -299,6 +305,9 @@ const cleanupState = () => {
   });
 };
 
+const getEntityFieldOfView = (entity: Entity, fov: number) =>
+  gameState.grid.findNearbyRadius(entity.gridItem.position, fov);
+
 const updateCallbacks = new Set<StateUpdateCallback>();
 
 export const gameController = {
@@ -338,12 +347,23 @@ export const gameController = {
   },
 
   getPlayerFieldOFView: (player: Player) => {
-    return gameState.grid
-      .findNearbyRadius(player.gridItem.position, PLAYER_FIELD_OF_VIEW)
-      .map(gridItem => ({
-        ...gridItem.position,
-        ...gridItem.meta
-      }));
+    const seenByPlayer = getEntityFieldOfView(player, PLAYER_FIELD_OF_VIEW);
+
+    const seenByProjectiles = Object.values(gameState.entities)
+      .filter(entity => isProjectile(entity) && entity.player === player)
+      .map(projectile =>
+        getEntityFieldOfView(projectile, PROJECTILE_FIELD_OF_VIEW)
+      )
+      .flat();
+
+    const all = uniqBy(
+      [...seenByPlayer, ...seenByProjectiles],
+      gridItem => gridItem.meta.id
+    );
+    return all.map(gridItem => ({
+      ...gridItem.position,
+      ...gridItem.meta
+    }));
   },
 
   addAction(action: GameStateAction) {

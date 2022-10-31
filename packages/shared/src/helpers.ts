@@ -18,6 +18,18 @@ export const indexBy = <T extends Record<string, any>>(
   key: keyof T
 ) => Object.fromEntries(arr.map(item => [item[key], item]));
 
+export const uniqBy = <T>(arr: T[], getKey: (item: T) => any): T[] => {
+  const uniq: Record<string, T> = {};
+
+  for (const item of arr) {
+    const val = getKey(item);
+    if (uniq[val]) continue;
+    uniq[val] = item;
+  }
+
+  return Object.values(uniq);
+};
+
 export const createMatrix = <T>(
   dimensions: Dimensions,
   initialValue: (coords: Coordinates) => T

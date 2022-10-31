@@ -71,8 +71,8 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
     const itemCells: Coordinates[] = [];
     for (let x = min.x; x <= max.x; ++x) {
       for (let y = min.y; y <= max.y; ++y) {
-        if (!cells[x]?.[y]) continue;
         itemCells.push({ x, y });
+        console.log(`grid item inserted on cell [${x}, ${y}]`);
         cells[x]?.[y]?.items.push(item);
       }
     }
@@ -172,6 +172,7 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
         });
       }
     }
+
     return nearby;
   };
 

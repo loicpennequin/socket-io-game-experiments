@@ -29,8 +29,8 @@ export const createGameRenderer = () => {
         applyFieldOfView({ ctx, entityId: socket.id }, () => {
           drawMap({ ctx, showCoordinates: true, boundaries: camera });
           drawPlayers({ ctx });
-          drawProjectiles({ ctx });
         });
+        drawProjectiles({ ctx });
       });
     },
     getDimensions: () => ({
