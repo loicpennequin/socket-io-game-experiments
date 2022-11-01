@@ -1,4 +1,4 @@
-import { MAP_SIZE, PLAYER_ACTIONS, type Values } from '@game/shared';
+import { MAP_SIZE, PlayerAction, type Values } from '@game/shared';
 
 export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;
@@ -8,11 +8,11 @@ export const MINIMAP_ENTITY_SCALE = 5;
 export const FOG_OF_WAR_ALPHA = 0.3;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
-  KeyW: PLAYER_ACTIONS.MOVE_UP,
-  KeyS: PLAYER_ACTIONS.MOVE_DOWN,
-  KeyA: PLAYER_ACTIONS.MOVE_LEFT,
-  KeyD: PLAYER_ACTIONS.MOVE_RIGHT,
-  Space: PLAYER_ACTIONS.FIRE_PROJECTILE
+  KeyW: PlayerAction.MOVE_UP,
+  KeyS: PlayerAction.MOVE_DOWN,
+  KeyA: PlayerAction.MOVE_LEFT,
+  KeyD: PlayerAction.MOVE_RIGHT,
+  Space: PlayerAction.FIRE_PROJECTILE
 });
 
 export type KeyboardControls = Values<typeof KEYBOARD_CONTROLS>;

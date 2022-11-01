@@ -1,6 +1,3 @@
-import { PLAYER_ACTIONS } from './constants';
-import { MoveAction } from './types';
-
 export const isObject = (x: unknown): x is object =>
   typeof x === 'object' && x !== null && !Array.isArray(x);
 

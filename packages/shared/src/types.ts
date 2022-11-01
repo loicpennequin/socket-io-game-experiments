@@ -1,4 +1,4 @@
-import { ONGOING_ACTIONS, PLAYER_ACTIONS } from './constants';
+import { EntityType, OngoingAction, PlayerAction } from './enums';
 import {
   GAME_STATE_UPDATE,
   PING,
@@ -27,20 +27,17 @@ export type EntityDto = Coordinates & {
   id: string;
   type: EntityType;
 };
+
 export type PlayerDto = EntityDto;
 export type ProjectileDto = EntityDto & {
   playerId: string;
 };
+
 export type GameStateDto = {
   entities: EntityDto[];
   playerCount: number;
   discoveredCells: GameMapCell[];
 };
-
-export type EntityType = 'player' | 'projectile';
-
-export type PlayerAction = Values<typeof PLAYER_ACTIONS>;
-export type OngoingAction = typeof ONGOING_ACTIONS[number];
 
 export type MoveAction = Extract<
   PlayerAction,

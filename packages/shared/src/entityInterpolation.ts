@@ -2,7 +2,7 @@ import { TICK_RATE } from './constants';
 import { lerp } from './math';
 import { Coordinates } from './types';
 
-export type InterPolationState<T extends Coordinates = Coordinates> = {
+export type InterPolationState<T extends Coordinates> = {
   value: T;
   timestamp: number;
 };

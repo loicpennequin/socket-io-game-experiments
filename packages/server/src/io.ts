@@ -33,9 +33,8 @@ export const socketIoHandler = (server: http.Server) => {
         const socket = getSocketByPlayerId(player.id);
 
         if (!socket) {
-          console.warn(
-            `Player ${player.id} seems to not be tied to an active socket, something must be wrong...`
-          );
+          // websocket connexion ended without the ws server noticing (can this happen ?)
+          gameController.removePlayer(player);
           return;
         }
 

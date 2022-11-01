@@ -1,4 +1,4 @@
-import { ENTITY_TYPES } from './constants';
+import { EntityType } from './enums';
 import {
   Entries,
   Dimensions,
@@ -80,6 +80,6 @@ export const throttle = (fn: Function, wait: number = 300) => {
 };
 
 export const isPlayerDto = (entity: EntityDto): entity is PlayerDto =>
-  entity.type === ENTITY_TYPES.PLAYER;
+  entity.type === EntityType.PLAYER;
 export const isProjectileDto = (entity: EntityDto): entity is ProjectileDto =>
-  entity.type === ENTITY_TYPES.PROJECTILE;
+  entity.type === EntityType.PROJECTILE;

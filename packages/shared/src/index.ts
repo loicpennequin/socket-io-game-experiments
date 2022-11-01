@@ -1,6 +1,7 @@
 export * from './collision';
 export * from './constants';
 export * from './entityInterpolation';
+export * from './enums';
 export * from './events';
 export * from './helpers';
 export * from './math';

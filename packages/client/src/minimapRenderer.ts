@@ -28,7 +28,7 @@ export const createMinimapRenderer = () => {
         ctx.scale(MINIMAP_SCALE, MINIMAP_SCALE);
         pushPop(ctx, () => {
           ctx.globalAlpha = FOG_OF_WAR_ALPHA;
-          drawMap({ ctx, showLightness: false });
+          drawMap({ ctx, showLightness: false, boundariesBuffer: 0 });
         });
 
         drawMapInFieldOfView({

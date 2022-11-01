@@ -4,7 +4,7 @@ import {
   Matrix,
   GRID_SIZE,
   CELL_SIZE,
-  PLAYER_ACTIONS,
+  PlayerAction,
   PLAYER_SPEED,
   PLAYER_SIZE,
   TICK_RATE,
@@ -23,18 +23,18 @@ import {
   EntityType,
   PROJECTILE_SIZE,
   PROJECTILE_LIFESPAN,
-  ENTITY_TYPES,
   PROJECTILE_SPEED,
   getAnghleFromVector,
   PROJECTILE_FIELD_OF_VIEW,
-  uniqBy
+  uniqBy,
+  randomInt,
+  EntityDto
 } from '@game/shared';
 import { v4 as uuid } from 'uuid';
 import { performance } from 'perf_hooks';
 
 export type EntityMeta = {
   id: string;
-  type: EntityType;
 };
 
 export type Entity = {
@@ -74,9 +74,9 @@ const mapDimensions = { w: GRID_SIZE, h: GRID_SIZE };
 const noiseSeed = perlinMatrix(mapDimensions);
 
 export const isPlayer = (entity: Entity): entity is Player =>
-  entity.type === ENTITY_TYPES.PLAYER;
+  entity.type === EntityType.PLAYER;
 export const isProjectile = (entity: Entity): entity is Projectile =>
-  entity.type === ENTITY_TYPES.PROJECTILE;
+  entity.type === EntityType.PROJECTILE;
 
 let isRunning = false;
 
@@ -147,13 +147,11 @@ const makeProjectile = (player: Player, target: Coordinates): Projectile => {
   const position = { ...player.gridItem.position };
 
   const dimensions = { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE };
-  const meta = {
-    id: uuid(),
-    type: ENTITY_TYPES.PROJECTILE
-  };
 
+  const id = uuid();
   return {
-    ...meta,
+    id,
+    type: EntityType.PROJECTILE,
     player,
     angle: getAnghleFromVector({
       x: target.x - player.gridItem.position.x,
@@ -165,7 +163,7 @@ const makeProjectile = (player: Player, target: Coordinates): Projectile => {
         position,
         dimensions
       },
-      meta
+      { id }
     )
   };
 };
@@ -196,15 +194,15 @@ const movePlayer = (player: Player, { x = 0, y = 0 }) => {
 
 const makePlayer = (id: string): Player => {
   const position = {
-    x: Math.round(Math.random() * GRID_SIZE * CELL_SIZE),
-    y: Math.round(Math.random() * GRID_SIZE * CELL_SIZE)
+    x: randomInt(GRID_SIZE * CELL_SIZE),
+    y: randomInt(GRID_SIZE * CELL_SIZE)
   };
 
   const dimensions = { w: PLAYER_SIZE, h: PLAYER_SIZE };
-  const meta = { id, type: ENTITY_TYPES.PLAYER };
 
   return {
-    ...meta,
+    id,
+    type: EntityType.PLAYER,
     allDiscoveredCells: getVisibleCells(position, PLAYER_FIELD_OF_VIEW),
     newDiscoveredCells: getVisibleCells(position, PLAYER_FIELD_OF_VIEW),
     gridItem: gameState.grid.add(
@@ -212,7 +210,7 @@ const makePlayer = (id: string): Player => {
         position,
         dimensions
       },
-      meta
+      { id }
     ),
     ongoingActions: new Set()
   };
@@ -230,7 +228,7 @@ const processActionQueue = () => {
   let action = gameState.actionsQueue.shift();
   while (action) {
     switch (action.action) {
-      case PLAYER_ACTIONS.FIRE_PROJECTILE:
+      case PlayerAction.FIRE_PROJECTILE:
         fireProjectile(action);
     }
 
@@ -241,13 +239,13 @@ const processActionQueue = () => {
 const updatePlayer = (player: Player) => {
   player.ongoingActions.forEach(action => {
     switch (action) {
-      case PLAYER_ACTIONS.MOVE_UP:
+      case PlayerAction.MOVE_UP:
         return movePlayer(player, { y: -1 });
-      case PLAYER_ACTIONS.MOVE_DOWN:
+      case PlayerAction.MOVE_DOWN:
         return movePlayer(player, { y: 1 });
-      case PLAYER_ACTIONS.MOVE_LEFT:
+      case PlayerAction.MOVE_LEFT:
         return movePlayer(player, { x: -1 });
-      case PLAYER_ACTIONS.MOVE_RIGHT:
+      case PlayerAction.MOVE_RIGHT:
         return movePlayer(player, { x: 1 });
     }
   });
@@ -285,9 +283,9 @@ const updateProjectile = (projectile: Projectile) => {
 const updateEntities = () => {
   Object.values(gameState.entities).forEach(entity => {
     switch (entity.type) {
-      case ENTITY_TYPES.PLAYER:
+      case EntityType.PLAYER:
         return updatePlayer(entity as Player);
-      case ENTITY_TYPES.PROJECTILE:
+      case EntityType.PROJECTILE:
         return updateProjectile(entity as Projectile);
     }
   });
@@ -329,7 +327,9 @@ const getPlayerDiscoveredCells = (player: Player) =>
   Array.from(player.newDiscoveredCells.values());
 
 const getEntityFieldOfView = (entity: Entity, fov: number) =>
-  gameState.grid.findNearbyRadius(entity.gridItem.position, fov);
+  gameState.grid
+    .findNearbyRadius(entity.gridItem.position, fov)
+    .map(gridItem => gameState.entities[gridItem.meta.id]);
 
 const updateCallbacks = new Set<StateUpdateCallback>();
 
@@ -374,19 +374,19 @@ export const gameController = {
     delete gameState.entities[player.id];
   },
 
-  getPlayerFieldOFView: (player: Player) => {
+  getPlayerFieldOFView: (player: Player): EntityDto[] => {
     const playerFov = getEntityFieldOfView(player, PLAYER_FIELD_OF_VIEW);
     const projectilesFov = getPlayerProjectiles(player).map(projectile =>
       getEntityFieldOfView(projectile, PROJECTILE_FIELD_OF_VIEW)
     );
 
-    return uniqBy(
-      [playerFov, projectilesFov].flat(2),
-      gridItem => gridItem.meta.id
-    ).map(gridItem => ({
-      ...gridItem.position,
-      ...gridItem.meta
-    }));
+    return uniqBy([playerFov, projectilesFov].flat(2), entity => entity.id).map(
+      entity => ({
+        ...entity.gridItem.position,
+        id: entity.id,
+        type: entity.type
+      })
+    );
   },
 
   getPlayerDiscoveredCells: (player: Player) =>
