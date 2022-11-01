@@ -1,3 +1,4 @@
+import { PLAYER_FIELD_OF_VIEW } from '@game/shared';
 import { applyCamera, type Camera } from './renderer/applyCamera';
 import { applyFieldOfView } from './renderer/applyFieldOfView';
 import { createRenderer } from './renderer/createRenderer';
@@ -26,11 +27,18 @@ export const createGameRenderer = () => {
           drawMap({ ctx, boundaries: camera });
         });
 
-        applyFieldOfView({ ctx, entityId: socket.id }, () => {
-          drawMap({ ctx, showCoordinates: true, boundaries: camera });
-          drawPlayers({ ctx });
-        });
-        drawProjectiles({ ctx });
+        applyFieldOfView(
+          {
+            ctx,
+            entityId: socket.id,
+            fieldOfView: PLAYER_FIELD_OF_VIEW
+          },
+          () => {
+            drawMap({ ctx, showCoordinates: true, boundaries: camera });
+            drawPlayers({ ctx });
+          }
+        );
+        drawProjectiles({ ctx, camera });
       });
     },
     getDimensions: () => ({

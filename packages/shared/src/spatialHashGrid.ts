@@ -72,7 +72,6 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
     for (let x = min.x; x <= max.x; ++x) {
       for (let y = min.y; y <= max.y; ++y) {
         itemCells.push({ x, y });
-        console.log(`grid item inserted on cell [${x}, ${y}]`);
         cells[x]?.[y]?.items.push(item);
       }
     }

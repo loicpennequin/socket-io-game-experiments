@@ -38,12 +38,10 @@ export const socketIoHandler = (server: http.Server) => {
           return;
         }
 
-        const fov = gameController.getPlayerFieldOFView(player);
-
         socket.emit(GAME_STATE_UPDATE, {
           playerCount: arr.length,
-          entities: fov,
-          discoveredCells: Array.from(player.newDiscoveredCells.values())
+          entities: gameController.getPlayerFieldOFView(player),
+          discoveredCells: gameController.getPlayerDiscoveredCells(player)
         });
       });
   });

@@ -1,18 +1,15 @@
 import { pushPop } from '@/utils/canvas';
 import { prevState, state } from '@/gameState';
-import {
-  interpolateEntity,
-  type EntityDto,
-  PLAYER_FIELD_OF_VIEW
-} from '@game/shared';
+import { interpolateEntity, type EntityDto } from '@game/shared';
 
 type ApplyFieldOfViewOptions = {
   ctx: CanvasRenderingContext2D;
   entityId: string;
+  fieldOfView: number;
 };
 
 export const applyFieldOfView = (
-  { ctx, entityId }: ApplyFieldOfViewOptions,
+  { ctx, entityId, fieldOfView }: ApplyFieldOfViewOptions,
   cb: () => void
 ) => {
   const player = state.entitiesById[entityId];
@@ -28,8 +25,8 @@ export const applyFieldOfView = (
         ctx.arc(
           entity.x,
           entity.y,
-          PLAYER_FIELD_OF_VIEW,
-          PLAYER_FIELD_OF_VIEW,
+          fieldOfView,
+          fieldOfView,
           Math.PI * 2,
           true
         );
