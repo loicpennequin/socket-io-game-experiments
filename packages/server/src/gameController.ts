@@ -374,21 +374,20 @@ export const gameController = {
     delete gameState.entities[player.id];
   },
 
-  getPlayerFieldOFView: (player: Player) =>
-    uniqBy(
-      [
-        ...getEntityFieldOfView(player, PLAYER_FIELD_OF_VIEW),
-        ...getPlayerProjectiles(player)
-          .map(projectile =>
-            getEntityFieldOfView(projectile, PROJECTILE_FIELD_OF_VIEW)
-          )
-          .flat()
-      ],
+  getPlayerFieldOFView: (player: Player) => {
+    const playerFov = getEntityFieldOfView(player, PLAYER_FIELD_OF_VIEW);
+    const projectilesFov = getPlayerProjectiles(player).map(projectile =>
+      getEntityFieldOfView(projectile, PROJECTILE_FIELD_OF_VIEW)
+    );
+
+    return uniqBy(
+      [playerFov, projectilesFov].flat(2),
       gridItem => gridItem.meta.id
     ).map(gridItem => ({
       ...gridItem.position,
       ...gridItem.meta
-    })),
+    }));
+  },
 
   getPlayerDiscoveredCells: (player: Player) =>
     uniqBy(

@@ -11,7 +11,7 @@ export const KEYBOARD_CONTROLS = Object.freeze({
 export type KeyboardControls = Values<typeof KEYBOARD_CONTROLS>;
 
 export const MAP_HUE = 120;
-
+export const PROJECTILE_THROTTLE_RATE = 500;
 export const COLORS = Object.freeze({
   player: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 50%)' : 'hsl(250, 80%, 50%)',

@@ -11,6 +11,7 @@ import {
 import { applyFieldOfView } from './applyFieldOfView';
 import { drawMap } from './drawMap';
 import type { Camera } from './applyCamera';
+import { drawPlayers } from './drawPlayers';
 
 type DrawProjectilesOptions = { ctx: CanvasRenderingContext2D; camera: Camera };
 
@@ -21,6 +22,7 @@ export const drawProjectiles = ({ ctx, camera }: DrawProjectilesOptions) => {
         { ctx, entityId: projectile.id, fieldOfView: PROJECTILE_FIELD_OF_VIEW },
         () => {
           drawMap({ ctx, boundaries: camera });
+          drawPlayers({ ctx });
           interpolateEntity<typeof projectile>(
             { value: projectile, timestamp: state.timestamp },
             {

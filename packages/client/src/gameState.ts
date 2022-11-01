@@ -23,7 +23,9 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
   Object.assign(prevState, state);
 
   const { entities, playerCount, discoveredCells } = payload;
-  console.log(discoveredCells.length);
+  console.log(
+    `${entities.filter(e => e.type === 'player').length} players seen`
+  );
 
   Object.assign(state, {
     playerCount,

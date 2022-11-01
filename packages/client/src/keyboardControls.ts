@@ -2,12 +2,13 @@ import {
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ONGOING_ACTION_START,
   PLAYER_ACTION,
-  type Nullable,
   PLAYER_ACTIONS,
   ONGOING_ACTIONS,
+  throttle,
+  type Nullable,
   type OngoingAction
 } from '@game/shared';
-import { KEYBOARD_CONTROLS } from './utils/constants';
+import { KEYBOARD_CONTROLS, PROJECTILE_THROTTLE_RATE } from './utils/constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
 import { gameCamera } from './gameRenderer';
@@ -36,6 +37,19 @@ const isOngoingAction = (x: string): x is OngoingAction =>
   ONGOING_ACTIONS.includes(x as any);
 
 export const initKeyboardControls = () => {
+  const fireProjectile = throttle(() => {
+    console.log;
+    socket.emit(PLAYER_ACTION, {
+      action: PLAYER_ACTIONS.FIRE_PROJECTILE,
+      meta: {
+        target: {
+          x: mousePosition.x + gameCamera.x,
+          y: mousePosition.y + gameCamera.y
+        }
+      }
+    });
+  }, PROJECTILE_THROTTLE_RATE);
+
   useKeydownOnce(e => {
     const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
 
@@ -48,15 +62,7 @@ export const initKeyboardControls = () => {
       case PLAYER_ACTIONS.MOVE_RIGHT:
         return socket.emit(PLAYER_ONGOING_ACTION_START, { action });
       case PLAYER_ACTIONS.FIRE_PROJECTILE:
-        return socket.emit(PLAYER_ACTION, {
-          action,
-          meta: {
-            target: {
-              x: mousePosition.x + gameCamera.x,
-              y: mousePosition.y + gameCamera.y
-            }
-          }
-        });
+        return fireProjectile();
     }
   });
 
