@@ -7,7 +7,8 @@ import {
   Coordinates,
   ClientToServerEvents,
   ServerToClientEvents,
-  PLAYER_ACTION
+  PLAYER_ACTION,
+  PING
 } from '@game/shared';
 import { gameController, isPlayer } from './gameController';
 
@@ -53,6 +54,10 @@ export const socketIoHandler = (server: http.Server) => {
 
     socket.on('disconnect', () => {
       gameController.removePlayer(player);
+    });
+
+    socket.on(PING, (timestamp, callback) => {
+      callback(timestamp);
     });
 
     socket.on(PLAYER_ONGOING_ACTION_START, ({ action }) => {

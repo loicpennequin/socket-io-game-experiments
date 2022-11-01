@@ -1,9 +1,11 @@
 import { EntityType } from './types';
 
+export const TICK_RATE = 20;
+export const PING_INTERVAL = 1000;
+
 export const GRID_SIZE = 150;
 export const CELL_SIZE = 30;
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
-export const TICK_RATE = 20;
 
 export const PLAYER_SIZE = 20;
 export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 10;

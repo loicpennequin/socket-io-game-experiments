@@ -19,6 +19,9 @@ main {
   position: fixed;
   top: 0;
   left: 0;
+  font-size: 0.8rem;
+  padding: 1rem;
+  line-height: 1.8;
 }
 
 #minimap {

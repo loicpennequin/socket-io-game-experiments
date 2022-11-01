@@ -1,6 +1,7 @@
 import { ONGOING_ACTIONS, PLAYER_ACTIONS } from './constants';
 import {
   GAME_STATE_UPDATE,
+  PING,
   PLAYER_ACTION,
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ONGOING_ACTION_START
@@ -64,6 +65,7 @@ export type ServerToClientEvents = {
   [GAME_STATE_UPDATE]: (state: GameStateDto) => void;
 };
 export type ClientToServerEvents = {
+  [PING]: (timestamp: number, callback: (e: number) => void) => void;
   [PLAYER_ONGOING_ACTION_START]: (payload: OngoingActionStartPayload) => void;
   [PLAYER_ONGOING_ACTION_END]: (payload: OngoingActionEndPayload) => void;
   [PLAYER_ACTION]: (payload: ActionPayload) => void;

@@ -1,16 +1,26 @@
-import { sum } from '@game/shared';
+import { PING, sum } from '@game/shared';
+import { socket } from './socket';
 
 const FPS_BUFFER_MAX_LENGTH = 50;
 
 export const displayDebugInfo = () => {
   const fps: number[] = [];
-  let lastTick = 0;
+  let ping = 0;
 
   const debugEl = document.body.appendChild(
-    Object.assign(document.createElement('pre'), {
+    Object.assign(document.createElement('div'), {
       id: 'debug-infos'
     })
   );
+
+  let lastTick = 0;
+
+  const render = () => {
+    debugEl.innerHTML = /*html*/ `
+      <div>FPS: ${Math.round(sum(...fps) / fps.length)}</div>
+      <div>PING: ${Math.round(ping)}ms</div>
+    `;
+  };
 
   const updateFps = () => {
     if (lastTick) {
@@ -19,13 +29,21 @@ export const displayDebugInfo = () => {
       if (fps.length > FPS_BUFFER_MAX_LENGTH) fps.shift();
     }
     lastTick = performance.now();
-    debugEl.textContent = JSON.stringify(
-      { fps: Math.round(sum(...fps) / fps.length) },
-      null,
-      4
-    );
+
+    render();
+
     requestAnimationFrame(updateFps);
   };
 
+  const updatePing = () => {
+    socket.emit(PING, performance.now(), timestamp => {
+      ping = performance.now() - timestamp;
+      render();
+    });
+  };
+
+  setInterval(updatePing, 5000);
+
   updateFps();
+  updatePing();
 };
