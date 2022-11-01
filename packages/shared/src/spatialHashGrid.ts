@@ -96,7 +96,7 @@ export const makeSpatialHashGrid = <TMeta = unknown>({
 
   const remove = (item: GridItem) => {
     item.cellsIndices.forEach(({ x, y }) => {
-      const cell = cells[x][y];
+      const cell = cells[x]?.[y];
       if (!cell) return;
 
       const { items } = cell;
