@@ -54,7 +54,7 @@ export const dotProduct = (point1: Coordinates, point2: Coordinates) => {
 export const sum = (...nums: number[]) =>
   nums.reduce((total, num) => total + num, 0);
 
-export const getAnghleFromVector = ({ x, y }: Coordinates) => Math.atan2(y, x);
+export const getAngleFromVector = ({ x, y }: Coordinates) => Math.atan2(y, x);
 
 export const perlinMatrix = (dimensions: Dimensions) =>
   createMatrix(dimensions, ({ x, y }) => {

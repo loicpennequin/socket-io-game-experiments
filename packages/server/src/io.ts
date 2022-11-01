@@ -10,7 +10,7 @@ import {
   PLAYER_ACTION,
   PING
 } from '@game/shared';
-import { gameController, isPlayer } from './gameController';
+import { gameController, isPlayer } from './controllers/gameController';
 
 export type EntityDto = Coordinates & {
   id: string;

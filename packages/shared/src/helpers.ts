@@ -79,6 +79,11 @@ export const throttle = (fn: Function, wait: number = 300) => {
   };
 };
 
+export const pipe =
+  <T>(...fns: Array<(arg: T) => T>) =>
+  (value: T) =>
+    fns.reduce((acc, fn) => fn(acc), value);
+
 export const isPlayerDto = (entity: EntityDto): entity is PlayerDto =>
   entity.type === EntityType.PLAYER;
 export const isProjectileDto = (entity: EntityDto): entity is ProjectileDto =>
