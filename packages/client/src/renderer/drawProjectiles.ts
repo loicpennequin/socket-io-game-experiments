@@ -5,6 +5,7 @@ import { socket } from '@/socket';
 import {
   interpolateEntity,
   isProjectileDto,
+  PLAYER_SIZE,
   PROJECTILE_FIELD_OF_VIEW,
   PROJECTILE_SIZE
 } from '@game/shared';
@@ -22,7 +23,7 @@ export const drawProjectiles = ({ ctx, camera }: DrawProjectilesOptions) => {
         { ctx, entityId: projectile.id, fieldOfView: PROJECTILE_FIELD_OF_VIEW },
         () => {
           drawMap({ ctx, boundaries: camera });
-          drawPlayers({ ctx });
+          drawPlayers({ ctx, size: PLAYER_SIZE });
           interpolateEntity<typeof projectile>(
             { value: projectile, timestamp: state.timestamp },
             {

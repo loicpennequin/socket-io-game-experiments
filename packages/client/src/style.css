@@ -29,9 +29,4 @@ main {
   top: 0;
   right: 0;
   outline: solid 1px white;
-  transition: opacity 0.5s;
-}
-
-#minimap:hover {
-  opacity: 0;
 }

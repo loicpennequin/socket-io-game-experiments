@@ -1,4 +1,4 @@
-import { PLAYER_FIELD_OF_VIEW } from '@game/shared';
+import { PLAYER_FIELD_OF_VIEW, PLAYER_SIZE } from '@game/shared';
 import { applyCamera, type Camera } from './renderer/applyCamera';
 import { applyFieldOfView } from './renderer/applyFieldOfView';
 import { createRenderer } from './renderer/createRenderer';
@@ -35,7 +35,7 @@ export const createGameRenderer = () => {
           },
           () => {
             drawMap({ ctx, boundaries: camera });
-            drawPlayers({ ctx });
+            drawPlayers({ ctx, size: PLAYER_SIZE });
           }
         );
         drawProjectiles({ ctx, camera });

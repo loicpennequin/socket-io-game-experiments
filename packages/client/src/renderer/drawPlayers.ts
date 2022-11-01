@@ -2,11 +2,11 @@ import { pushPop, fillCircle } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
-import { interpolateEntity, isPlayerDto, PLAYER_SIZE } from '@game/shared';
+import { interpolateEntity, isPlayerDto } from '@game/shared';
 
-type DrawPlayersOptions = { ctx: CanvasRenderingContext2D };
+type DrawPlayersOptions = { ctx: CanvasRenderingContext2D; size: number };
 
-export const drawPlayers = ({ ctx }: DrawPlayersOptions) => {
+export const drawPlayers = ({ ctx, size }: DrawPlayersOptions) => {
   pushPop(ctx, () => {
     state.entities.filter(isPlayerDto).forEach(player => {
       interpolateEntity<typeof player>(
@@ -22,7 +22,7 @@ export const drawPlayers = ({ ctx }: DrawPlayersOptions) => {
           fillCircle(ctx, {
             x: entity.x,
             y: entity.y,
-            radius: PLAYER_SIZE / 2
+            radius: size / 2
           });
         }
       );

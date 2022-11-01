@@ -13,6 +13,7 @@ type DrawMapOptions = {
   ctx: CanvasRenderingContext2D;
   opacity?: number;
   boundaries?: Coordinates & Dimensions;
+  showLightness?: boolean;
 };
 
 const DEFAULT_BOUNDARIES = {
@@ -22,23 +23,26 @@ const DEFAULT_BOUNDARIES = {
   h: Infinity
 };
 
+const DEFAULT_LIGHTNESS = 50;
 const BOUNDARIES_BUFFER = 50;
 
 type DrawCellOptions = {
   ctx: CanvasRenderingContext2D;
+  showLightness: boolean;
   cell: GameMapCell;
 };
 
-const drawCell = ({ ctx, cell }: DrawCellOptions) => {
+const drawCell = ({ ctx, cell, showLightness }: DrawCellOptions) => {
   ctx.fillStyle = COLORS.mapCell({
-    lightness: cell.lightness * 100
+    lightness: showLightness ? cell.lightness * 100 : DEFAULT_LIGHTNESS
   });
   ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };
 
 export const drawMap = ({
   ctx,
-  boundaries = DEFAULT_BOUNDARIES
+  boundaries = DEFAULT_BOUNDARIES,
+  showLightness = true
 }: DrawMapOptions) => {
   pushPop(ctx, () => {
     const cells = state.discoveredCells;
@@ -60,7 +64,7 @@ export const drawMap = ({
 
       if (!isInBounds) return;
 
-      drawCell({ ctx, cell });
+      drawCell({ ctx, cell, showLightness });
     });
   });
 };
