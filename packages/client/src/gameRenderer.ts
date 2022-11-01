@@ -34,7 +34,7 @@ export const createGameRenderer = () => {
             fieldOfView: PLAYER_FIELD_OF_VIEW
           },
           () => {
-            drawMap({ ctx, showCoordinates: true, boundaries: camera });
+            drawMap({ ctx, boundaries: camera });
             drawPlayers({ ctx });
           }
         );

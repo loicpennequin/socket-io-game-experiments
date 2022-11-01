@@ -15,19 +15,20 @@ main {
   height: 100vh;
 }
 
-#game-renderer {
-  display: grid;
-  place-items: center;
-  outline: solid 1px white;
-}
-
-#game-renderer > * {
-  grid-column: 1;
-  grid-row: 1;
-}
-
 #debug-infos {
   position: fixed;
   top: 0;
   left: 0;
+}
+
+#minimap {
+  position: fixed;
+  top: 0;
+  right: 0;
+  outline: solid 1px white;
+  transition: opacity 0.5s;
+}
+
+#minimap:hover {
+  opacity: 0;
 }

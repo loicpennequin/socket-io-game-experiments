@@ -1,6 +1,6 @@
 import { EntityType } from './types';
 
-export const GRID_SIZE = 80;
+export const GRID_SIZE = 150;
 export const CELL_SIZE = 30;
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
 export const TICK_RATE = 20;

@@ -22,16 +22,15 @@ export const createRenderer = ({
 
   const { canvas, ctx } = createCanvas(getDimensions());
 
-  window.addEventListener(
-    'resize',
-    () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+  const resizeCanvas = () => {
+    const dimensions = getDimensions();
+    canvas.width = dimensions.w;
+    canvas.height = dimensions.h;
 
-      render({ canvas, ctx });
-    },
-    false
-  );
+    render({ canvas, ctx });
+  };
+
+  window.addEventListener('resize', resizeCanvas, false);
 
   if (pauseOnDocumentHidden) {
     document.addEventListener('visibilitychange', function () {
