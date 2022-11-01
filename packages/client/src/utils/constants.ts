@@ -4,6 +4,8 @@ export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
+export const MINIMAP_ENTITY_SCALE = 5;
+export const FOG_OF_WAR_ALPHA = 0.3;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
   KeyW: PLAYER_ACTIONS.MOVE_UP,

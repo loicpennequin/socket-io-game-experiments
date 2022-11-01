@@ -5,44 +5,37 @@ import { socket } from '@/socket';
 import {
   interpolateEntity,
   isProjectileDto,
-  PLAYER_SIZE,
   PROJECTILE_FIELD_OF_VIEW,
   PROJECTILE_SIZE
 } from '@game/shared';
-import { applyFieldOfView } from './applyFieldOfView';
-import { drawMap } from './drawMap';
-import type { Camera } from './applyCamera';
-import { drawPlayers } from './drawPlayers';
+import { drawMapInFieldOfView } from './drawMap';
 
-type DrawProjectilesOptions = { ctx: CanvasRenderingContext2D; camera: Camera };
+type DrawProjectilesOptions = { ctx: CanvasRenderingContext2D; size: number };
 
-export const drawProjectiles = ({ ctx, camera }: DrawProjectilesOptions) => {
+export const drawProjectiles = ({ ctx, size }: DrawProjectilesOptions) => {
   pushPop(ctx, () => {
     state.entities.filter(isProjectileDto).forEach(projectile => {
-      applyFieldOfView(
-        { ctx, entityId: projectile.id, fieldOfView: PROJECTILE_FIELD_OF_VIEW },
-        () => {
-          drawMap({ ctx, boundaries: camera });
-          drawPlayers({ ctx, size: PLAYER_SIZE });
-          interpolateEntity<typeof projectile>(
-            { value: projectile, timestamp: state.timestamp },
-            {
-              value: prevState.entitiesById[projectile.id] as typeof projectile,
-              timestamp: prevState.timestamp
-            },
+      drawMapInFieldOfView({
+        ctx,
+        entityId: projectile.id,
+        fieldOfView: PROJECTILE_FIELD_OF_VIEW
+      });
 
-            entity => {
-              ctx.lineWidth = 0;
-              ctx.fillStyle = COLORS.projectile(
-                projectile.playerId === socket.id
-              );
-              fillCircle(ctx, {
-                x: entity.x,
-                y: entity.y,
-                radius: PROJECTILE_SIZE / 2
-              });
-            }
-          );
+      interpolateEntity<typeof projectile>(
+        { value: projectile, timestamp: state.timestamp },
+        {
+          value: prevState.entitiesById[projectile.id] as typeof projectile,
+          timestamp: prevState.timestamp
+        },
+
+        entity => {
+          ctx.lineWidth = 0;
+          ctx.fillStyle = COLORS.projectile(projectile.playerId === socket.id);
+          fillCircle(ctx, {
+            x: entity.x,
+            y: entity.y,
+            radius: size / 2
+          });
         }
       );
     });

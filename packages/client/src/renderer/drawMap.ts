@@ -8,6 +8,10 @@ import {
   CELL_SIZE,
   pointRectCollision
 } from '@game/shared';
+import {
+  applyFieldOfView,
+  type ApplyFieldOfViewOptions
+} from './applyFieldOfView';
 
 type DrawMapOptions = {
   ctx: CanvasRenderingContext2D;
@@ -67,4 +71,33 @@ export const drawMap = ({
       drawCell({ ctx, cell, showLightness });
     });
   });
+};
+
+type DrawMapInFieldOfViewOptions = Omit<DrawMapOptions, 'boundaries'> &
+  ApplyFieldOfViewOptions;
+
+export const drawMapInFieldOfView = ({
+  ctx,
+  showLightness = true,
+  entityId,
+  fieldOfView
+}: DrawMapInFieldOfViewOptions) => {
+  applyFieldOfView(
+    {
+      ctx,
+      entityId,
+      fieldOfView
+    },
+    boundaries => {
+      drawMap({
+        ctx,
+        showLightness,
+        boundaries: {
+          ...boundaries.min,
+          w: boundaries.w,
+          h: boundaries.h
+        }
+      });
+    }
+  );
 };

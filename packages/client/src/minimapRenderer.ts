@@ -1,10 +1,22 @@
-import { PLAYER_SIZE } from '@game/shared';
+import {
+  PLAYER_FIELD_OF_VIEW,
+  PLAYER_SIZE,
+  PROJECTILE_SIZE
+} from '@game/shared';
 import { gameCamera } from './gameRenderer';
 import { createRenderer } from './renderer/createRenderer';
-import { drawMap } from './renderer/drawMap';
+import { drawMap, drawMapInFieldOfView } from './renderer/drawMap';
 import { drawPlayers } from './renderer/drawPlayers';
+import { drawProjectiles } from './renderer/drawProjectiles';
+import { socket } from './socket';
 import { pushPop } from './utils/canvas';
-import { COLORS, MINIMAP_SCALE, MINIMAP_SIZE } from './utils/constants';
+import {
+  COLORS,
+  FOG_OF_WAR_ALPHA,
+  MINIMAP_ENTITY_SCALE,
+  MINIMAP_SCALE,
+  MINIMAP_SIZE
+} from './utils/constants';
 
 export const createMinimapRenderer = () => {
   return createRenderer({
@@ -14,8 +26,19 @@ export const createMinimapRenderer = () => {
 
       pushPop(ctx, () => {
         ctx.scale(MINIMAP_SCALE, MINIMAP_SCALE);
-        drawMap({ ctx, showLightness: false });
-        drawPlayers({ ctx, size: PLAYER_SIZE * 5 });
+        pushPop(ctx, () => {
+          ctx.globalAlpha = FOG_OF_WAR_ALPHA;
+          drawMap({ ctx, showLightness: false });
+        });
+
+        drawMapInFieldOfView({
+          ctx,
+          entityId: socket.id,
+          fieldOfView: PLAYER_FIELD_OF_VIEW
+        });
+
+        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        drawPlayers({ ctx, size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE });
 
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 5;

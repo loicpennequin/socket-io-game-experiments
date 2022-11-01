@@ -1,16 +1,24 @@
 import { pushPop } from '@/utils/canvas';
 import { prevState, state } from '@/gameState';
-import { interpolateEntity, type EntityDto } from '@game/shared';
+import {
+  interpolateEntity,
+  type Boundaries,
+  type Coordinates,
+  type Dimensions,
+  type EntityDto
+} from '@game/shared';
 
-type ApplyFieldOfViewOptions = {
+export type ApplyFieldOfViewOptions = {
   ctx: CanvasRenderingContext2D;
   entityId: string;
   fieldOfView: number;
 };
 
+export type FieldOfViewBoundaries = Boundaries<Coordinates> & Dimensions;
+
 export const applyFieldOfView = (
   { ctx, entityId, fieldOfView }: ApplyFieldOfViewOptions,
-  cb: () => void
+  cb: (boundaries: FieldOfViewBoundaries) => void
 ) => {
   const player = state.entitiesById[entityId];
   if (!player) return;
@@ -31,9 +39,15 @@ export const applyFieldOfView = (
           true
         );
         ctx.clip();
+
+        const boundaries: FieldOfViewBoundaries = {
+          min: { x: entity.x - fieldOfView, y: entity.y - fieldOfView },
+          max: { x: entity.x + fieldOfView, y: entity.y + fieldOfView },
+          w: fieldOfView * 2,
+          h: fieldOfView * 2
+        };
+        cb(boundaries);
       }
     );
-
-    cb();
   });
 };
