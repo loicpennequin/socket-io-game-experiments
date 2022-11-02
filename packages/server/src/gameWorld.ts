@@ -10,11 +10,11 @@ import {
   createTaskQueue
 } from '@game/shared';
 import { v4 as uuid } from 'uuid';
-import { mapController } from './mapController';
-import { createPlayer, Player } from '../factories/playerFactory';
-import { createProjectile, Projectile } from '../factories/projectileFactory';
-import { Entity } from '../factories/entityFactory';
-import { isPlayer, isProjectile } from '../utils';
+import { gameMap } from './gameMap';
+import { createPlayer, Player } from './factories/playerFactory';
+import { createProjectile, Projectile } from './factories/projectileFactory';
+import { Entity } from './factories/entityFactory';
+import { isProjectile } from './utils';
 
 export type GameStateAction = ActionPayload & { player: Player };
 export type GameState = {
@@ -28,11 +28,14 @@ const getPlayerProjectiles = (player: Player) =>
     entity => isProjectile(entity) && entity.player === player
   );
 
-const getPlayerDiscoveredCells = (player: Player) =>
-  Array.from(player.newDiscoveredCells.values());
+const getPlayerDiscoveredCells = (player: Player) => {
+  const cells = Array.from(player.newDiscoveredCells.values());
+  player.newDiscoveredCells.clear();
+  return cells;
+};
 
 const getEntityFieldOfView = (entity: Entity, fov: number) =>
-  mapController.grid
+  gameMap.grid
     .findNearbyRadius(entity.gridItem.position, fov)
     .map(gridItem => gameState.entities[gridItem.meta.id]);
 
@@ -46,8 +49,15 @@ const fireProjectile = ({
   meta: { target },
   player
 }: FireProjectileActionPayload & { player: Player }) => {
-  const projectile = createProjectile({ id: uuid(), target, player });
-  gameState.entities[projectile.id] = projectile;
+  const projectile = createProjectile({
+    id: uuid(),
+    target,
+    player
+  }).on('destroy', () => {
+    delete gameState.entities[projectile.id];
+  });
+
+  gameState.entities[projectile.id] = projectile as Projectile; // @fixme should get fixed when solidify object composition
 };
 
 const updateGameState = () => {
@@ -57,29 +67,15 @@ const updateGameState = () => {
   });
 };
 
-const cleanupState = () => {
-  Object.values(gameState.entities).forEach(entity => {
-    if (isPlayer(entity)) {
-      entity.newDiscoveredCells.clear();
-    } else if (isProjectile(entity)) {
-      if (entity.lifeSpan <= 0) {
-        mapController.grid.remove(entity.gridItem);
-        delete gameState.entities[entity.id];
-      }
-    }
-  });
-};
-
 const updateCallbacks = new Set<StateUpdateCallback>();
 
-export const gameController = {
+export const gameWorld = {
   start: () => {
     if (isRunning) return;
 
     setInterval(() => {
       updateGameState();
       updateCallbacks.forEach(cb => cb(gameState));
-      cleanupState();
     }, 1000 / TICK_RATE);
     isRunning = true;
   },
@@ -100,7 +96,6 @@ export const gameController = {
   },
 
   removePlayer: (player: Player) => {
-    mapController.grid.remove(player.gridItem);
     delete gameState.entities[player.id];
   },
 

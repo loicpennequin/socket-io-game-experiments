@@ -10,7 +10,7 @@ import {
   PLAYER_ACTION,
   PING
 } from '@game/shared';
-import { gameController } from './controllers/gameController';
+import { gameWorld } from './gameWorld';
 import { isPlayer } from './utils';
 
 export type EntityDto = Coordinates & {
@@ -29,31 +29,31 @@ export const socketIoHandler = (server: http.Server) => {
 
   const getSocketByPlayerId = (id: string) => io.sockets.sockets.get(id);
 
-  gameController.onStateUpdate(gameState => {
+  gameWorld.onStateUpdate(gameState => {
     Object.values(gameState.entities)
       .filter(isPlayer)
       .forEach((player, _, arr) => {
         const socket = getSocketByPlayerId(player.id) as Socket;
 
-        const entities = gameController
+        const entities = gameWorld
           .getPlayerFieldOFView(player)
           .map(entity => entity.toDto());
 
         socket.emit(GAME_STATE_UPDATE, {
           playerCount: arr.length,
           entities,
-          discoveredCells: gameController.getPlayerDiscoveredCells(player)
+          discoveredCells: gameWorld.getPlayerDiscoveredCells(player)
         });
       });
   });
 
-  gameController.start();
+  gameWorld.start();
 
   io.on('connection', socket => {
-    const player = gameController.addPlayer(socket.id);
+    const player = gameWorld.addPlayer(socket.id);
 
     socket.on('disconnect', () => {
-      gameController.removePlayer(player);
+      gameWorld.removePlayer(player);
     });
 
     socket.on(PING, (timestamp, callback) => {
@@ -69,7 +69,7 @@ export const socketIoHandler = (server: http.Server) => {
     });
 
     socket.on(PLAYER_ACTION, ({ action, meta }) => {
-      gameController.addAction({
+      gameWorld.addAction({
         action,
         meta,
         player

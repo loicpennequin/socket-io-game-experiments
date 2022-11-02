@@ -12,13 +12,15 @@ import {
   PLAYER_SPEED,
   randomInt
 } from '@game/shared';
-import { mapController } from '../controllers/mapController';
+import { gameMap } from '../gameMap';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 
 export type Player = Entity & {
   ongoingActions: Set<OngoingAction>;
   newDiscoveredCells: Map<string, GameMapCell>;
   allDiscoveredCells: Map<string, GameMapCell>;
+
+  move: (coords: Coordinates) => void;
 };
 
 export type MakePlayerOptions = Omit<
@@ -42,11 +44,11 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
 
   return Object.assign(entity, {
     ongoingActions: new Set<OngoingAction>(),
-    allDiscoveredCells: mapController.getVisibleCells(
+    allDiscoveredCells: gameMap.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
-    newDiscoveredCells: mapController.getVisibleCells(
+    newDiscoveredCells: gameMap.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
@@ -59,7 +61,7 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
         y: clampToGrid(entity.position.y + y * PLAYER_SPEED)
       });
 
-      const visibleCells = mapController.getVisibleCells(
+      const visibleCells = gameMap.getVisibleCells(
         entity.position,
         PLAYER_FIELD_OF_VIEW
       );
@@ -70,22 +72,22 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
         }
       }
 
-      mapController.grid.update(entity.gridItem);
-    },
-
-    update() {
-      this.ongoingActions.forEach(action => {
-        switch (action) {
-          case PlayerAction.MOVE_UP:
-            return this.move({ x: 0, y: -1 });
-          case PlayerAction.MOVE_DOWN:
-            return this.move({ x: 0, y: 1 });
-          case PlayerAction.MOVE_LEFT:
-            return this.move({ x: -1, y: 0 });
-          case PlayerAction.MOVE_RIGHT:
-            return this.move({ x: 1, y: 0 });
-        }
-      });
+      gameMap.grid.update(entity.gridItem);
     }
-  });
+  }).on('update', e => {
+    const player = e as Player;
+
+    player.ongoingActions.forEach(action => {
+      switch (action) {
+        case PlayerAction.MOVE_UP:
+          return player.move({ x: 0, y: -1 });
+        case PlayerAction.MOVE_DOWN:
+          return player.move({ x: 0, y: 1 });
+        case PlayerAction.MOVE_LEFT:
+          return player.move({ x: -1, y: 0 });
+        case PlayerAction.MOVE_RIGHT:
+          return player.move({ x: 1, y: 0 });
+      }
+    });
+  }) as Player;
 };

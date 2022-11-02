@@ -1,11 +1,9 @@
-import {
-  Coordinates,
-  Dimensions,
-  EntityDto,
-  EntityType,
-  noop
-} from '@game/shared';
-import { mapController, MapGridItem } from '../controllers/mapController';
+import { Coordinates, Dimensions, EntityDto, EntityType } from '@game/shared';
+import { gameMap } from '../gameMap';
+import { MapGridItem } from './gameMapFactory';
+
+export type EntityLifecycleCallback = (entity: Entity) => void;
+export type EntityLifecycleEvent = 'update' | 'destroy';
 
 export type Entity = {
   id: string;
@@ -15,6 +13,8 @@ export type Entity = {
   dimensions: Readonly<Dimensions>;
   update: () => void;
   destroy: () => void;
+  on: (eventName: EntityLifecycleEvent, cb: EntityLifecycleCallback) => Entity;
+  dispatch: (eventName: EntityLifecycleEvent) => Entity;
   toDto: () => EntityDto;
 };
 
@@ -23,19 +23,23 @@ export type MakeEntityOptions = {
   type: EntityType;
   position: Coordinates;
   dimensions: Dimensions;
-  onUpdated?: (entity: Entity) => void;
-  onDestroyed?: (entity: Entity) => void;
 };
 
 export const createEntity = ({
   id,
   type,
   position,
-  dimensions,
-  onUpdated = noop,
-  onDestroyed = noop
+  dimensions
 }: MakeEntityOptions): Entity => {
-  const gridItem = mapController.grid.add(
+  const callbacks: Record<
+    EntityLifecycleEvent,
+    Set<EntityLifecycleCallback>
+  > = {
+    update: new Set(),
+    destroy: new Set()
+  };
+
+  const gridItem = gameMap.grid.add(
     {
       position,
       dimensions
@@ -56,11 +60,24 @@ export const createEntity = ({
     },
 
     update() {
-      return onUpdated(this);
+      this.dispatch('update');
     },
 
     destroy() {
-      return onDestroyed(this);
+      gameMap.grid.remove(this.gridItem);
+      this.dispatch('destroy');
+    },
+
+    on(eventName: EntityLifecycleEvent, cb: EntityLifecycleCallback) {
+      callbacks[eventName].add(cb);
+
+      return this;
+    },
+
+    dispatch(eventName: EntityLifecycleEvent) {
+      callbacks[eventName].forEach(cb => cb(this));
+
+      return this;
     },
 
     toDto() {

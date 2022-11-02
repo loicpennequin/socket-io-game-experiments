@@ -7,7 +7,7 @@ import {
   PROJECTILE_SIZE,
   PROJECTILE_SPEED
 } from '@game/shared';
-import { mapController } from '../controllers/mapController';
+import { gameMap } from '../gameMap';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { Player } from './playerFactory';
 
@@ -41,28 +41,32 @@ export const createProjectile = ({
       x: target.x - player.gridItem.position.x,
       y: target.y - player.gridItem.position.y
     }),
-    lifeSpan: PROJECTILE_LIFESPAN,
-    update() {
-      Object.assign(entity.gridItem.position, {
-        x: entity.position.x + Math.cos(this.angle) * PROJECTILE_SPEED,
-        y: entity.position.y + Math.sin(this.angle) * PROJECTILE_SPEED
-      });
+    lifeSpan: PROJECTILE_LIFESPAN
+  }).on('update', e => {
+    const projectile = e as Projectile;
+    Object.assign(projectile.gridItem.position, {
+      x: projectile.position.x + Math.cos(projectile.angle) * PROJECTILE_SPEED,
+      y: projectile.position.y + Math.sin(projectile.angle) * PROJECTILE_SPEED
+    });
 
-      const visibleCells = mapController.getVisibleCells(
-        entity.position,
-        PROJECTILE_FIELD_OF_VIEW
-      );
+    const visibleCells = gameMap.getVisibleCells(
+      entity.position,
+      PROJECTILE_FIELD_OF_VIEW
+    );
 
-      for (const [key, cell] of visibleCells) {
-        if (!this.player.allDiscoveredCells.has(key)) {
-          this.player.allDiscoveredCells.set(key, cell);
-          this.player.newDiscoveredCells.set(key, cell);
-        }
+    for (const [key, cell] of visibleCells) {
+      if (!projectile.player.allDiscoveredCells.has(key)) {
+        projectile.player.allDiscoveredCells.set(key, cell);
+        projectile.player.newDiscoveredCells.set(key, cell);
       }
-
-      mapController.grid.update(entity.gridItem);
-
-      this.lifeSpan--;
     }
-  });
+
+    gameMap.grid.update(entity.gridItem);
+
+    projectile.lifeSpan--;
+
+    if (projectile.lifeSpan <= 0) {
+      entity.destroy();
+    }
+  }) as Projectile;
 };
