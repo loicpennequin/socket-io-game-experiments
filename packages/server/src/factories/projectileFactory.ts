@@ -1,12 +1,11 @@
 import {
-  Coordinates,
   EntityType,
-  getAngleFromVector,
+  PROJECTILE_SIZE,
   PROJECTILE_FIELD_OF_VIEW,
   PROJECTILE_LIFESPAN,
-  PROJECTILE_SIZE,
   PROJECTILE_SPEED
-} from '@game/shared';
+} from '@game/domain';
+import { Coordinates, getAngleFromVector } from '@game/shared-utils';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { Player } from './playerFactory';
 

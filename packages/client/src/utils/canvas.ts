@@ -1,4 +1,4 @@
-import type { Coordinates, Dimensions } from '@game/shared';
+import type { Coordinates, Dimensions } from '@game/shared-utils';
 
 export const createCanvas = (dimensions: Dimensions) => {
   const canvas = Object.assign(document.createElement('canvas'), {

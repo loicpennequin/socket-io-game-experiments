@@ -1,4 +1,4 @@
-import { EntityType } from '@game/shared';
+import { EntityType } from '@game/domain';
 import { Entity } from './factories/entityFactory';
 import { Player } from './factories/playerFactory';
 import { Projectile } from './factories/projectileFactory';

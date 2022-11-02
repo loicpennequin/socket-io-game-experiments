@@ -5,7 +5,8 @@
     "dev": "nodemon --watch src --watch ../shared/src src/index.ts"
   },
   "dependencies": {
-    "@game/shared": "*",
+    "@game/shared-utils": "*",
+    "@game/domain": "*",
     "@types/node": "^18.11.8",
     "express": "^4.18.2",
     "socket.io": "^4.5.3",

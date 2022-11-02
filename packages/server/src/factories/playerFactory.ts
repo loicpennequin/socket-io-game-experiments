@@ -1,16 +1,13 @@
 import {
   CELL_SIZE,
-  clamp,
-  Coordinates,
   EntityType,
   GameMapCell,
   GRID_SIZE,
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE,
-  PLAYER_SPEED,
-  randomInt,
-  uniqBy
-} from '@game/shared';
+  PLAYER_SPEED
+} from '@game/domain';
+import { clamp, Coordinates, randomInt, uniqBy } from '@game/shared-utils';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { createProjectile, Projectile } from './projectileFactory';
 

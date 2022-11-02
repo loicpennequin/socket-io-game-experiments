@@ -1,4 +1,4 @@
-import { AnyObject } from '@game/shared';
+import { AnyObject } from '@game/shared-utils';
 import { EventEmitter } from 'events';
 
 export type EventsMap = {

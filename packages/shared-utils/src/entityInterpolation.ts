@@ -1,4 +1,3 @@
-import { TICK_RATE } from './constants';
 import { lerp } from './math';
 import { Coordinates } from './types';
 
@@ -7,13 +6,18 @@ export type InterPolationState<T extends Coordinates> = {
   timestamp: number;
 };
 
+export type InterpolateOptions<T> = {
+  cb: (val: T) => void;
+  tickRate: number;
+};
+
 export const interpolateEntity = <T extends Coordinates = Coordinates>(
   newState: InterPolationState<T>,
   oldState: Partial<InterPolationState<T>>,
-  cb: (val: T) => void
+  { cb, tickRate }: InterpolateOptions<T>
 ) => {
   const now = performance.now();
-  const past = 1000 / TICK_RATE;
+  const past = 1000 / tickRate;
 
   const targetTime = now - past;
   const oldT = oldState.timestamp;

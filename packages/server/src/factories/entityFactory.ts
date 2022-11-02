@@ -1,10 +1,5 @@
-import {
-  Coordinates,
-  Dimensions,
-  EntityDto,
-  EntityType,
-  uniqBy
-} from '@game/shared';
+import { EntityDto, EntityType } from '@game/domain';
+import { Coordinates, Dimensions, uniqBy } from '@game/shared-utils';
 import { v4 as uuid } from 'uuid';
 import { MapGridItem } from './gameMapFactory';
 import { GameWorld } from './gameWorldFactory';

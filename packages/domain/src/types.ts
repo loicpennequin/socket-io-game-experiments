@@ -1,3 +1,4 @@
+import { Coordinates } from '@game/shared-utils';
 import { EntityType, OngoingAction, PlayerAction } from './enums';
 import {
   GAME_STATE_UPDATE,
@@ -7,22 +8,6 @@ import {
   PLAYER_ONGOING_ACTION_START
 } from './events';
 
-export type Nullable<T> = T | null | undefined;
-export type PartialBy<T, K extends keyof T = never> = Omit<T, K> &
-  Partial<Pick<T, K>>;
-export type Coordinates = { x: number; y: number };
-export type Dimensions = { w: number; h: number };
-export type SpatialObject = { dimensions: Dimensions; position: Coordinates };
-export type Boundaries<T = number> = { min: T; max: T };
-export type Range = Boundaries<number>;
-export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
-export type Matrix<T> = T[][];
-export type AnyObject = { [key: string]: any };
-export type Values<T> = T[keyof T];
-export type GameMapCell = Coordinates & {
-  lightness: number;
-};
-
 export type EntityDto = Coordinates & {
   id: string;
   type: EntityType;
@@ -31,6 +16,9 @@ export type EntityDto = Coordinates & {
 export type PlayerDto = EntityDto;
 export type ProjectileDto = EntityDto & {
   playerId: string;
+};
+export type GameMapCell = Coordinates & {
+  lightness: number;
 };
 
 export type GameStateDto = {

@@ -1,4 +1,4 @@
-import { Coordinates, AnyObject, Dimensions, pipeBuilder } from '@game/shared';
+import { Coordinates, AnyObject } from '@game/shared-utils';
 
 export type Positionable = {
   position: Coordinates;

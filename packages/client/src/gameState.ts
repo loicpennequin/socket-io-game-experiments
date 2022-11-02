@@ -1,5 +1,10 @@
-import type { GameStateDto, EntityDto, GameMapCell } from '@game/shared';
-import { GAME_STATE_UPDATE, indexBy } from '@game/shared';
+import {
+  type GameStateDto,
+  type EntityDto,
+  type GameMapCell,
+  GAME_STATE_UPDATE
+} from '@game/domain';
+import { indexBy } from '@game/shared-utils';
 import { socket } from './socket';
 
 export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {

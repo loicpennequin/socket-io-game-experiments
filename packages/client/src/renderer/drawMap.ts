@@ -2,12 +2,11 @@ import { pushPop } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { state } from '@/gameState';
 import {
-  type GameMapCell,
   type Coordinates,
   type Dimensions,
-  CELL_SIZE,
   pointRectCollision
-} from '@game/shared';
+} from '@game/shared-utils';
+import { type GameMapCell, CELL_SIZE } from '@game/domain';
 import {
   applyFieldOfView,
   type ApplyFieldOfViewOptions

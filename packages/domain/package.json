@@ -1,0 +1,7 @@
+{
+  "name": "@game/domain",
+  "version": "1.0.0",
+  "dependencies": {
+    "@game/shared-utils": "*"
+  }
+}

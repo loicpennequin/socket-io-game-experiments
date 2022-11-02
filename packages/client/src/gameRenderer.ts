@@ -1,10 +1,9 @@
 import {
   PLAYER_FIELD_OF_VIEW,
-  PLAYER_SIZE,
-  PROJECTILE_SIZE
-} from '@game/shared';
+  PROJECTILE_SIZE,
+  PLAYER_SIZE
+} from '@game/domain';
 import { applyCamera, type Camera } from './renderer/applyCamera';
-import { applyFieldOfView } from './renderer/applyFieldOfView';
 import { createRenderer } from './renderer/createRenderer';
 import { drawMap, drawMapInFieldOfView } from './renderer/drawMap';
 import { drawPlayers } from './renderer/drawPlayers';

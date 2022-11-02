@@ -1,5 +1,5 @@
 import { createCanvas } from '@/utils/canvas';
-import type { Dimensions } from '@game/shared';
+import type { Dimensions } from '@game/shared-utils';
 
 export type RenderContext = {
   canvas: HTMLCanvasElement;

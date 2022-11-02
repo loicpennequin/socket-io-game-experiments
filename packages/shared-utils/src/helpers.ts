@@ -1,12 +1,4 @@
-import { EntityType } from './enums';
-import {
-  Dimensions,
-  Coordinates,
-  Matrix,
-  EntityDto,
-  PlayerDto,
-  ProjectileDto
-} from './types';
+import { Dimensions, Coordinates, Matrix } from './types';
 
 export const indexBy = <T extends Record<string, any>>(
   arr: T[],
@@ -87,7 +79,3 @@ export const pipeBuilder = <A, B>(fn: (a: A) => B) => {
 };
 
 export const noop = () => {};
-export const isPlayerDto = (entity: EntityDto): entity is PlayerDto =>
-  entity.type === EntityType.PLAYER;
-export const isProjectileDto = (entity: EntityDto): entity is ProjectileDto =>
-  entity.type === EntityType.PROJECTILE;

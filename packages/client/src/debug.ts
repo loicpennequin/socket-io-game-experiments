@@ -1,4 +1,5 @@
-import { PING, sum } from '@game/shared';
+import { PING } from '@game/domain';
+import { sum } from '@game/shared-utils';
 import { socket } from './socket';
 
 const FPS_BUFFER_MAX_LENGTH = 50;

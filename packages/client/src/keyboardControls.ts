@@ -1,16 +1,15 @@
-import {
-  PLAYER_ONGOING_ACTION_END,
-  PLAYER_ONGOING_ACTION_START,
-  PLAYER_ACTION,
-  PlayerAction,
-  throttle,
-  OngoingAction,
-  type Nullable
-} from '@game/shared';
+import { throttle, type Nullable } from '@game/shared-utils';
 import { KEYBOARD_CONTROLS, PROJECTILE_THROTTLE_RATE } from './utils/constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
 import { gameCamera } from './gameRenderer';
+import {
+  OngoingAction,
+  PLAYER_ACTION,
+  PlayerAction,
+  PLAYER_ONGOING_ACTION_START,
+  PLAYER_ONGOING_ACTION_END
+} from '@game/domain';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   let hasFired = false;

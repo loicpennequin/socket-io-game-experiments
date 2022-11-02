@@ -1,5 +1,3 @@
-import { PlayerAction } from './enums';
-
 export const TICK_RATE = 20;
 export const PING_INTERVAL = 1000;
 

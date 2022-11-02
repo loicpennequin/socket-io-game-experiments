@@ -1,16 +1,18 @@
 import {
+  GRID_SIZE,
   CELL_SIZE,
+  PLAYER_FIELD_OF_VIEW,
+  GameMapCell
+} from '@game/domain';
+import {
   Coordinates,
   createMatrix,
   dist,
-  GameMapCell,
-  GRID_SIZE,
   createSpatialHashGrid,
   mapRange,
   perlinMatrix,
-  PLAYER_FIELD_OF_VIEW,
   SpatialHashGridItem
-} from '@game/shared';
+} from '@game/shared-utils';
 
 export type MapGridMeta = {
   id: string;

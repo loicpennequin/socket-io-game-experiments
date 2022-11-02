@@ -1,13 +1,13 @@
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
 import { pushPop } from '@/utils/canvas';
+import { MAP_SIZE, TICK_RATE } from '@game/domain';
 import {
   clamp,
   interpolateEntity,
-  MAP_SIZE,
   type Coordinates,
   type Dimensions
-} from '@game/shared';
+} from '@game/shared-utils';
 
 type ApplyCameraOptions = {
   canvas: HTMLCanvasElement;
@@ -30,23 +30,25 @@ export const applyCamera = (
         value: prevState.entitiesById[player.id],
         timestamp: prevState.timestamp
       },
+      {
+        tickRate: TICK_RATE,
+        cb: ({ x, y }) => {
+          const camera = {
+            x: clamp(x - canvas.width / 2, {
+              min: 0,
+              max: MAP_SIZE - canvas.width
+            }),
+            y: clamp(y - canvas.height / 2, {
+              min: 0,
+              max: MAP_SIZE - canvas.height
+            }),
+            w: canvas.width,
+            h: canvas.height
+          };
 
-      ({ x, y }) => {
-        const camera = {
-          x: clamp(x - canvas.width / 2, {
-            min: 0,
-            max: MAP_SIZE - canvas.width
-          }),
-          y: clamp(y - canvas.height / 2, {
-            min: 0,
-            max: MAP_SIZE - canvas.height
-          }),
-          w: canvas.width,
-          h: canvas.height
-        };
-
-        ctx.translate(camera.x * -1, camera.y * -1);
-        cb(camera);
+          ctx.translate(camera.x * -1, camera.y * -1);
+          cb(camera);
+        }
       }
     );
   });

@@ -1,4 +1,5 @@
-import { MAP_SIZE, PlayerAction, type Values } from '@game/shared';
+import type { Values } from '@game/shared-utils';
+import { MAP_SIZE, PlayerAction } from '@game/domain';
 
 export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;

@@ -1,9 +1,9 @@
 import {
   ActionPayload,
-  createTaskQueue,
   OngoingActionStartPayload,
   TICK_RATE
-} from '@game/shared';
+} from '@game/domain';
+import { createTaskQueue } from '@game/shared-utils';
 import { Entity } from './entityFactory';
 import { GameMap } from './gameMapFactory';
 import { Player } from './playerFactory';

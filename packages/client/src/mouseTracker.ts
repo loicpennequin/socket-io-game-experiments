@@ -1,4 +1,4 @@
-import type { Coordinates } from '@game/shared';
+import type { Coordinates } from '@game/shared-utils';
 
 export const mousePosition: Coordinates = {
   x: 0,

@@ -1,20 +1,20 @@
 import http from 'http';
 import { Server, Socket as IoSocket } from 'socket.io';
-import {
-  GAME_STATE_UPDATE,
-  PLAYER_ONGOING_ACTION_START,
-  PLAYER_ONGOING_ACTION_END,
-  Coordinates,
-  ClientToServerEvents,
-  ServerToClientEvents,
-  PLAYER_ACTION,
-  PING,
-  PlayerAction
-} from '@game/shared';
+import { Coordinates } from '@game/shared-utils';
 import { isPlayer } from './utils';
 import { createPlayer } from './factories/playerFactory';
 import { createGameWorld } from './factories/gameWorldFactory';
 import { createGameMap } from './factories/gameMapFactory';
+import {
+  ClientToServerEvents,
+  ServerToClientEvents,
+  GAME_STATE_UPDATE,
+  PING,
+  PLAYER_ONGOING_ACTION_START,
+  PlayerAction,
+  PLAYER_ONGOING_ACTION_END,
+  PLAYER_ACTION
+} from '@game/domain';
 
 export type EntityDto = Coordinates & {
   id: string;
