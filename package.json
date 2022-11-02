@@ -3,11 +3,15 @@
   "private": true,
   "scripts": {
     "client": "yarn workspace @game/client",
-    "server": "yarn workspace @game/server"
+    "server": "yarn workspace @game/server",
+    "dev": "concurrently --kill-others \"yarn server dev\" \"yarn client dev\""
   },
   "workspaces": {
     "packages": [
       "packages/*"
     ]
+  },
+  "dependencies": {
+    "concurrently": "^7.5.0"
   }
 }
