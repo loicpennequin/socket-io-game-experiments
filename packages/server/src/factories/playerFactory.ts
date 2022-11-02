@@ -14,13 +14,16 @@ import {
 } from '@game/shared';
 import { gameMap } from '../gameMap';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
+import { createProjectile, Projectile } from './projectileFactory';
 
 export type Player = Entity & {
   ongoingActions: Set<OngoingAction>;
   newDiscoveredCells: Map<string, GameMapCell>;
   allDiscoveredCells: Map<string, GameMapCell>;
+  entities: Set<Entity>;
 
   move: (coords: Coordinates) => void;
+  fireProjectile: (opts: { id: string; target: Coordinates }) => Projectile;
 };
 
 export type MakePlayerOptions = Omit<
@@ -42,8 +45,10 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
     dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE }
   });
 
-  return Object.assign(entity, {
+  const player = Object.assign(entity, {
     ongoingActions: new Set<OngoingAction>(),
+    entities: new Set<Entity>(),
+
     allDiscoveredCells: gameMap.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
@@ -73,8 +78,23 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
       }
 
       gameMap.grid.update(entity.gridItem);
+    },
+
+    fireProjectile({ id, target }: { id: string; target: Coordinates }) {
+      const projectile = createProjectile({
+        id,
+        target,
+        player: this as unknown as Player
+      });
+
+      this.entities.add(projectile);
+      projectile.on('destroy', () => this.entities.delete(projectile));
+
+      return projectile;
     }
-  }).on('update', e => {
+  });
+
+  player.on('update', e => {
     const player = e as Player;
 
     player.ongoingActions.forEach(action => {
@@ -89,5 +109,7 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
           return player.move({ x: 1, y: 0 });
       }
     });
-  }) as Player;
+  });
+
+  return player;
 };

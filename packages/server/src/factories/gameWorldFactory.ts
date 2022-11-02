@@ -1,14 +1,26 @@
-import { createTaskQueue, TICK_RATE } from '@game/shared';
+import {
+  ActionPayload,
+  createTaskQueue,
+  OngoingActionStartPayload,
+  PlayerAction,
+  TICK_RATE
+} from '@game/shared';
 import { Entity } from './entityFactory';
+import { Player } from './playerFactory';
 
 export type EntityMap = Map<string, Entity>;
 export type StateUpdateCallback = (
   state: Readonly<{ entities: EntityMap }>
 ) => void;
 
+export type OngoingActionKey = `${string}.${string}`;
+
+export type GameAction = ActionPayload & { player: Player };
+export type GameOngoingAction = OngoingActionStartPayload & { player: Player };
 export const createGameWorld = () => {
   const entities = new Map<string, Entity>();
   const actionsQueue = createTaskQueue();
+  const ongoingActions = new Map<string, GameOngoingAction>();
   const updateCallbacks = new Set<StateUpdateCallback>();
   let isRunning = false;
 
@@ -40,10 +52,17 @@ export const createGameWorld = () => {
       return () => updateCallbacks.delete(cb);
     },
 
-    getEntityById: (id: string) => entities.get(id),
-
-    addEntity(entity: Entity) {
+    addEntity: (entity: Entity) => {
       entities.set(entity.id, entity);
+    },
+
+    addOngoingAction: (action: OngoingActionStartPayload, player: Player) => {
+      ongoingActions.set(`${player.id}.${action.action}`, {
+        ...action,
+        player
+      });
     }
   };
 };
+
+export type GameWorld = ReturnType<typeof createGameWorld>;

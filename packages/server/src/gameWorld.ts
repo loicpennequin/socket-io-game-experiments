@@ -49,13 +49,14 @@ const fireProjectile = ({
   meta: { target },
   player
 }: FireProjectileActionPayload & { player: Player }) => {
-  const projectile = createProjectile({
-    id: uuid(),
-    target,
-    player
-  }).on('destroy', () => {
-    delete gameState.entities[projectile.id];
-  });
+  const projectile = player
+    .fireProjectile({
+      id: uuid(),
+      target
+    })
+    .on('destroy', () => {
+      delete gameState.entities[projectile.id];
+    });
 
   gameState.entities[projectile.id] = projectile as Projectile; // @fixme should get fixed when solidify object composition
 };
