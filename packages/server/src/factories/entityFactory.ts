@@ -1,5 +1,12 @@
-import { Coordinates, Dimensions, EntityDto, EntityType } from '@game/shared';
+import {
+  Coordinates,
+  Dimensions,
+  EntityDto,
+  EntityType,
+  uniqBy
+} from '@game/shared';
 import { gameMap } from '../gameMap';
+import { gameWorld } from '../gameWorld';
 import { MapGridItem } from './gameMapFactory';
 
 export type EntityLifecycleCallback = (entity: Entity) => void;
@@ -11,6 +18,9 @@ export type Entity = {
   gridItem: MapGridItem;
   position: Readonly<Coordinates>;
   dimensions: Readonly<Dimensions>;
+  visibleEntities: Readonly<Entity[]>;
+  fieldOfView: number;
+  children: Set<Entity>;
   update: () => void;
   destroy: () => void;
   on: (eventName: EntityLifecycleEvent, cb: EntityLifecycleCallback) => Entity;
@@ -23,13 +33,15 @@ export type MakeEntityOptions = {
   type: EntityType;
   position: Coordinates;
   dimensions: Dimensions;
+  fieldOfView: number;
 };
 
 export const createEntity = ({
   id,
   type,
   position,
-  dimensions
+  dimensions,
+  fieldOfView
 }: MakeEntityOptions): Entity => {
   const callbacks: Record<
     EntityLifecycleEvent,
@@ -51,12 +63,24 @@ export const createEntity = ({
     id,
     type,
     gridItem,
+    fieldOfView,
+    children: new Set<Entity>(),
 
     get position() {
       return gridItem.position;
     },
     get dimensions() {
       return gridItem.dimensions;
+    },
+
+    get visibleEntities() {
+      const entities = [this, ...this.children].map(entity =>
+        gameMap.grid
+          .findNearbyRadius(entity.position, entity.fieldOfView)
+          .map(gridItem => gameWorld.entities.get(gridItem.meta.id) as Entity)
+      );
+
+      return uniqBy(entities.flat(), entity => entity.id);
     },
 
     update() {

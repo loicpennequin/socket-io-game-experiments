@@ -19,7 +19,7 @@ export type Projectile = Entity & {
 
 export type MakeProjectileOptions = Omit<
   MakeEntityOptions,
-  'position' | 'dimensions' | 'type'
+  'position' | 'dimensions' | 'type' | 'fieldOfView'
 > & { player: Player; target: Coordinates };
 
 export const createProjectile = ({
@@ -31,10 +31,10 @@ export const createProjectile = ({
     id,
     type: EntityType.PROJECTILE,
     position: { ...player.position },
-    dimensions: { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE }
+    dimensions: { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE },
+    fieldOfView: PROJECTILE_FIELD_OF_VIEW
   });
 
-  console.log(entity.position);
   return Object.assign(entity, {
     player,
     angle: getAngleFromVector({

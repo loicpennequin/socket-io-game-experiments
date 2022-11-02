@@ -8,10 +8,12 @@ import {
   ClientToServerEvents,
   ServerToClientEvents,
   PLAYER_ACTION,
-  PING
+  PING,
+  PlayerAction
 } from '@game/shared';
 import { gameWorld } from './gameWorld';
 import { isPlayer } from './utils';
+import { createPlayer } from './factories/playerFactory';
 
 export type EntityDto = Coordinates & {
   id: string;
@@ -30,19 +32,15 @@ export const socketIoHandler = (server: http.Server) => {
   const getSocketByPlayerId = (id: string) => io.sockets.sockets.get(id);
 
   gameWorld.onStateUpdate(gameState => {
-    Object.values(gameState.entities)
+    [...gameState.entities.values()]
       .filter(isPlayer)
       .forEach((player, _, arr) => {
         const socket = getSocketByPlayerId(player.id) as Socket;
 
-        const entities = gameWorld
-          .getPlayerFieldOFView(player)
-          .map(entity => entity.toDto());
-
         socket.emit(GAME_STATE_UPDATE, {
           playerCount: arr.length,
-          entities,
-          discoveredCells: gameWorld.getPlayerDiscoveredCells(player)
+          entities: player.visibleEntities.map(entity => entity.toDto()),
+          discoveredCells: player.consumeDiscoveredCells()
         });
       });
   });
@@ -50,10 +48,14 @@ export const socketIoHandler = (server: http.Server) => {
   gameWorld.start();
 
   io.on('connection', socket => {
-    const player = gameWorld.addPlayer(socket.id);
+    const player = gameWorld.addEntity(
+      createPlayer({
+        id: socket.id
+      })
+    );
 
     socket.on('disconnect', () => {
-      gameWorld.removePlayer(player);
+      player.destroy();
     });
 
     socket.on(PING, (timestamp, callback) => {
@@ -69,11 +71,12 @@ export const socketIoHandler = (server: http.Server) => {
     });
 
     socket.on(PLAYER_ACTION, ({ action, meta }) => {
-      gameWorld.addAction({
-        action,
-        meta,
-        player
-      });
+      switch (action) {
+        case PlayerAction.FIRE_PROJECTILE:
+          gameWorld.addAction(() =>
+            gameWorld.addEntity(player.fireProjectile(meta.target))
+          );
+      }
     });
   });
 };

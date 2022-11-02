@@ -10,8 +10,10 @@ import {
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PLAYER_SPEED,
-  randomInt
+  randomInt,
+  uniqBy
 } from '@game/shared';
+import { v4 as uuid } from 'uuid';
 import { gameMap } from '../gameMap';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { createProjectile, Projectile } from './projectileFactory';
@@ -20,15 +22,15 @@ export type Player = Entity & {
   ongoingActions: Set<OngoingAction>;
   newDiscoveredCells: Map<string, GameMapCell>;
   allDiscoveredCells: Map<string, GameMapCell>;
-  entities: Set<Entity>;
 
+  consumeDiscoveredCells: () => GameMapCell[];
   move: (coords: Coordinates) => void;
-  fireProjectile: (opts: { id: string; target: Coordinates }) => Projectile;
+  fireProjectile: (target: Coordinates) => Projectile;
 };
 
 export type MakePlayerOptions = Omit<
   MakeEntityOptions,
-  'position' | 'dimensions' | 'type'
+  'position' | 'dimensions' | 'type' | 'fieldOfView'
 >;
 
 const clampToGrid = (n: number) =>
@@ -42,12 +44,12 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
       x: randomInt(GRID_SIZE * CELL_SIZE),
       y: randomInt(GRID_SIZE * CELL_SIZE)
     },
-    dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE }
+    dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE },
+    fieldOfView: PLAYER_FIELD_OF_VIEW
   });
 
   const player = Object.assign(entity, {
     ongoingActions: new Set<OngoingAction>(),
-    entities: new Set<Entity>(),
 
     allDiscoveredCells: gameMap.getVisibleCells(
       entity.position,
@@ -57,6 +59,13 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
+
+    consumeDiscoveredCells() {
+      const cells = Array.from(this.newDiscoveredCells.values());
+      this.newDiscoveredCells.clear();
+
+      return uniqBy(cells.flat(), cell => `${cell.x}.${cell.y}`);
+    },
 
     move({ x, y }: Coordinates) {
       if (x === 0 && y === 0) return;
@@ -80,15 +89,15 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
       gameMap.grid.update(entity.gridItem);
     },
 
-    fireProjectile({ id, target }: { id: string; target: Coordinates }) {
+    fireProjectile(target: Coordinates) {
       const projectile = createProjectile({
-        id,
+        id: uuid(),
         target,
         player: this as unknown as Player
       });
 
-      this.entities.add(projectile);
-      projectile.on('destroy', () => this.entities.delete(projectile));
+      entity.children.add(projectile);
+      projectile.on('destroy', () => entity.children.delete(projectile));
 
       return projectile;
     }

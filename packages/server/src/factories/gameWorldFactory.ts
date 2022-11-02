@@ -52,8 +52,17 @@ export const createGameWorld = () => {
       return () => updateCallbacks.delete(cb);
     },
 
-    addEntity: (entity: Entity) => {
+    addEntity: <T extends Entity>(entity: T) => {
+      entity.on('destroy', () => {
+        entities.delete(entity.id);
+      });
       entities.set(entity.id, entity);
+
+      return entity;
+    },
+
+    addAction: (action: () => void) => {
+      actionsQueue.schedule(action);
     },
 
     addOngoingAction: (action: OngoingActionStartPayload, player: Player) => {
