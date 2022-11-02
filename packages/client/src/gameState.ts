@@ -8,7 +8,7 @@ export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {
   entitiesById: Record<string, EntityDto>;
 };
 
-const makeEmptyState = (): SavedState => ({
+const createEmptyState = (): SavedState => ({
   discoveredCells: [],
   entities: [],
   entitiesById: {},
@@ -16,8 +16,8 @@ const makeEmptyState = (): SavedState => ({
   timestamp: performance.now()
 });
 
-export const state = makeEmptyState();
-export const prevState = makeEmptyState();
+export const state = createEmptyState();
+export const prevState = createEmptyState();
 
 socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
   Object.assign(prevState, state);

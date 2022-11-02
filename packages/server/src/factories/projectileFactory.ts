@@ -8,7 +8,7 @@ import {
   PROJECTILE_SPEED
 } from '@game/shared';
 import { mapController } from '../controllers/mapController';
-import { Entity, makeEntity, MakeEntityOptions } from './entityFactory';
+import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { Player } from './playerFactory';
 
 export type Projectile = Entity & {
@@ -22,18 +22,19 @@ export type MakeProjectileOptions = Omit<
   'position' | 'dimensions' | 'type'
 > & { player: Player; target: Coordinates };
 
-export const makeProjectile = ({
+export const createProjectile = ({
   player,
   target,
   id
 }: MakeProjectileOptions): Projectile => {
-  const entity = makeEntity({
+  const entity = createEntity({
     id,
-    type: EntityType.PLAYER,
+    type: EntityType.PROJECTILE,
     position: { ...player.position },
     dimensions: { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE }
   });
 
+  console.log(entity.position);
   return Object.assign(entity, {
     player,
     angle: getAngleFromVector({
@@ -43,8 +44,8 @@ export const makeProjectile = ({
     lifeSpan: PROJECTILE_LIFESPAN,
     update() {
       Object.assign(entity.gridItem.position, {
-        x: Math.cos(this.angle) * PROJECTILE_SPEED,
-        y: Math.sin(this.angle) * PROJECTILE_SPEED
+        x: entity.position.x + Math.cos(this.angle) * PROJECTILE_SPEED,
+        y: entity.position.y + Math.sin(this.angle) * PROJECTILE_SPEED
       });
 
       const visibleCells = mapController.getVisibleCells(

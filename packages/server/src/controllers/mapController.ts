@@ -5,20 +5,20 @@ import {
   dist,
   GameMapCell,
   GRID_SIZE,
-  makeSpatialHashGrid,
+  createSpatialHashGrid,
   mapRange,
   perlinMatrix,
   PLAYER_FIELD_OF_VIEW,
   SpatialHashGridItem
 } from '@game/shared';
 
-export type GridMeta = {
+export type MapGridMeta = {
   id: string;
 };
 
-export type MapGridItem = SpatialHashGridItem<GridMeta>;
+export type MapGridItem = SpatialHashGridItem<MapGridMeta>;
 
-const grid = makeSpatialHashGrid<GridMeta>({
+const grid = createSpatialHashGrid<MapGridMeta>({
   dimensions: { w: GRID_SIZE, h: GRID_SIZE },
   bounds: {
     start: { x: 0, y: 0 },

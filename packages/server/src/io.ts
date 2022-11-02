@@ -1,5 +1,5 @@
 import http from 'http';
-import { Server } from 'socket.io';
+import { Server, Socket as IoSocket } from 'socket.io';
 import {
   GAME_STATE_UPDATE,
   PLAYER_ONGOING_ACTION_START,
@@ -10,11 +10,14 @@ import {
   PLAYER_ACTION,
   PING
 } from '@game/shared';
-import { gameController, isPlayer } from './controllers/gameController';
+import { gameController } from './controllers/gameController';
+import { isPlayer } from './utils';
 
 export type EntityDto = Coordinates & {
   id: string;
 };
+
+type Socket = IoSocket<ClientToServerEvents, ServerToClientEvents>;
 
 export const socketIoHandler = (server: http.Server) => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -30,17 +33,15 @@ export const socketIoHandler = (server: http.Server) => {
     Object.values(gameState.entities)
       .filter(isPlayer)
       .forEach((player, _, arr) => {
-        const socket = getSocketByPlayerId(player.id);
+        const socket = getSocketByPlayerId(player.id) as Socket;
 
-        if (!socket) {
-          // websocket connexion ended without the ws server noticing (can this happen ?)
-          gameController.removePlayer(player);
-          return;
-        }
+        const entities = gameController
+          .getPlayerFieldOFView(player)
+          .map(entity => entity.toDto());
 
         socket.emit(GAME_STATE_UPDATE, {
           playerCount: arr.length,
-          entities: gameController.getPlayerFieldOFView(player),
+          entities,
           discoveredCells: gameController.getPlayerDiscoveredCells(player)
         });
       });

@@ -5,5 +5,5 @@ export * from './enums';
 export * from './events';
 export * from './helpers';
 export * from './math';
-export * from './spatialHashGrid';
 export * from './types';
+export * from './factories';

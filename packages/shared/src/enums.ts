@@ -17,6 +17,6 @@ export type OngoingAction = keyof typeof OngoingAction;
 
 export const EntityType = {
   PLAYER: 'PLAYER',
-  PROJECTILE: 'PLAYER'
+  PROJECTILE: 'PROJECTILE'
 } as const;
 export type EntityType = keyof typeof EntityType;

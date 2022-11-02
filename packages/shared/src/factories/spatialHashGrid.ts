@@ -1,13 +1,13 @@
-import { sat } from './math';
-import { pointCircleCollision, pointRectCollision } from './collision';
-import { createMatrix } from './helpers';
+import { sat } from '../math';
+import { pointCircleCollision, pointRectCollision } from '../collision';
+import { createMatrix } from '../helpers';
 import {
   SpatialObject,
   Coordinates,
   Boundaries,
   Nullable,
   Dimensions
-} from './types';
+} from '../types';
 
 export type SpatialHashGridItem<TMeta> = SpatialObject & {
   cellsIndices: Coordinates[];
@@ -25,9 +25,9 @@ export type SpatialHashGridOptions = {
   bounds: { start: Coordinates; end: Coordinates };
 };
 
-export type SpatialHashGrid<T> = ReturnType<typeof makeSpatialHashGrid<T>>;
+export type SpatialHashGrid<T> = ReturnType<typeof createSpatialHashGrid<T>>;
 
-export const makeSpatialHashGrid = <TMeta = unknown>({
+export const createSpatialHashGrid = <TMeta = unknown>({
   dimensions,
   bounds
 }: SpatialHashGridOptions) => {

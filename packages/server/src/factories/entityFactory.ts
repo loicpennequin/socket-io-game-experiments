@@ -1,4 +1,10 @@
-import { Coordinates, Dimensions, EntityDto, EntityType } from '@game/shared';
+import {
+  Coordinates,
+  Dimensions,
+  EntityDto,
+  EntityType,
+  noop
+} from '@game/shared';
 import { mapController, MapGridItem } from '../controllers/mapController';
 
 export type Entity = {
@@ -8,6 +14,7 @@ export type Entity = {
   position: Readonly<Coordinates>;
   dimensions: Readonly<Dimensions>;
   update: () => void;
+  destroy: () => void;
   toDto: () => EntityDto;
 };
 
@@ -16,13 +23,17 @@ export type MakeEntityOptions = {
   type: EntityType;
   position: Coordinates;
   dimensions: Dimensions;
+  onUpdated?: (entity: Entity) => void;
+  onDestroyed?: (entity: Entity) => void;
 };
 
-export const makeEntity = ({
+export const createEntity = ({
   id,
   type,
   position,
-  dimensions
+  dimensions,
+  onUpdated = noop,
+  onDestroyed = noop
 }: MakeEntityOptions): Entity => {
   const gridItem = mapController.grid.add(
     {
@@ -45,15 +56,21 @@ export const makeEntity = ({
     },
 
     update() {
-      console.log(`Update function not implemented for eneity of type ${type}`);
+      return onUpdated(this);
+    },
+
+    destroy() {
+      return onDestroyed(this);
     },
 
     toDto() {
-      return {
+      const dto = {
         id,
         type,
-        ...gridItem.position
+        ...this.position
       };
+
+      return dto;
     }
   };
 };

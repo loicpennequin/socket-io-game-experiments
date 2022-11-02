@@ -13,7 +13,7 @@ import {
   randomInt
 } from '@game/shared';
 import { mapController } from '../controllers/mapController';
-import { Entity, makeEntity, MakeEntityOptions } from './entityFactory';
+import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 
 export type Player = Entity & {
   ongoingActions: Set<OngoingAction>;
@@ -29,8 +29,8 @@ export type MakePlayerOptions = Omit<
 const clampToGrid = (n: number) =>
   clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
-export const makePlayer = ({ id }: MakePlayerOptions): Player => {
-  const entity = makeEntity({
+export const createPlayer = ({ id }: MakePlayerOptions): Player => {
+  const entity = createEntity({
     id,
     type: EntityType.PLAYER,
     position: {

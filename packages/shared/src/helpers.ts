@@ -1,6 +1,5 @@
 import { EntityType } from './enums';
 import {
-  Entries,
   Dimensions,
   Coordinates,
   Matrix,
@@ -8,10 +7,6 @@ import {
   PlayerDto,
   ProjectileDto
 } from './types';
-
-export function objectEntries<T extends object>(t: T): Entries<T>[] {
-  return Object.entries(t) as any;
-}
 
 export const indexBy = <T extends Record<string, any>>(
   arr: T[],
@@ -84,6 +79,7 @@ export const pipe =
   (value: T) =>
     fns.reduce((acc, fn) => fn(acc), value);
 
+export const noop = () => {};
 export const isPlayerDto = (entity: EntityDto): entity is PlayerDto =>
   entity.type === EntityType.PLAYER;
 export const isProjectileDto = (entity: EntityDto): entity is ProjectileDto =>
