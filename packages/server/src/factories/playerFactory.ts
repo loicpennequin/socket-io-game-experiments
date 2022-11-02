@@ -14,10 +14,6 @@ import {
   uniqBy
 } from '@game/shared';
 import { v4 as uuid } from 'uuid';
-import { withEventEmitter } from '../behaviors/eventEmitter';
-import { LifecycleEvents, withLifecycle } from '../behaviors/lifecycle';
-import { withMovement, withPosition } from '../behaviors/positionable';
-import { gameWorld } from '../gameWorld';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { createProjectile, Projectile } from './projectileFactory';
 
@@ -39,10 +35,11 @@ export type MakePlayerOptions = Omit<
 const clampToGrid = (n: number) =>
   clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
-export const createPlayer = ({ id }: MakePlayerOptions): Player => {
+export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
   const entity = createEntity({
     id,
     type: EntityType.PLAYER,
+    world,
     position: {
       x: randomInt(GRID_SIZE * CELL_SIZE),
       y: randomInt(GRID_SIZE * CELL_SIZE)
@@ -54,11 +51,11 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
   const player = Object.assign(entity, {
     ongoingActions: new Set<OngoingAction>(),
 
-    allDiscoveredCells: gameWorld.map.getVisibleCells(
+    allDiscoveredCells: world.map.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
-    newDiscoveredCells: gameWorld.map.getVisibleCells(
+    newDiscoveredCells: world.map.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
@@ -78,7 +75,7 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
         y: clampToGrid(entity.position.y + y * PLAYER_SPEED)
       });
 
-      const visibleCells = gameWorld.map.getVisibleCells(
+      const visibleCells = world.map.getVisibleCells(
         entity.position,
         PLAYER_FIELD_OF_VIEW
       );
@@ -89,13 +86,14 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
         }
       }
 
-      gameWorld.map.grid.update(entity.gridItem);
+      world.map.grid.update(entity.gridItem);
     },
 
     fireProjectile(target: Coordinates) {
       const projectile = createProjectile({
         id: uuid(),
         target,
+        world,
         player: this as unknown as Player
       });
 

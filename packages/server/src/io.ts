@@ -11,9 +11,10 @@ import {
   PING,
   PlayerAction
 } from '@game/shared';
-import { gameWorld } from './gameWorld';
 import { isPlayer } from './utils';
 import { createPlayer } from './factories/playerFactory';
+import { createGameWorld } from './factories/gameWorldFactory';
+import { createGameMap } from './factories/gameMapFactory';
 
 export type EntityDto = Coordinates & {
   id: string;
@@ -30,6 +31,10 @@ export const socketIoHandler = (server: http.Server) => {
   });
 
   const getSocketByPlayerId = (id: string) => io.sockets.sockets.get(id);
+
+  const gameWorld = createGameWorld({
+    map: createGameMap()
+  });
 
   gameWorld.onStateUpdate(gameState => {
     [...gameState.entities.values()]
@@ -50,7 +55,8 @@ export const socketIoHandler = (server: http.Server) => {
   io.on('connection', socket => {
     const player = gameWorld.addEntity(
       createPlayer({
-        id: socket.id
+        id: socket.id,
+        world: gameWorld
       })
     );
 

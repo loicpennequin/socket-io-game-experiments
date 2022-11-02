@@ -7,7 +7,6 @@ import {
   PROJECTILE_SIZE,
   PROJECTILE_SPEED
 } from '@game/shared';
-import { gameWorld } from '../gameWorld';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { Player } from './playerFactory';
 
@@ -25,11 +24,13 @@ export type MakeProjectileOptions = Omit<
 export const createProjectile = ({
   player,
   target,
-  id
+  id,
+  world
 }: MakeProjectileOptions): Projectile => {
   const entity = createEntity({
     id,
     type: EntityType.PROJECTILE,
+    world,
     position: { ...player.position },
     dimensions: { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE },
     fieldOfView: PROJECTILE_FIELD_OF_VIEW
@@ -49,7 +50,7 @@ export const createProjectile = ({
       y: projectile.position.y + Math.sin(projectile.angle) * PROJECTILE_SPEED
     });
 
-    const visibleCells = gameWorld.map.getVisibleCells(
+    const visibleCells = world.map.getVisibleCells(
       entity.position,
       PROJECTILE_FIELD_OF_VIEW
     );
@@ -61,7 +62,7 @@ export const createProjectile = ({
       }
     }
 
-    gameWorld.map.grid.update(entity.gridItem);
+    world.map.grid.update(entity.gridItem);
 
     projectile.lifeSpan--;
 

@@ -5,8 +5,8 @@ import {
   EntityType,
   uniqBy
 } from '@game/shared';
-import { gameWorld } from '../gameWorld';
 import { MapGridItem } from './gameMapFactory';
+import { GameWorld } from './gameWorldFactory';
 
 export type EntityLifecycleCallback = (entity: Entity) => void;
 export type EntityLifecycleEvent = 'update' | 'destroy';
@@ -20,6 +20,7 @@ export type Entity = {
   visibleEntities: Readonly<Entity[]>;
   fieldOfView: number;
   children: Set<Entity>;
+  world: GameWorld;
   update: () => void;
   destroy: () => void;
   on: (eventName: EntityLifecycleEvent, cb: EntityLifecycleCallback) => Entity;
@@ -33,6 +34,7 @@ export type MakeEntityOptions = {
   position: Coordinates;
   dimensions: Dimensions;
   fieldOfView: number;
+  world: GameWorld;
 };
 
 export const createEntity = ({
@@ -40,6 +42,7 @@ export const createEntity = ({
   type,
   position,
   dimensions,
+  world,
   fieldOfView
 }: MakeEntityOptions): Entity => {
   const callbacks: Record<
@@ -50,7 +53,7 @@ export const createEntity = ({
     destroy: new Set()
   };
 
-  const gridItem = gameWorld.map.grid.add(
+  const gridItem = world.map.grid.add(
     {
       position,
       dimensions
@@ -61,6 +64,7 @@ export const createEntity = ({
   return {
     id,
     type,
+    world,
     gridItem,
     fieldOfView,
     children: new Set<Entity>(),
@@ -74,9 +78,9 @@ export const createEntity = ({
 
     get visibleEntities() {
       const entities = [this, ...this.children].map(entity =>
-        gameWorld.map.grid
+        world.map.grid
           .findNearbyRadius(entity.position, entity.fieldOfView)
-          .map(gridItem => gameWorld.entities.get(gridItem.meta.id) as Entity)
+          .map(gridItem => world.entities.get(gridItem.meta.id) as Entity)
       );
 
       return uniqBy(entities.flat(), entity => entity.id);
@@ -87,7 +91,7 @@ export const createEntity = ({
     },
 
     destroy() {
-      gameWorld.map.grid.remove(this.gridItem);
+      world.map.grid.remove(this.gridItem);
       this.dispatch('destroy');
     },
 
