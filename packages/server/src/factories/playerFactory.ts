@@ -5,20 +5,16 @@ import {
   EntityType,
   GameMapCell,
   GRID_SIZE,
-  OngoingAction,
-  PlayerAction,
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PLAYER_SPEED,
   randomInt,
   uniqBy
 } from '@game/shared';
-import { v4 as uuid } from 'uuid';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { createProjectile, Projectile } from './projectileFactory';
 
 export type Player = Entity & {
-  ongoingActions: Set<OngoingAction>;
   newDiscoveredCells: Map<string, GameMapCell>;
   allDiscoveredCells: Map<string, GameMapCell>;
 
@@ -49,8 +45,6 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
   });
 
   const player = Object.assign(entity, {
-    ongoingActions: new Set<OngoingAction>(),
-
     allDiscoveredCells: world.map.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
@@ -91,7 +85,6 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
 
     fireProjectile(target: Coordinates) {
       const projectile = createProjectile({
-        id: uuid(),
         target,
         world,
         player: this as unknown as Player
@@ -102,23 +95,6 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
 
       return projectile;
     }
-  });
-
-  player.on('update', e => {
-    const player = e as Player;
-
-    player.ongoingActions.forEach(action => {
-      switch (action) {
-        case PlayerAction.MOVE_UP:
-          return player.move({ x: 0, y: -1 });
-        case PlayerAction.MOVE_DOWN:
-          return player.move({ x: 0, y: 1 });
-        case PlayerAction.MOVE_LEFT:
-          return player.move({ x: -1, y: 0 });
-        case PlayerAction.MOVE_RIGHT:
-          return player.move({ x: 1, y: 0 });
-      }
-    });
   });
 
   return player;

@@ -25,12 +25,17 @@ export type CreateGameWorldOptions = {
 export const createGameWorld = ({ map }: CreateGameWorldOptions) => {
   const entities = new Map<string, Entity>();
   const actionsQueue = createTaskQueue();
-  const ongoingActions = new Map<string, GameOngoingAction>();
+  const ongoingActionsQueue = createTaskQueue();
+  const ongoingActions = new Map<string, () => void>();
   const updateCallbacks = new Set<StateUpdateCallback>();
   let isRunning = false;
 
   const update = () => {
+    ongoingActions.forEach(action => {
+      ongoingActionsQueue.schedule(action);
+    });
     actionsQueue.process();
+    ongoingActionsQueue.process();
     entities.forEach(entity => {
       entity.update();
     });
@@ -72,11 +77,12 @@ export const createGameWorld = ({ map }: CreateGameWorldOptions) => {
       actionsQueue.schedule(action);
     },
 
-    addOngoingAction: (action: OngoingActionStartPayload, player: Player) => {
-      ongoingActions.set(`${player.id}.${action.action}`, {
-        ...action,
-        player
-      });
+    addOngoingAction: (actionKey: string, action: () => void) => {
+      ongoingActions.set(actionKey, action);
+    },
+
+    stopOngoingAction: (actionKey: string) => {
+      ongoingActions.delete(actionKey);
     }
   };
 };

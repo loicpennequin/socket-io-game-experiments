@@ -5,6 +5,7 @@ import {
   EntityType,
   uniqBy
 } from '@game/shared';
+import { v4 as uuid } from 'uuid';
 import { MapGridItem } from './gameMapFactory';
 import { GameWorld } from './gameWorldFactory';
 
@@ -29,7 +30,7 @@ export type Entity = {
 };
 
 export type MakeEntityOptions = {
-  id: string;
+  id?: string;
   type: EntityType;
   position: Coordinates;
   dimensions: Dimensions;
@@ -38,7 +39,7 @@ export type MakeEntityOptions = {
 };
 
 export const createEntity = ({
-  id,
+  id = uuid(),
   type,
   position,
   dimensions,

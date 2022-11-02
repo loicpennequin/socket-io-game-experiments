@@ -32,11 +32,11 @@ export const socketIoHandler = (server: http.Server) => {
 
   const getSocketByPlayerId = (id: string) => io.sockets.sockets.get(id);
 
-  const gameWorld = createGameWorld({
+  const world = createGameWorld({
     map: createGameMap()
   });
 
-  gameWorld.onStateUpdate(gameState => {
+  world.onStateUpdate(gameState => {
     [...gameState.entities.values()]
       .filter(isPlayer)
       .forEach((player, _, arr) => {
@@ -50,13 +50,13 @@ export const socketIoHandler = (server: http.Server) => {
       });
   });
 
-  gameWorld.start();
+  world.start();
 
   io.on('connection', socket => {
-    const player = gameWorld.addEntity(
+    const player = world.addEntity(
       createPlayer({
         id: socket.id,
-        world: gameWorld
+        world: world
       })
     );
 
@@ -69,18 +69,37 @@ export const socketIoHandler = (server: http.Server) => {
     });
 
     socket.on(PLAYER_ONGOING_ACTION_START, ({ action }) => {
-      player.ongoingActions.add(action);
+      const actionKey = `${player.id}.${action}`;
+      switch (action) {
+        case PlayerAction.MOVE_UP:
+          return world.addOngoingAction(actionKey, () =>
+            player.move({ x: 0, y: -1 })
+          );
+
+        case PlayerAction.MOVE_DOWN:
+          return world.addOngoingAction(actionKey, () =>
+            player.move({ x: 0, y: 1 })
+          );
+        case PlayerAction.MOVE_LEFT:
+          return world.addOngoingAction(actionKey, () =>
+            player.move({ x: -1, y: 0 })
+          );
+        case PlayerAction.MOVE_RIGHT:
+          return world.addOngoingAction(actionKey, () =>
+            player.move({ x: 1, y: 0 })
+          );
+      }
     });
 
     socket.on(PLAYER_ONGOING_ACTION_END, ({ action }) => {
-      player.ongoingActions.delete(action);
+      world.stopOngoingAction(`${player.id}.${action}`);
     });
 
     socket.on(PLAYER_ACTION, ({ action, meta }) => {
       switch (action) {
         case PlayerAction.FIRE_PROJECTILE:
-          gameWorld.addAction(() =>
-            gameWorld.addEntity(player.fireProjectile(meta.target))
+          world.addAction(() =>
+            world.addEntity(player.fireProjectile(meta.target))
           );
       }
     });
