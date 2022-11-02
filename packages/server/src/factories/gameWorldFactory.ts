@@ -2,10 +2,10 @@ import {
   ActionPayload,
   createTaskQueue,
   OngoingActionStartPayload,
-  PlayerAction,
   TICK_RATE
 } from '@game/shared';
 import { Entity } from './entityFactory';
+import { GameMap } from './gameMapFactory';
 import { Player } from './playerFactory';
 
 export type EntityMap = Map<string, Entity>;
@@ -17,7 +17,12 @@ export type OngoingActionKey = `${string}.${string}`;
 
 export type GameAction = ActionPayload & { player: Player };
 export type GameOngoingAction = OngoingActionStartPayload & { player: Player };
-export const createGameWorld = () => {
+
+export type CreateGameWorldOptions = {
+  map: GameMap;
+};
+
+export const createGameWorld = ({ map }: CreateGameWorldOptions) => {
   const entities = new Map<string, Entity>();
   const actionsQueue = createTaskQueue();
   const ongoingActions = new Map<string, GameOngoingAction>();
@@ -38,6 +43,8 @@ export const createGameWorld = () => {
 
   return {
     entities,
+
+    map,
 
     start() {
       if (isRunning) return;

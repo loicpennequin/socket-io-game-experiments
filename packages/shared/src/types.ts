@@ -17,7 +17,7 @@ export type Boundaries<T = number> = { min: T; max: T };
 export type Range = Boundaries<number>;
 export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
 export type Matrix<T> = T[][];
-export type AnyObject = Record<string, any>;
+export type AnyObject = { [key: string]: any };
 export type Values<T> = T[keyof T];
 export type GameMapCell = Coordinates & {
   lightness: number;

@@ -5,7 +5,6 @@ import {
   EntityType,
   uniqBy
 } from '@game/shared';
-import { gameMap } from '../gameMap';
 import { gameWorld } from '../gameWorld';
 import { MapGridItem } from './gameMapFactory';
 
@@ -51,7 +50,7 @@ export const createEntity = ({
     destroy: new Set()
   };
 
-  const gridItem = gameMap.grid.add(
+  const gridItem = gameWorld.map.grid.add(
     {
       position,
       dimensions
@@ -75,7 +74,7 @@ export const createEntity = ({
 
     get visibleEntities() {
       const entities = [this, ...this.children].map(entity =>
-        gameMap.grid
+        gameWorld.map.grid
           .findNearbyRadius(entity.position, entity.fieldOfView)
           .map(gridItem => gameWorld.entities.get(gridItem.meta.id) as Entity)
       );
@@ -88,7 +87,7 @@ export const createEntity = ({
     },
 
     destroy() {
-      gameMap.grid.remove(this.gridItem);
+      gameWorld.map.grid.remove(this.gridItem);
       this.dispatch('destroy');
     },
 

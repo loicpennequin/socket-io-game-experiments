@@ -14,7 +14,10 @@ import {
   uniqBy
 } from '@game/shared';
 import { v4 as uuid } from 'uuid';
-import { gameMap } from '../gameMap';
+import { withEventEmitter } from '../behaviors/eventEmitter';
+import { LifecycleEvents, withLifecycle } from '../behaviors/lifecycle';
+import { withMovement, withPosition } from '../behaviors/positionable';
+import { gameWorld } from '../gameWorld';
 import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
 import { createProjectile, Projectile } from './projectileFactory';
 
@@ -51,11 +54,11 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
   const player = Object.assign(entity, {
     ongoingActions: new Set<OngoingAction>(),
 
-    allDiscoveredCells: gameMap.getVisibleCells(
+    allDiscoveredCells: gameWorld.map.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
-    newDiscoveredCells: gameMap.getVisibleCells(
+    newDiscoveredCells: gameWorld.map.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
     ),
@@ -75,7 +78,7 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
         y: clampToGrid(entity.position.y + y * PLAYER_SPEED)
       });
 
-      const visibleCells = gameMap.getVisibleCells(
+      const visibleCells = gameWorld.map.getVisibleCells(
         entity.position,
         PLAYER_FIELD_OF_VIEW
       );
@@ -86,7 +89,7 @@ export const createPlayer = ({ id }: MakePlayerOptions): Player => {
         }
       }
 
-      gameMap.grid.update(entity.gridItem);
+      gameWorld.map.grid.update(entity.gridItem);
     },
 
     fireProjectile(target: Coordinates) {

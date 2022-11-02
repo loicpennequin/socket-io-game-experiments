@@ -79,6 +79,13 @@ export const pipe =
   (value: T) =>
     fns.reduce((acc, fn) => fn(acc), value);
 
+export const pipeBuilder = <A, B>(fn: (a: A) => B) => {
+  return {
+    f: <C>(g: (x: B) => C) => pipeBuilder((arg: A) => g(fn(arg))),
+    build: (a: A) => fn(a)
+  };
+};
+
 export const noop = () => {};
 export const isPlayerDto = (entity: EntityDto): entity is PlayerDto =>
   entity.type === EntityType.PLAYER;
