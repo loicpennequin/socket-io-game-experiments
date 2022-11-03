@@ -1,4 +1,4 @@
-import type { Coordinates } from '@game/shared-utils';
+import type { Coordinates, Nullable } from '@game/shared-utils';
 import type { EntityType, OngoingAction, PlayerAction } from './enums';
 
 import {
@@ -12,6 +12,8 @@ import {
 export type EntityDto = Coordinates & {
   id: string;
   type: EntityType;
+  parent: Nullable<string>;
+  children: string[];
 };
 
 export type PlayerDto = EntityDto;
