@@ -7,21 +7,22 @@ import { clamp, type Coordinates, type Dimensions } from '@game/shared-utils';
 
 type ApplyCameraOptions = {
   canvas: HTMLCanvasElement;
+  camera: Camera;
   ctx: CanvasRenderingContext2D;
 };
 
 export type Camera = Coordinates & Dimensions;
 
 export const applyCamera = (
-  { canvas, ctx }: ApplyCameraOptions,
-  cb: (camera: Camera) => void
+  { canvas, camera, ctx }: ApplyCameraOptions,
+  cb: () => void
 ) => {
   const player = state.entitiesById[socket.id];
   if (!player) return;
 
   pushPop(ctx, () => {
     interpolate(player, prevState.entitiesById[player.id], ({ x, y }) => {
-      const camera = {
+      Object.assign(camera, {
         x: clamp(x - canvas.width / 2, {
           min: 0,
           max: MAP_SIZE - canvas.width
@@ -32,10 +33,10 @@ export const applyCamera = (
         }),
         w: canvas.width,
         h: canvas.height
-      };
+      });
 
       ctx.translate(camera.x * -1, camera.y * -1);
-      cb(camera);
+      cb();
     });
   });
 };

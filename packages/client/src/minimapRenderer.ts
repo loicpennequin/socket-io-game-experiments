@@ -3,7 +3,7 @@ import {
   PLAYER_SIZE,
   PROJECTILE_SIZE
 } from '@game/shared-domain';
-import { gameCamera } from './gameRenderer';
+import { camera } from './gameRenderer';
 import { createMapCacheRenderer } from './mapCacheRenderer';
 import { createRenderer } from './renderer/createRenderer';
 import { drawMapInFieldOfView } from './renderer/drawMap';
@@ -48,7 +48,7 @@ export const createMinimapRenderer = () => {
 
         ctx.strokeStyle = 'white';
         ctx.lineWidth = 5;
-        ctx.strokeRect(gameCamera.x, gameCamera.y, gameCamera.w, gameCamera.h);
+        ctx.strokeRect(camera.x, camera.y, camera.w, camera.h);
       });
     },
     getDimensions: () => ({

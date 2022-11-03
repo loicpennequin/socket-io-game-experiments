@@ -2,7 +2,7 @@ import { throttle, type Nullable } from '@game/shared-utils';
 import { KEYBOARD_CONTROLS, PROJECTILE_THROTTLE_RATE } from './utils/constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
-import { gameCamera } from './gameRenderer';
+import { camera } from './gameRenderer';
 import {
   OngoingAction,
   PLAYER_ACTION,
@@ -40,8 +40,8 @@ export const initKeyboardControls = () => {
       action: PlayerAction.FIRE_PROJECTILE,
       meta: {
         target: {
-          x: mousePosition.x + gameCamera.x,
-          y: mousePosition.y + gameCamera.y
+          x: mousePosition.x + camera.x,
+          y: mousePosition.y + camera.y
         }
       }
     });

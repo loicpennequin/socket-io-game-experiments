@@ -10,9 +10,8 @@ import { drawMapInFieldOfView } from './renderer/drawMap';
 import { drawPlayers } from './renderer/drawPlayers';
 import { drawProjectiles } from './renderer/drawProjectiles';
 import { socket } from './socket';
-import { pushPop } from './utils/canvas';
 
-export const gameCamera: Camera = {
+export const camera: Camera = {
   x: 0,
   y: 0,
   w: 0,
@@ -26,25 +25,21 @@ export const createGameRenderer = () => {
   return createRenderer({
     render: ({ canvas, ctx }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      pushPop(ctx, () => {
-        applyCamera({ canvas, ctx }, camera => {
-          Object.assign(gameCamera, camera);
-
-          mapCache.draw(ctx, {
-            x: camera.x,
-            y: camera.y,
-            w: camera.w,
-            h: camera.h
-          });
-
-          drawMapInFieldOfView({
-            ctx,
-            entityId: socket.id,
-            fieldOfView: PLAYER_FIELD_OF_VIEW
-          });
-          drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-          drawPlayers({ ctx, size: PLAYER_SIZE, camera });
+      applyCamera({ canvas, ctx, camera }, () => {
+        mapCache.draw(ctx, {
+          x: camera.x,
+          y: camera.y,
+          w: camera.w,
+          h: camera.h
         });
+
+        drawMapInFieldOfView({
+          ctx,
+          entityId: socket.id,
+          fieldOfView: PLAYER_FIELD_OF_VIEW
+        });
+        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        drawPlayers({ ctx, size: PLAYER_SIZE, camera });
       });
     },
     getDimensions: () => ({
