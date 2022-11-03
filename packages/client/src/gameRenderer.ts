@@ -3,14 +3,15 @@ import {
   PROJECTILE_SIZE,
   PLAYER_SIZE
 } from '@game/domain';
+import { createMapCacheRenderer } from './mapCacheRenderer';
 import { applyCamera, type Camera } from './renderer/applyCamera';
 import { createRenderer } from './renderer/createRenderer';
-import { drawMap, drawMapInFieldOfView } from './renderer/drawMap';
+import { drawMapInFieldOfView } from './renderer/drawMap';
 import { drawPlayers } from './renderer/drawPlayers';
 import { drawProjectiles } from './renderer/drawProjectiles';
 import { socket } from './socket';
 import { pushPop } from './utils/canvas';
-import { FOG_OF_WAR_ALPHA } from './utils/constants';
+// import { FOG_OF_WAR_ALPHA } from './utils/constants';
 
 export const gameCamera: Camera = {
   x: 0,
@@ -20,6 +21,9 @@ export const gameCamera: Camera = {
 };
 
 export const createGameRenderer = () => {
+  const mapCache = createMapCacheRenderer({ showLightness: true });
+  mapCache.resume();
+
   return createRenderer({
     render({ canvas, ctx }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -27,11 +31,17 @@ export const createGameRenderer = () => {
         applyCamera({ canvas, ctx }, camera => {
           Object.assign(gameCamera, camera);
 
-          // pushPop(ctx, () => {
-          //   ctx.globalAlpha = FOG_OF_WAR_ALPHA;
-          //   drawMap({ ctx, boundaries: camera });
-          // });
-
+          ctx.drawImage(
+            mapCache.canvas,
+            camera.x,
+            camera.y,
+            camera.w,
+            camera.h,
+            camera.x,
+            camera.y,
+            camera.w,
+            camera.h
+          );
           drawMapInFieldOfView({
             ctx,
             entityId: socket.id,

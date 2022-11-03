@@ -30,3 +30,12 @@ main {
   right: 0;
   outline: solid 1px white;
 }
+
+#mapcache-debug {
+  position: relative;
+  z-index: 999;
+}
+
+.hidden {
+  display: none;
+}

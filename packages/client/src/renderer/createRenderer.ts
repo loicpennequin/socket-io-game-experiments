@@ -67,3 +67,5 @@ export const createRenderer = ({
     resume
   };
 };
+
+export type Renderer = ReturnType<typeof createRenderer>;

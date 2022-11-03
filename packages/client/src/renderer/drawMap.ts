@@ -35,11 +35,10 @@ const DEFAULT_BOUNDARIES = {
   w: Infinity,
   h: Infinity
 };
-
 const DEFAULT_LIGHTNESS = 50;
 const DEFAULT_BOUNDARIES_BUFFER = 50;
 
-const drawCell = ({ ctx, cell, showLightness }: DrawCellOptions) => {
+export const drawCell = ({ ctx, cell, showLightness }: DrawCellOptions) => {
   ctx.fillStyle = COLORS.mapCell({
     lightness: showLightness ? cell.lightness * 100 : DEFAULT_LIGHTNESS
   });

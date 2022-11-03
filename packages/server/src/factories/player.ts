@@ -22,7 +22,7 @@ export type Player = Entity & {
 
 export type MakePlayerOptions = Omit<
   MakeEntityOptions,
-  'position' | 'dimensions' | 'type' | 'fieldOfView'
+  'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
 >;
 
 const clampToGrid = (n: number) =>
@@ -33,6 +33,7 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
     id,
     type: EntityType.PLAYER,
     world,
+    parent: null,
     position: {
       x: randomInt(GRID_SIZE * CELL_SIZE),
       y: randomInt(GRID_SIZE * CELL_SIZE)
@@ -85,7 +86,7 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
       const projectile = createProjectile({
         target,
         world,
-        player: this as unknown as Player
+        parent: entity as Player
       });
 
       entity.children.add(projectile);

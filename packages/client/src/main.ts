@@ -6,7 +6,7 @@ import { displayDebugInfo } from './debug';
 import { trackMousePosition } from './mouseTracker';
 import { createMinimapRenderer } from './minimapRenderer';
 
-const mainEl = document.querySelector('main');
+const mainEl = document.querySelector('main') as HTMLElement;
 
 initKeyboardControls();
 trackMousePosition();
@@ -14,8 +14,8 @@ trackMousePosition();
 const gameRenderer = createGameRenderer();
 const minimapRenderer = createMinimapRenderer();
 
-mainEl!.appendChild(gameRenderer.canvas);
-mainEl!.appendChild(Object.assign(minimapRenderer.canvas, { id: 'minimap' }));
+mainEl.appendChild(gameRenderer.canvas);
+mainEl.appendChild(Object.assign(minimapRenderer.canvas, { id: 'minimap' }));
 
 gameRenderer.resume();
 minimapRenderer.resume();

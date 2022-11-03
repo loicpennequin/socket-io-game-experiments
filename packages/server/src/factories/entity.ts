@@ -1,5 +1,5 @@
 import { EntityDto, EntityType } from '@game/domain';
-import { Coordinates, Dimensions, uniqBy } from '@game/shared-utils';
+import { Coordinates, Dimensions, Nullable, uniqBy } from '@game/shared-utils';
 import { v4 as uuid } from 'uuid';
 import { MapGridItem } from './gameMap';
 import { GameWorld } from './gameWorld';
@@ -16,6 +16,7 @@ export type Entity = {
   visibleEntities: Readonly<Entity[]>;
   fieldOfView: number;
   children: Set<Entity>;
+  parent: Nullable<Entity>;
   world: GameWorld;
   update: () => void;
   destroy: () => void;
@@ -31,6 +32,7 @@ export type MakeEntityOptions = {
   dimensions: Dimensions;
   fieldOfView: number;
   world: GameWorld;
+  parent: Nullable<Entity>;
 };
 
 export const createEntity = ({
@@ -39,6 +41,7 @@ export const createEntity = ({
   position,
   dimensions,
   world,
+  parent,
   fieldOfView
 }: MakeEntityOptions): Entity => {
   const callbacks: Record<
@@ -63,6 +66,7 @@ export const createEntity = ({
     world,
     gridItem,
     fieldOfView,
+    parent,
     children: new Set<Entity>(),
 
     get position() {
@@ -107,6 +111,8 @@ export const createEntity = ({
       const dto = {
         id,
         type,
+        parent: this.parent?.id ?? null,
+        children: [...this.children.values()].map(child => child.id),
         ...this.position
       };
 

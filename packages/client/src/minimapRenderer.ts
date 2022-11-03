@@ -4,21 +4,24 @@ import {
   PROJECTILE_SIZE
 } from '@game/domain';
 import { gameCamera } from './gameRenderer';
+import { createMapCacheRenderer } from './mapCacheRenderer';
 import { createRenderer } from './renderer/createRenderer';
-import { drawMap, drawMapInFieldOfView } from './renderer/drawMap';
+import { drawMapInFieldOfView } from './renderer/drawMap';
 import { drawPlayers } from './renderer/drawPlayers';
 import { drawProjectiles } from './renderer/drawProjectiles';
 import { socket } from './socket';
 import { pushPop } from './utils/canvas';
 import {
   COLORS,
-  FOG_OF_WAR_ALPHA,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
 } from './utils/constants';
 
 export const createMinimapRenderer = () => {
+  const mapCache = createMapCacheRenderer({ showLightness: false });
+  mapCache.resume();
+
   return createRenderer({
     render({ canvas, ctx }) {
       ctx.fillStyle = COLORS.minimapBackground();
@@ -26,10 +29,17 @@ export const createMinimapRenderer = () => {
 
       pushPop(ctx, () => {
         ctx.scale(MINIMAP_SCALE, MINIMAP_SCALE);
-        pushPop(ctx, () => {
-          ctx.globalAlpha = FOG_OF_WAR_ALPHA;
-          drawMap({ ctx, showLightness: false, boundariesBuffer: 0 });
-        });
+        ctx.drawImage(
+          mapCache.canvas,
+          0,
+          0,
+          mapCache.canvas.width,
+          mapCache.canvas.height,
+          0,
+          0,
+          mapCache.canvas.width,
+          mapCache.canvas.height
+        );
 
         drawMapInFieldOfView({
           ctx,

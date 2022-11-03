@@ -9,37 +9,37 @@ import { Coordinates, getAngleFromVector } from '@game/shared-utils';
 import { Entity, createEntity, MakeEntityOptions } from './entity';
 import { Player } from './player';
 
-export type Projectile = Entity & {
-  player: Player;
+export type Projectile = Omit<Entity, 'parent'> & {
   lifeSpan: number;
   angle: number;
+  parent: Player;
 };
 
 export type MakeProjectileOptions = Omit<
   MakeEntityOptions,
-  'position' | 'dimensions' | 'type' | 'fieldOfView'
-> & { player: Player; target: Coordinates };
+  'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
+> & { target: Coordinates; parent: Player };
 
 export const createProjectile = ({
-  player,
   target,
   id,
-  world
+  world,
+  parent
 }: MakeProjectileOptions): Projectile => {
   const entity = createEntity({
     id,
     type: EntityType.PROJECTILE,
     world,
-    position: { ...player.position },
+    parent,
+    position: { ...parent.position },
     dimensions: { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE },
     fieldOfView: PROJECTILE_FIELD_OF_VIEW
   });
 
   return Object.assign(entity, {
-    player,
     angle: getAngleFromVector({
-      x: target.x - player.gridItem.position.x,
-      y: target.y - player.gridItem.position.y
+      x: target.x - entity.position.x,
+      y: target.y - entity.position.y
     }),
     lifeSpan: PROJECTILE_LIFESPAN
   }).on('update', e => {
@@ -54,10 +54,11 @@ export const createProjectile = ({
       PROJECTILE_FIELD_OF_VIEW
     );
 
+    const player = entity.parent as Player;
     for (const [key, cell] of visibleCells) {
-      if (!projectile.player.allDiscoveredCells.has(key)) {
-        projectile.player.allDiscoveredCells.set(key, cell);
-        projectile.player.newDiscoveredCells.set(key, cell);
+      if (!player.allDiscoveredCells.has(key)) {
+        player.allDiscoveredCells.set(key, cell);
+        player.newDiscoveredCells.set(key, cell);
       }
     }
 
