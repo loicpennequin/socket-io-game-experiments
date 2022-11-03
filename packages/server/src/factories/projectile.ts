@@ -6,8 +6,8 @@ import {
   PROJECTILE_SPEED
 } from '@game/domain';
 import { Coordinates, getAngleFromVector } from '@game/shared-utils';
-import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
-import { Player } from './playerFactory';
+import { Entity, createEntity, MakeEntityOptions } from './entity';
+import { Player } from './player';
 
 export type Projectile = Entity & {
   player: Player;

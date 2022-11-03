@@ -4,9 +4,9 @@ import {
   TICK_RATE
 } from '@game/domain';
 import { createTaskQueue } from '@game/shared-utils';
-import { Entity } from './entityFactory';
-import { GameMap } from './gameMapFactory';
-import { Player } from './playerFactory';
+import { Entity } from './entity';
+import { GameMap } from './gameMap';
+import { Player } from './player';
 
 export type EntityMap = Map<string, Entity>;
 export type StateUpdateCallback = (

@@ -1,7 +1,7 @@
 import { EntityType } from '@game/domain';
-import { Entity } from './factories/entityFactory';
-import { Player } from './factories/playerFactory';
-import { Projectile } from './factories/projectileFactory';
+import { Entity } from './factories/entity';
+import { Player } from './factories/player';
+import { Projectile } from './factories/projectile';
 
 export const isPlayer = (entity: Entity): entity is Player =>
   entity.type === EntityType.PLAYER;

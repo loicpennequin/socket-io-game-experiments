@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { createMatrix } from './helpers';
-import { Boundaries, Coordinates, Dimensions, Range } from './types';
+import type { Boundaries, Coordinates, Dimensions, Range } from './types';
 
 export const smootherStep = (x: number) =>
   6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;

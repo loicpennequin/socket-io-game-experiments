@@ -1,4 +1,4 @@
-import { Dimensions, Coordinates, Matrix } from './types';
+import type { Dimensions, Coordinates, Matrix } from './types';
 
 export const indexBy = <T extends Record<string, any>>(
   arr: T[],

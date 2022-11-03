@@ -8,8 +8,8 @@ import {
   PLAYER_SPEED
 } from '@game/domain';
 import { clamp, Coordinates, randomInt, uniqBy } from '@game/shared-utils';
-import { Entity, createEntity, MakeEntityOptions } from './entityFactory';
-import { createProjectile, Projectile } from './projectileFactory';
+import { Entity, createEntity, MakeEntityOptions } from './entity';
+import { createProjectile, Projectile } from './projectile';
 
 export type Player = Entity & {
   newDiscoveredCells: Map<string, GameMapCell>;

@@ -1,7 +1,7 @@
 import { sat } from '../math';
 import { pointCircleCollision, pointRectCollision } from '../collision';
 import { createMatrix } from '../helpers';
-import {
+import type {
   SpatialObject,
   Coordinates,
   Boundaries,

@@ -1,5 +1,6 @@
-import { Coordinates } from '@game/shared-utils';
-import { EntityType, OngoingAction, PlayerAction } from './enums';
+import type { Coordinates } from '@game/shared-utils';
+import type { EntityType, OngoingAction, PlayerAction } from './enums';
+
 import {
   GAME_STATE_UPDATE,
   PING,

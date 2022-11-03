@@ -2,9 +2,9 @@ import http from 'http';
 import { Server, Socket as IoSocket } from 'socket.io';
 import { Coordinates } from '@game/shared-utils';
 import { isPlayer } from './utils';
-import { createPlayer } from './factories/playerFactory';
-import { createGameWorld } from './factories/gameWorldFactory';
-import { createGameMap } from './factories/gameMapFactory';
+import { createPlayer } from './factories/player';
+import { createGameWorld } from './factories/gameWorld';
+import { createGameMap } from './factories/gameMap';
 import {
   ClientToServerEvents,
   ServerToClientEvents,

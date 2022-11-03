@@ -1,5 +1,5 @@
 import { dist } from './math';
-import { Coordinates, Dimensions } from './types';
+import type { Coordinates, Dimensions } from './types';
 
 export const pointRectCollision = (
   point: Coordinates,
