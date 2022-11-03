@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@game/domain": "*",
+    "@game/shared-domain": "*",
     "@game/shared-utils": "*",
     "pinia": "^2.0.23",
     "socket.io-client": "^4.5.3",

@@ -2,7 +2,7 @@ import {
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PROJECTILE_SIZE
-} from '@game/domain';
+} from '@game/shared-domain';
 import { gameCamera } from './gameRenderer';
 import { createMapCacheRenderer } from './mapCacheRenderer';
 import { createRenderer } from './renderer/createRenderer';

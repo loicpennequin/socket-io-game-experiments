@@ -3,7 +3,7 @@ import {
   CELL_SIZE,
   PLAYER_FIELD_OF_VIEW,
   GameMapCell
-} from '@game/domain';
+} from '@game/shared-domain';
 import {
   Coordinates,
   createMatrix,

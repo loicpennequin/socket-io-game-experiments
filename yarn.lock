@@ -2564,6 +2564,11 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
+random-name@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/random-name/-/random-name-0.1.2.tgz#20a1ad0efce9976764c5dd3c418c7018b57e816d"
+  integrity sha512-3UHvhW50ZMbm6R11J3G1WeKvvys3GWE0uw5IxPzJjIxG+c0QoIbMlWfRKBlji9boEXPBx4CiSL3XWIkO9T/OVA==
+
 range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"

@@ -1,4 +1,4 @@
-import { type GameMapCell, MAP_SIZE } from '@game/domain';
+import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
 import { state } from './gameState';
 import { createRenderer } from './renderer/createRenderer';
 import { drawCell } from './renderer/drawMap';

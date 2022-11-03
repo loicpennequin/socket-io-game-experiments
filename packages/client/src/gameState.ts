@@ -1,14 +1,12 @@
 import {
   type GameStateDto,
   type EntityDto,
-  type GameMapCell,
   GAME_STATE_UPDATE
-} from '@game/domain';
+} from '@game/shared-domain';
 import { indexBy } from '@game/shared-utils';
 import { socket } from './socket';
 
-export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {
-  discoveredCells: GameMapCell[];
+export type SavedState = GameStateDto & {
   timestamp: number;
   entitiesById: Record<string, EntityDto>;
 };

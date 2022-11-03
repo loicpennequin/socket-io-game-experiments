@@ -2,7 +2,7 @@ import {
   ActionPayload,
   OngoingActionStartPayload,
   TICK_RATE
-} from '@game/domain';
+} from '@game/shared-domain';
 import { createTaskQueue } from '@game/shared-utils';
 import { Entity } from './entity';
 import { GameMap } from './gameMap';

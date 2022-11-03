@@ -1,5 +1,11 @@
-import { EntityDto, EntityType } from '@game/domain';
-import { Coordinates, Dimensions, Nullable, uniqBy } from '@game/shared-utils';
+import { EntityDto, EntityType } from '@game/shared-domain';
+import {
+  AnyObject,
+  Coordinates,
+  Dimensions,
+  Nullable,
+  uniqBy
+} from '@game/shared-utils';
 import { v4 as uuid } from 'uuid';
 import { MapGridItem } from './gameMap';
 import { GameWorld } from './gameWorld';
@@ -18,6 +24,7 @@ export type Entity = {
   children: Set<Entity>;
   parent: Nullable<Entity>;
   world: GameWorld;
+  meta: AnyObject;
   update: () => void;
   destroy: () => void;
   on: (eventName: EntityLifecycleEvent, cb: EntityLifecycleCallback) => Entity;
@@ -33,6 +40,7 @@ export type MakeEntityOptions = {
   fieldOfView: number;
   world: GameWorld;
   parent: Nullable<Entity>;
+  meta?: AnyObject;
 };
 
 export const createEntity = ({
@@ -42,7 +50,8 @@ export const createEntity = ({
   dimensions,
   world,
   parent,
-  fieldOfView
+  fieldOfView,
+  meta = {}
 }: MakeEntityOptions): Entity => {
   const callbacks: Record<
     EntityLifecycleEvent,
@@ -66,6 +75,7 @@ export const createEntity = ({
     world,
     gridItem,
     fieldOfView,
+    meta,
     parent,
     children: new Set<Entity>(),
 
@@ -108,15 +118,14 @@ export const createEntity = ({
     },
 
     toDto() {
-      const dto = {
+      return {
         id,
         type,
+        meta,
         parent: this.parent?.id ?? null,
         children: [...this.children.values()].map(child => child.id),
         ...this.position
       };
-
-      return dto;
     }
   };
 };

@@ -1,4 +1,9 @@
-import type { Coordinates, Nullable } from '@game/shared-utils';
+import type {
+  AnyObject,
+  Coordinates,
+  Nullable,
+  Override
+} from '@game/shared-utils';
 import type { EntityType, OngoingAction, PlayerAction } from './enums';
 
 import {
@@ -14,12 +19,13 @@ export type EntityDto = Coordinates & {
   type: EntityType;
   parent: Nullable<string>;
   children: string[];
+  meta: AnyObject;
 };
 
-export type PlayerDto = EntityDto;
-export type ProjectileDto = EntityDto & {
-  playerId: string;
-};
+export type PlayerMeta = { name: string };
+export type PlayerDto = Override<EntityDto, { meta: PlayerMeta }>;
+
+export type ProjectileDto = EntityDto;
 export type GameMapCell = Coordinates & {
   lightness: number;
 };

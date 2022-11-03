@@ -9,7 +9,7 @@ import {
   PlayerAction,
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ACTION
-} from '@game/domain';
+} from '@game/shared-domain';
 import { GameWorld } from './gameWorld';
 import { isPlayer } from '../utils';
 import { createPlayer } from './player';

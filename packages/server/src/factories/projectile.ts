@@ -4,21 +4,24 @@ import {
   PROJECTILE_FIELD_OF_VIEW,
   PROJECTILE_LIFESPAN,
   PROJECTILE_SPEED
-} from '@game/domain';
-import { Coordinates, getAngleFromVector } from '@game/shared-utils';
+} from '@game/shared-domain';
+import { Coordinates, getAngleFromVector, Override } from '@game/shared-utils';
 import { Entity, createEntity, MakeEntityOptions } from './entity';
 import { Player } from './player';
 
-export type Projectile = Omit<Entity, 'parent'> & {
-  lifeSpan: number;
-  angle: number;
-  parent: Player;
-};
+export type Projectile = Override<
+  Entity,
+  {
+    lifeSpan: number;
+    angle: number;
+    parent: Player;
+  }
+>;
 
-export type MakeProjectileOptions = Omit<
-  MakeEntityOptions,
-  'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
-> & { target: Coordinates; parent: Player };
+export type MakeProjectileOptions = Override<
+  Omit<MakeEntityOptions, 'position' | 'dimensions' | 'type' | 'fieldOfView'>,
+  { target: Coordinates; parent: Player }
+>;
 
 export const createProjectile = ({
   target,

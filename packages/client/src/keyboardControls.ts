@@ -9,7 +9,7 @@ import {
   PlayerAction,
   PLAYER_ONGOING_ACTION_START,
   PLAYER_ONGOING_ACTION_END
-} from '@game/domain';
+} from '@game/shared-domain';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   let hasFired = false;

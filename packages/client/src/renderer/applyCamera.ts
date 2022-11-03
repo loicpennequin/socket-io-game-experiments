@@ -2,7 +2,7 @@ import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
 import { pushPop } from '@/utils/canvas';
 import { interpolate } from '@/utils/interpolate';
-import { MAP_SIZE } from '@game/domain';
+import { MAP_SIZE } from '@game/shared-domain';
 import { clamp, type Coordinates, type Dimensions } from '@game/shared-utils';
 
 type ApplyCameraOptions = {

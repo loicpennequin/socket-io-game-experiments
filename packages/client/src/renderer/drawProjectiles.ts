@@ -3,7 +3,7 @@ import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
 import { drawMapInFieldOfView } from './drawMap';
-import { isProjectileDto, PROJECTILE_FIELD_OF_VIEW } from '@game/domain';
+import { isProjectileDto, PROJECTILE_FIELD_OF_VIEW } from '@game/shared-domain';
 import { interpolate } from '@/utils/interpolate';
 
 type DrawProjectilesOptions = { ctx: CanvasRenderingContext2D; size: number };
@@ -19,7 +19,7 @@ export const drawProjectiles = ({ ctx, size }: DrawProjectilesOptions) => {
 
       interpolate(projectile, prevState.entitiesById[projectile.id], entity => {
         ctx.lineWidth = 0;
-        ctx.fillStyle = COLORS.projectile(projectile.playerId === socket.id);
+        ctx.fillStyle = COLORS.projectile(projectile.parent === socket.id);
         fillCircle(ctx, {
           x: entity.x,
           y: entity.y,

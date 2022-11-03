@@ -10,3 +10,4 @@ export type Entries<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
 export type Matrix<T> = T[][];
 export type AnyObject = { [key: string]: any };
 export type Values<T> = T[keyof T];
+export type Override<A, B> = Omit<A, keyof B> & B;

@@ -6,7 +6,7 @@ import {
   type Dimensions,
   pointRectCollision
 } from '@game/shared-utils';
-import { type GameMapCell, CELL_SIZE } from '@game/domain';
+import { type GameMapCell, CELL_SIZE } from '@game/shared-domain';
 import {
   applyFieldOfView,
   type ApplyFieldOfViewOptions

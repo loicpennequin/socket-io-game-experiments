@@ -1,4 +1,4 @@
 {
   "restartable": "rs",
-  "watch": ["src", "../shared-utils/src", "../domain/src"]
+  "watch": ["src", "../shared-utils/src", "../shared-domain/src"]
 }

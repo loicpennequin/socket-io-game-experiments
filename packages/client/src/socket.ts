@@ -1,4 +1,7 @@
-import type { ServerToClientEvents, ClientToServerEvents } from '@game/domain';
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents
+} from '@game/shared-domain';
 import { io, type Socket } from 'socket.io-client';
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(

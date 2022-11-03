@@ -1,5 +1,5 @@
 import { prevState, state } from '@/gameState';
-import { TICK_RATE } from '@game/domain';
+import { TICK_RATE } from '@game/shared-domain';
 import { interpolateEntity, type Coordinates } from '@game/shared-utils';
 
 export const interpolate = <T extends Coordinates>(

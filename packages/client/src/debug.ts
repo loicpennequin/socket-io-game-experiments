@@ -1,4 +1,4 @@
-import { PING } from '@game/domain';
+import { PING } from '@game/shared-domain';
 import { sum } from '@game/shared-utils';
 import { socket } from './socket';
 
