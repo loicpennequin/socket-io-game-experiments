@@ -23,22 +23,23 @@ export const createGameRenderer = () => {
   return createRenderer({
     render({ canvas, ctx }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pushPop(ctx, () => {
+        applyCamera({ canvas, ctx }, camera => {
+          Object.assign(gameCamera, camera);
 
-      applyCamera({ canvas, ctx }, camera => {
-        Object.assign(gameCamera, camera);
+          // pushPop(ctx, () => {
+          //   ctx.globalAlpha = FOG_OF_WAR_ALPHA;
+          //   drawMap({ ctx, boundaries: camera });
+          // });
 
-        pushPop(ctx, () => {
-          ctx.globalAlpha = FOG_OF_WAR_ALPHA;
-          drawMap({ ctx, boundaries: camera });
+          drawMapInFieldOfView({
+            ctx,
+            entityId: socket.id,
+            fieldOfView: PLAYER_FIELD_OF_VIEW
+          });
+          drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+          drawPlayers({ ctx, size: PLAYER_SIZE });
         });
-
-        drawMapInFieldOfView({
-          ctx,
-          entityId: socket.id,
-          fieldOfView: PLAYER_FIELD_OF_VIEW
-        });
-        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        drawPlayers({ ctx, size: PLAYER_SIZE });
       });
     },
     getDimensions: () => ({

@@ -2,7 +2,7 @@ import { pushPop, fillCircle } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
-import { isPlayerDto, TICK_RATE } from '@game/domain';
+import { isPlayerDto } from '@game/domain';
 import { interpolate } from '@/utils/interpolate';
 
 type DrawPlayersOptions = { ctx: CanvasRenderingContext2D; size: number };

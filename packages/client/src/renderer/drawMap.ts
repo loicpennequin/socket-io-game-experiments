@@ -57,8 +57,8 @@ export const drawMap = ({
     const bufferedBoundaries = {
       x: boundaries.x - boundariesBuffer,
       y: boundaries.y - boundariesBuffer,
-      w: boundaries.w + boundariesBuffer,
-      h: boundaries.h + boundariesBuffer
+      w: boundaries.w + boundariesBuffer * 2,
+      h: boundaries.h + boundariesBuffer * 2
     };
 
     cells.forEach(cell => {

@@ -70,6 +70,7 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
         entity.position,
         PLAYER_FIELD_OF_VIEW
       );
+
       for (const [key, cell] of visibleCells) {
         if (!this.allDiscoveredCells.has(key)) {
           this.allDiscoveredCells.set(key, cell);
@@ -93,6 +94,5 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
       return projectile;
     }
   });
-
   return player;
 };
