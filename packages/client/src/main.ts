@@ -17,7 +17,7 @@ const minimapRenderer = createMinimapRenderer();
 mainEl.appendChild(gameRenderer.canvas);
 mainEl.appendChild(Object.assign(minimapRenderer.canvas, { id: 'minimap' }));
 
-gameRenderer.resume();
-minimapRenderer.resume();
+gameRenderer.start();
+minimapRenderer.start();
 
 import.meta.env.VITE_DEBUG && displayDebugInfo();

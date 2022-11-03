@@ -11,7 +11,6 @@ import { drawPlayers } from './renderer/drawPlayers';
 import { drawProjectiles } from './renderer/drawProjectiles';
 import { socket } from './socket';
 import { pushPop } from './utils/canvas';
-// import { FOG_OF_WAR_ALPHA } from './utils/constants';
 
 export const gameCamera: Camera = {
   x: 0,
@@ -22,26 +21,22 @@ export const gameCamera: Camera = {
 
 export const createGameRenderer = () => {
   const mapCache = createMapCacheRenderer({ showLightness: true });
-  mapCache.resume();
+  mapCache.start();
 
   return createRenderer({
-    render({ canvas, ctx }) {
+    render: ({ canvas, ctx }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pushPop(ctx, () => {
         applyCamera({ canvas, ctx }, camera => {
           Object.assign(gameCamera, camera);
 
-          ctx.drawImage(
-            mapCache.canvas,
-            camera.x,
-            camera.y,
-            camera.w,
-            camera.h,
-            camera.x,
-            camera.y,
-            camera.w,
-            camera.h
-          );
+          mapCache.draw(ctx, {
+            x: camera.x,
+            y: camera.y,
+            w: camera.w,
+            h: camera.h
+          });
+
           drawMapInFieldOfView({
             ctx,
             entityId: socket.id,

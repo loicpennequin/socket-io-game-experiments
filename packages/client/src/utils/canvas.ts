@@ -24,15 +24,6 @@ export const circle = (
   ctx.closePath();
 };
 
-export const fillCircle = (
-  ctx: CanvasRenderingContext2D,
-  opts: Coordinates & { radius: number }
-) => {
-  circle(ctx, opts);
-
-  ctx.fill();
-};
-
 export const fillRectCentered = (
   context: CanvasRenderingContext2D,
   { x, y, w, h }: Coordinates & Dimensions

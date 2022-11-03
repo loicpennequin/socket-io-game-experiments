@@ -34,7 +34,7 @@ export const createRenderer = ({
 
   if (pauseOnDocumentHidden) {
     document.addEventListener('visibilitychange', function () {
-      document.hidden ? pause() : resume();
+      document.hidden ? pause() : start();
     });
   }
 
@@ -45,7 +45,7 @@ export const createRenderer = ({
     rafId = window.requestAnimationFrame(loop);
   };
 
-  const resume = () => {
+  const start = () => {
     if (!isRunning) {
       isRunning = true;
       loop();
@@ -64,7 +64,7 @@ export const createRenderer = ({
     canvas,
     isRunning,
     pause,
-    resume
+    start
   };
 };
 

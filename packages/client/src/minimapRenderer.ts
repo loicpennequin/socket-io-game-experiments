@@ -20,7 +20,7 @@ import {
 
 export const createMinimapRenderer = () => {
   const mapCache = createMapCacheRenderer({ showLightness: false });
-  mapCache.resume();
+  mapCache.start();
 
   return createRenderer({
     render({ canvas, ctx }) {
@@ -29,17 +29,13 @@ export const createMinimapRenderer = () => {
 
       pushPop(ctx, () => {
         ctx.scale(MINIMAP_SCALE, MINIMAP_SCALE);
-        ctx.drawImage(
-          mapCache.canvas,
-          0,
-          0,
-          mapCache.canvas.width,
-          mapCache.canvas.height,
-          0,
-          0,
-          mapCache.canvas.width,
-          mapCache.canvas.height
-        );
+
+        mapCache.draw(ctx, {
+          x: 0,
+          y: 0,
+          w: mapCache.canvas.width,
+          h: mapCache.canvas.height
+        });
 
         drawMapInFieldOfView({
           ctx,

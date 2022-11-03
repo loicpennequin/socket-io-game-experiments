@@ -1,4 +1,4 @@
-import { pushPop, fillCircle } from '@/utils/canvas';
+import { pushPop, circle } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
@@ -29,35 +29,40 @@ export const drawPlayers = ({ ctx, size, camera }: DrawPlayersOptions) => {
             r: size / 2
           }
         );
-        ctx.canvas.style.cursor = isHovered ? 'pointer' : 'initial';
         pushPop(ctx, () => {
           if (isHovered) ctx.filter = 'saturate(200%)';
 
           ctx.lineWidth = 0;
-          ctx.fillStyle = COLORS.player(player.id === socket.id);
-          fillCircle(ctx, {
+          circle(ctx, {
             x: entity.x,
             y: entity.y,
             radius: size / 2
           });
+          ctx.fillStyle = COLORS.player(player.id === socket.id);
+          ctx.fill();
         });
 
         if (isHovered) {
-          ctx.font = '12px Helvetica';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          pushPop(ctx, () => {
+            const { width } = ctx.measureText(entity.meta.name);
+            const padding = 8;
 
-          ctx.fillStyle = 'black';
-          const { width } = ctx.measureText(entity.meta.name + 'y');
-          const padding = 8;
-          ctx.fillRect(
-            entity.x - padding - width / 2,
-            entity.y - 40,
-            width + padding * 2,
-            20
-          );
-          ctx.fillStyle = 'white';
-          ctx.fillText(entity.meta.name + 'y', entity.x, entity.y - 30);
+            ctx.beginPath();
+            ctx.rect(
+              entity.x - padding - width / 2,
+              entity.y - 40,
+              width + padding * 2,
+              20
+            );
+            ctx.closePath();
+
+            ctx.font = '12px Helvetica';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.fillText(entity.meta.name, entity.x, entity.y - 30);
+          });
         }
       });
     });

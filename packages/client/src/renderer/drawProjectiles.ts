@@ -1,4 +1,4 @@
-import { pushPop, fillCircle } from '@/utils/canvas';
+import { circle, pushPop } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
 import { socket } from '@/socket';
@@ -19,12 +19,13 @@ export const drawProjectiles = ({ ctx, size }: DrawProjectilesOptions) => {
 
       interpolate(projectile, prevState.entitiesById[projectile.id], entity => {
         ctx.lineWidth = 0;
-        ctx.fillStyle = COLORS.projectile(projectile.parent === socket.id);
-        fillCircle(ctx, {
+        circle(ctx, {
           x: entity.x,
           y: entity.y,
           radius: size / 2
         });
+        ctx.fillStyle = COLORS.projectile(projectile.parent === socket.id);
+        ctx.fill();
       });
     });
   });

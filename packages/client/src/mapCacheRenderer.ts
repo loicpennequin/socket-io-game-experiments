@@ -1,5 +1,6 @@
 import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
 import { state } from './gameState';
+import type { Camera } from './renderer/applyCamera';
 import { createRenderer } from './renderer/createRenderer';
 import { drawCell } from './renderer/drawMap';
 import { FOG_OF_WAR_ALPHA } from './utils/constants';
@@ -15,7 +16,7 @@ export const createMapCacheRenderer = ({
 }: CreateMapCacheRendererOptions) => {
   const drawnCells = new Map<string, GameMapCell>();
 
-  return createRenderer({
+  const renderer = createRenderer({
     render: ({ ctx }) => {
       state.discoveredCells.forEach(cell => {
         ctx.globalAlpha = FOG_OF_WAR_ALPHA;
@@ -26,4 +27,21 @@ export const createMapCacheRenderer = ({
     },
     getDimensions: () => ({ w: MAP_SIZE, h: MAP_SIZE })
   });
+
+  return {
+    ...renderer,
+    draw(ctx: CanvasRenderingContext2D, camera: Camera) {
+      ctx.drawImage(
+        renderer.canvas,
+        camera.x,
+        camera.y,
+        camera.w,
+        camera.h,
+        camera.x,
+        camera.y,
+        camera.w,
+        camera.h
+      );
+    }
+  };
 };
