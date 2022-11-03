@@ -48,7 +48,7 @@ export const createGameRenderer = () => {
             fieldOfView: PLAYER_FIELD_OF_VIEW
           });
           drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-          drawPlayers({ ctx, size: PLAYER_SIZE });
+          drawPlayers({ ctx, size: PLAYER_SIZE, camera });
         });
       });
     },

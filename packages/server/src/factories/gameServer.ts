@@ -1,5 +1,6 @@
 import http from 'http';
-import { Server, Socket } from 'socket.io';
+import randomName from 'random-name';
+import { Server } from 'socket.io';
 import {
   ClientToServerEvents,
   ServerToClientEvents,
@@ -44,7 +45,10 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     const player = world.addEntity(
       createPlayer({
         id: socket.id,
-        world: world
+        world: world,
+        meta: {
+          name: randomName.first()
+        }
       })
     );
 

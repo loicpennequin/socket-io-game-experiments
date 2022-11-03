@@ -3,32 +3,52 @@ import {
   EntityType,
   GameMapCell,
   GRID_SIZE,
+  PlayerMeta,
   PLAYER_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PLAYER_SPEED
 } from '@game/shared-domain';
-import { clamp, Coordinates, randomInt, uniqBy } from '@game/shared-utils';
+import {
+  clamp,
+  Coordinates,
+  Override,
+  randomInt,
+  uniqBy
+} from '@game/shared-utils';
 import { Entity, createEntity, MakeEntityOptions } from './entity';
 import { createProjectile, Projectile } from './projectile';
 
-export type Player = Entity & {
-  newDiscoveredCells: Map<string, GameMapCell>;
-  allDiscoveredCells: Map<string, GameMapCell>;
+export type Player = Override<
+  Entity,
+  {
+    // overrides
+    meta: PlayerMeta;
 
-  consumeDiscoveredCells: () => GameMapCell[];
-  move: (coords: Coordinates) => void;
-  fireProjectile: (target: Coordinates) => Projectile;
-};
+    // new properties
+    newDiscoveredCells: Map<string, GameMapCell>;
+    allDiscoveredCells: Map<string, GameMapCell>;
+    consumeDiscoveredCells: () => GameMapCell[];
+    move: (coords: Coordinates) => void;
+    fireProjectile: (target: Coordinates) => Projectile;
+  }
+>;
 
-export type MakePlayerOptions = Omit<
-  MakeEntityOptions,
-  'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
+export type MakePlayerOptions = Override<
+  Omit<
+    MakeEntityOptions,
+    'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
+  >,
+  { meta: PlayerMeta }
 >;
 
 const clampToGrid = (n: number) =>
   clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
 
-export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
+export const createPlayer = ({
+  id,
+  world,
+  meta
+}: MakePlayerOptions): Player => {
   const entity = createEntity({
     id,
     type: EntityType.PLAYER,
@@ -42,7 +62,8 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
     fieldOfView: PLAYER_FIELD_OF_VIEW
   });
 
-  const player = Object.assign(entity, {
+  return Object.assign(entity, {
+    meta,
     allDiscoveredCells: world.map.getVisibleCells(
       entity.position,
       PLAYER_FIELD_OF_VIEW
@@ -95,5 +116,4 @@ export const createPlayer = ({ id, world }: MakePlayerOptions): Player => {
       return projectile;
     }
   });
-  return player;
 };

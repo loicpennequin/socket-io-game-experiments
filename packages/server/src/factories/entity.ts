@@ -121,7 +121,7 @@ export const createEntity = ({
       return {
         id,
         type,
-        meta,
+        meta: this.meta,
         parent: this.parent?.id ?? null,
         children: [...this.children.values()].map(child => child.id),
         ...this.position
