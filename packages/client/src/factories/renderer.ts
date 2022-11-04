@@ -4,6 +4,14 @@ import type { Dimensions } from '@game/shared-utils';
 export type RenderContext = {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  children: Renderer[];
+};
+
+export type Renderer = {
+  canvas: HTMLCanvasElement & { width: number; height: number };
+  isRunning: boolean;
+  start: () => void;
+  pause: () => void;
 };
 
 export type CreateRendererOptions = {
@@ -11,13 +19,15 @@ export type CreateRendererOptions = {
   getDimensions: () => Dimensions;
   pauseOnDocumentHidden?: boolean;
   id: string;
+  children?: Renderer[];
 };
 
 export const createRenderer = ({
   render,
   getDimensions,
-  pauseOnDocumentHidden = true
-}: CreateRendererOptions) => {
+  pauseOnDocumentHidden = true,
+  children = []
+}: CreateRendererOptions): Renderer => {
   let isRunning = false;
   let rafId: null | number = null;
 
@@ -28,7 +38,7 @@ export const createRenderer = ({
     canvas.width = dimensions.w;
     canvas.height = dimensions.h;
 
-    render({ canvas, ctx });
+    render({ canvas, ctx, children });
   };
 
   window.addEventListener('resize', resizeCanvas, false);
@@ -42,7 +52,7 @@ export const createRenderer = ({
   const loop = () => {
     if (!isRunning) return;
 
-    render({ canvas, ctx });
+    render({ canvas, ctx, children });
     rafId = window.requestAnimationFrame(loop);
   };
 
@@ -50,6 +60,7 @@ export const createRenderer = ({
     if (!isRunning) {
       isRunning = true;
       loop();
+      children.forEach(child => child.start());
     }
   };
 
@@ -58,6 +69,7 @@ export const createRenderer = ({
     if (rafId != null) {
       window.cancelAnimationFrame(rafId);
       rafId = null;
+      children.forEach(child => child.pause());
     }
   };
 
@@ -68,5 +80,3 @@ export const createRenderer = ({
     start
   };
 };
-
-export type Renderer = ReturnType<typeof createRenderer>;

@@ -1,9 +1,13 @@
-import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
+import { type GameMapCell, MAP_SIZE, CELL_SIZE } from '@game/shared-domain';
 import { state } from '../gameState';
 import type { Camera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawCell } from '../commands/drawMap';
-import { MAP_CELL_OPACITY_STEP } from '@/utils/constants';
+import {
+  COLORS,
+  DEFAULT_CELL_LIGHTNESS,
+  MAP_CELL_OPACITY_STEP
+} from '@/utils/constants';
 
 const getKey = (cell: GameMapCell) => `${cell.x}.${cell.y}`;
 
@@ -16,34 +20,49 @@ export const createMapRenderer = ({
   showLightness,
   id
 }: CreateMapCacheRendererOptions) => {
-  const drawnCells = new Map<string, GameMapCell & { opacity: number }>();
-  window.addEventListener(
-    'resize',
-    () => {
-      drawnCells.clear();
-    },
-    false
-  );
+  const cellsToDraw = new Map<string, GameMapCell & { opacity: number }>();
+
+  // window.addEventListener(
+  //   'resize',
+  //   () => {
+  //     drawnCells.clear();
+  //   },
+  //   false
+  // );
+
   const renderer = createRenderer({
     id,
     render: ({ ctx }) => {
       state.discoveredCells.forEach(cell => {
-        const cachedCell = drawnCells.get(getKey(cell));
+        const key = getKey(cell);
+        if (cellsToDraw.has(key)) return;
+        cellsToDraw.set(key, { ...cell, opacity: MAP_CELL_OPACITY_STEP });
+      });
 
-        if (cachedCell && cachedCell.opacity >= 1) return;
-        const value = {
-          ...cell,
-          opacity: (cachedCell?.opacity ?? 0) + MAP_CELL_OPACITY_STEP
-        };
-
-        drawnCells.set(getKey(cell), value);
-
-        drawCell({
-          ctx,
-          cell,
-          showLightness,
-          opacity: value.opacity
+      cellsToDraw.forEach(cell => {
+        ctx.clearRect(
+          cell.x * CELL_SIZE,
+          cell.y * CELL_SIZE,
+          CELL_SIZE,
+          CELL_SIZE
+        );
+        ctx.fillStyle = COLORS.mapCell({
+          lightness: showLightness
+            ? cell.lightness * 100
+            : DEFAULT_CELL_LIGHTNESS,
+          opacity: cell.opacity
         });
+        ctx.fillRect(
+          cell.x * CELL_SIZE,
+          cell.y * CELL_SIZE,
+          CELL_SIZE,
+          CELL_SIZE
+        );
+
+        cell.opacity += MAP_CELL_OPACITY_STEP;
+        if (cell.opacity > 1) {
+          cellsToDraw.delete(getKey(cell));
+        }
       });
     },
     getDimensions: () => ({ w: MAP_SIZE, h: MAP_SIZE })

@@ -35,11 +35,9 @@ export const createMinimapRenderer = ({ id }: { id: string }) => {
     getDimensions
   });
 
-  mapRenderer.start();
-  fogOfWarRenderer.start();
-
   return createRenderer({
     id,
+    children: [mapRenderer, fogOfWarRenderer],
     render({ canvas, ctx }) {
       ctx.fillStyle = COLORS.minimapBackground();
       ctx.fillRect(0, 0, canvas.width, canvas.height);

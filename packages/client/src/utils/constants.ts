@@ -7,7 +7,8 @@ export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 5;
 export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
-export const MAP_CELL_OPACITY_STEP = 0.03;
+export const MAP_CELL_OPACITY_STEP = 0.1;
+export const DEFAULT_CELL_LIGHTNESS = 50;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,

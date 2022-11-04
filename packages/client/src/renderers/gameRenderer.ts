@@ -5,7 +5,7 @@ import { applyCamera, type Camera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
-import { setGlobalInterpolationTimestamp } from '@/gameState';
+import { interpolateEntities } from '@/gameState';
 
 export const camera: Camera = {
   x: 0,
@@ -30,13 +30,13 @@ export const createGameRenderer = ({ id }: { id: string }) => {
     getDimensions
   });
 
-  mapRenderer.start();
-  fogOfWarRenderer.start();
-
   return createRenderer({
     id,
+    children: [mapRenderer, fogOfWarRenderer],
+
     render: ({ canvas, ctx }) => {
-      setGlobalInterpolationTimestamp();
+      interpolateEntities();
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       applyCamera({ canvas, ctx, camera }, () => {

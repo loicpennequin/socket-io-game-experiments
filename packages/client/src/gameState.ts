@@ -1,18 +1,21 @@
 import {
   type GameStateDto,
   type EntityDto,
-  GAME_STATE_UPDATE
+  GAME_STATE_UPDATE,
+  type GameMapCell
 } from '@game/shared-domain';
-import { indexBy, memoize } from '@game/shared-utils';
+import { indexBy } from '@game/shared-utils';
 import { interpolate } from './utils/interpolate';
 import { socket } from './utils/socket';
 
 export type SavedState = GameStateDto & {
+  allCells: GameMapCell[];
   timestamp: number;
   entitiesById: Record<string, EntityDto>;
 };
 
 const createEmptyState = (): SavedState => ({
+  allCells: [],
   discoveredCells: [],
   entities: [],
   entitiesById: {},
@@ -32,30 +35,26 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
     playerCount,
     entities,
     entitiesById: indexBy(payload.entities, 'id'),
-    discoveredCells: state.discoveredCells.concat(discoveredCells),
+    discoveredCells,
+    allCells: state.discoveredCells.concat(discoveredCells),
     timestamp: performance.now()
   });
 });
 
-let globalInterpolationTimeStamp = performance.now();
+let interpolatedEntities = new Map<string, EntityDto>();
 
-export const setGlobalInterpolationTimestamp = (now = performance.now()) => {
-  globalInterpolationTimeStamp = now;
-};
-
-export const _getInterpolatedEntities = memoize((timestamp: number) => {
+export const interpolateEntities = (now = performance.now()) => {
   const entries = state.entities.map((entity): [string, EntityDto] => {
     return [
       entity.id,
       {
         ...entity,
-        ...interpolate(entity, prevState.entitiesById[entity.id], timestamp)
+        ...interpolate(entity, prevState.entitiesById[entity.id], now)
       }
     ];
   });
-
-  return new Map<string, EntityDto>(entries);
-});
+  interpolatedEntities = new Map<string, EntityDto>(entries);
+};
 
 export const getInterpolatedEntity = (id: string) =>
-  _getInterpolatedEntities(globalInterpolationTimeStamp).get(id) as EntityDto;
+  interpolatedEntities.get(id) as EntityDto;
