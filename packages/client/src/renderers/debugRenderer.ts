@@ -1,5 +1,6 @@
 import { createRenderer } from '@/factories/renderer';
-import { PING } from '@game/shared-domain';
+import { state } from '@/gameState';
+import { isPlayerDto, PING } from '@game/shared-domain';
 import { sum } from '@game/shared-utils';
 import { socket } from '../utils/socket';
 
@@ -17,9 +18,11 @@ export const createDebugRenderer = () => {
   );
 
   const renderDOM = () => {
+    const seenPlayers = state.entities.filter(isPlayerDto).length;
     debugEl.innerHTML = /*html*/ `
       <div>FPS: ${Math.round(sum(...fps) / fps.length)}</div>
       <div>PING: ${Math.round(ping)}ms</div>
+      <div>Players seen: ${seenPlayers} / ${state.playerCount}</div>
     `;
   };
 

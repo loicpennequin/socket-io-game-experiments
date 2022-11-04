@@ -1,21 +1,18 @@
 import {
   type GameStateDto,
   type EntityDto,
-  GAME_STATE_UPDATE,
-  type GameMapCell
+  GAME_STATE_UPDATE
 } from '@game/shared-domain';
 import { indexBy } from '@game/shared-utils';
 import { interpolate } from './utils/interpolate';
 import { socket } from './utils/socket';
 
 export type SavedState = GameStateDto & {
-  allCells: GameMapCell[];
   timestamp: number;
   entitiesById: Record<string, EntityDto>;
 };
 
 const createEmptyState = (): SavedState => ({
-  allCells: [],
   discoveredCells: [],
   entities: [],
   entitiesById: {},
@@ -34,9 +31,8 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
   Object.assign(state, {
     playerCount,
     entities,
-    entitiesById: indexBy(payload.entities, 'id'),
     discoveredCells,
-    allCells: state.discoveredCells.concat(discoveredCells),
+    entitiesById: indexBy(payload.entities, 'id'),
     timestamp: performance.now()
   });
 });

@@ -29,6 +29,7 @@ export const createFogOfWarRenderer = ({
       applyCamera({ canvas, ctx, camera, shouldReadjust: false }, () => {
         ctx.fillStyle = COLORS.fogOfWar();
         ctx.fillRect(camera.x, camera.y, camera.w, camera.h);
+
         ctx.globalCompositeOperation = 'destination-out';
 
         const player = state.entitiesById[socket.id];

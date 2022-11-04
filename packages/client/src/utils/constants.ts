@@ -1,6 +1,7 @@
 import type { Values } from '@game/shared-utils';
 import { CELL_SIZE, MAP_SIZE, PlayerAction } from '@game/shared-domain';
 
+export const ONE_FRAME = 1000 / 60;
 export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
