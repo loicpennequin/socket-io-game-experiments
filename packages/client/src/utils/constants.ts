@@ -1,11 +1,12 @@
 import type { Values } from '@game/shared-utils';
-import { MAP_SIZE, PlayerAction } from '@game/shared-domain';
+import { CELL_SIZE, MAP_SIZE, PlayerAction } from '@game/shared-domain';
 
 export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 5;
+export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.25;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,
@@ -26,7 +27,7 @@ export const COLORS = Object.freeze({
     isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
 
   mapCell: ({ lightness }: { lightness: number }) => {
-    return `hsl(${MAP_HUE}, 45%, ${lightness}%)`;
+    return `hsl(${MAP_HUE}, 30%, ${lightness}%)`;
   },
 
   fogOfWar: () => 'rgba(0, 0, 0, 0.8)'

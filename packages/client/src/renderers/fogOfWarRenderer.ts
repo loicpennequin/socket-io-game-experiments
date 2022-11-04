@@ -9,7 +9,7 @@ import { applyCamera, type Camera } from '../commands/applyCamera';
 import { createRenderer } from '../commands/createRenderer';
 import { socket } from '../utils/socket';
 import { pushPop } from '../utils/canvas';
-import { COLORS } from '../utils/constants';
+import { COLORS, FOG_OF_WAR_BLUR } from '../utils/constants';
 import { interpolate } from '../utils/interpolate';
 
 export const createFogOfWarRenderer = ({
@@ -44,7 +44,7 @@ export const createFogOfWarRenderer = ({
               const gradient = ctx.createRadialGradient(
                 entity.x,
                 entity.y,
-                fov - 25,
+                fov - FOG_OF_WAR_BLUR,
                 entity.x,
                 entity.y,
                 fov
