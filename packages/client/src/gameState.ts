@@ -4,7 +4,7 @@ import {
   GAME_STATE_UPDATE
 } from '@game/shared-domain';
 import { indexBy } from '@game/shared-utils';
-import { socket } from './socket';
+import { socket } from './utils/socket';
 
 export type SavedState = GameStateDto & {
   timestamp: number;

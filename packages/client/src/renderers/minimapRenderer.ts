@@ -1,16 +1,16 @@
 import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createMapRenderer } from './mapRenderer';
-import { createRenderer } from './renderer/createRenderer';
-import { drawPlayers } from './renderer/drawPlayers';
-import { drawProjectiles } from './renderer/drawProjectiles';
-import { pushPop } from './utils/canvas';
+import { createRenderer } from '../commands/createRenderer';
+import { drawPlayers } from '../commands/drawPlayers';
+import { drawProjectiles } from '../commands/drawProjectiles';
+import { pushPop } from '../utils/canvas';
 import {
   COLORS,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
-} from './utils/constants';
+} from '../utils/constants';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,

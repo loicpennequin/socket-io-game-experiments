@@ -1,8 +1,8 @@
 import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
-import { state } from './gameState';
-import type { Camera } from './renderer/applyCamera';
-import { createRenderer } from './renderer/createRenderer';
-import { drawCell } from './renderer/drawMap';
+import { state } from '../gameState';
+import type { Camera } from '../commands/applyCamera';
+import { createRenderer } from '../commands/createRenderer';
+import { drawCell } from '../commands/drawMap';
 
 const getKey = (cell: GameMapCell) => `${cell.x}.${cell.y}`;
 

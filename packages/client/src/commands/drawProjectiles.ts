@@ -1,7 +1,7 @@
 import { circle, pushPop } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
-import { socket } from '@/socket';
+import { socket } from '@/utils/socket';
 import { isProjectileDto } from '@game/shared-domain';
 import { interpolate } from '@/utils/interpolate';
 

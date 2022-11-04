@@ -1,11 +1,11 @@
 import { pushPop, circle } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { prevState, state } from '@/gameState';
-import { socket } from '@/socket';
+import { socket } from '@/utils/socket';
 import { isPlayerDto } from '@game/shared-domain';
 import { interpolate } from '@/utils/interpolate';
 import { pointCircleCollision } from '@game/shared-utils';
-import { mousePosition } from '@/mouseTracker';
+import { mousePosition } from '@/utils/mouseTracker';
 import type { Camera } from './applyCamera';
 
 type DrawPlayersOptions = {

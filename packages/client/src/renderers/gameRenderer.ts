@@ -1,10 +1,10 @@
 import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createMapRenderer } from './mapRenderer';
-import { applyCamera, type Camera } from './renderer/applyCamera';
-import { createRenderer } from './renderer/createRenderer';
-import { drawPlayers } from './renderer/drawPlayers';
-import { drawProjectiles } from './renderer/drawProjectiles';
+import { applyCamera, type Camera } from '../commands/applyCamera';
+import { createRenderer } from '../commands/createRenderer';
+import { drawPlayers } from '../commands/drawPlayers';
+import { drawProjectiles } from '../commands/drawProjectiles';
 
 export const camera: Camera = {
   x: 0,

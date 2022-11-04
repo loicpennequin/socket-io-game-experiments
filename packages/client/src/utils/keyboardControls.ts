@@ -1,8 +1,8 @@
 import { throttle, type Nullable } from '@game/shared-utils';
-import { KEYBOARD_CONTROLS, PROJECTILE_THROTTLE_RATE } from './utils/constants';
+import { KEYBOARD_CONTROLS, PROJECTILE_THROTTLE_RATE } from './constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
-import { camera } from './gameRenderer';
+import { camera } from '../renderers/gameRenderer';
 import {
   OngoingAction,
   PLAYER_ACTION,

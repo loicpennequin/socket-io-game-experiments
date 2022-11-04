@@ -4,13 +4,13 @@ import {
   PROJECTILE_HARD_FIELD_OF_VIEW
 } from '@game/shared-domain';
 import type { Dimensions } from '@game/shared-utils';
-import { state, prevState } from './gameState';
-import { applyCamera, type Camera } from './renderer/applyCamera';
-import { createRenderer } from './renderer/createRenderer';
-import { socket } from './socket';
-import { pushPop } from './utils/canvas';
-import { COLORS } from './utils/constants';
-import { interpolate } from './utils/interpolate';
+import { state, prevState } from '../gameState';
+import { applyCamera, type Camera } from '../commands/applyCamera';
+import { createRenderer } from '../commands/createRenderer';
+import { socket } from '../utils/socket';
+import { pushPop } from '../utils/canvas';
+import { COLORS } from '../utils/constants';
+import { interpolate } from '../utils/interpolate';
 
 export const createFogOfWarRenderer = ({
   camera,

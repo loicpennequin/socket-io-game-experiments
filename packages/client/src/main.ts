@@ -1,10 +1,10 @@
 import './style.css';
 
-import { initKeyboardControls } from './keyboardControls';
-import { createGameRenderer } from './gameRenderer';
-import { displayDebugInfo } from './debug';
-import { trackMousePosition } from './mouseTracker';
-import { createMinimapRenderer } from './minimapRenderer';
+import { initKeyboardControls } from './utils/keyboardControls';
+import { createGameRenderer } from './renderers/gameRenderer';
+import { displayDebugInfo } from './utils/debug';
+import { trackMousePosition } from './utils/mouseTracker';
+import { createMinimapRenderer } from './renderers/minimapRenderer';
 
 const mainEl = document.querySelector('main') as HTMLElement;
 
