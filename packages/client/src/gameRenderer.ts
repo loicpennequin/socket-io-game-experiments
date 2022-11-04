@@ -1,11 +1,10 @@
-import { PLAYER_HARD_FIELD_OF_VIEW } from '@game/shared-domain';
-import { createMapCacheRenderer } from './mapCacheRenderer';
+import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
+import { createFogOfWarRenderer } from './fogOfWarRenderer';
+import { createMapRenderer } from './mapRenderer';
 import { applyCamera, type Camera } from './renderer/applyCamera';
 import { createRenderer } from './renderer/createRenderer';
-import { drawMapInFieldOfView } from './renderer/drawMap';
-// import { drawPlayers } from './renderer/drawPlayers';
-// import { drawProjectiles } from './renderer/drawProjectiles';
-import { socket } from './socket';
+import { drawPlayers } from './renderer/drawPlayers';
+import { drawProjectiles } from './renderer/drawProjectiles';
 
 export const camera: Camera = {
   x: 0,
@@ -14,33 +13,44 @@ export const camera: Camera = {
   h: 0
 };
 
+const getDimensions = () => ({
+  w: window.innerWidth,
+  h: window.innerHeight
+});
+
 export const createGameRenderer = () => {
-  const mapCache = createMapCacheRenderer({ showLightness: true });
-  mapCache.start();
+  const mapRenderer = createMapRenderer({ showLightness: true });
+  const fogOfWarRenderer = createFogOfWarRenderer({
+    camera,
+    getDimensions
+  });
+
+  mapRenderer.start();
+  fogOfWarRenderer.start();
 
   return createRenderer({
     render: ({ canvas, ctx }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      applyCamera({ canvas, ctx, camera }, () => {
-        // mapCache.draw(ctx, {
-        //   x: camera.x,
-        //   y: camera.y,
-        //   w: camera.w,
-        //   h: camera.h
-        // });
 
-        drawMapInFieldOfView({
-          ctx,
-          entityId: socket.id,
-          fieldOfView: PLAYER_HARD_FIELD_OF_VIEW
+      applyCamera({ canvas, ctx, camera }, () => {
+        mapRenderer.draw(ctx, {
+          x: camera.x,
+          y: camera.y,
+          w: camera.w,
+          h: camera.h
         });
-        // drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        // drawPlayers({ ctx, size: PLAYER_SIZE, camera });
+
+        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        drawPlayers({ ctx, size: PLAYER_SIZE, camera });
+
+        fogOfWarRenderer.draw(ctx, {
+          x: camera.x,
+          y: camera.y,
+          w: camera.w,
+          h: camera.h
+        });
       });
     },
-    getDimensions: () => ({
-      w: window.innerWidth,
-      h: window.innerHeight
-    })
+    getDimensions
   });
 };

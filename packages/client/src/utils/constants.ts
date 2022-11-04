@@ -6,7 +6,6 @@ export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 5;
-export const FOG_OF_WAR_ALPHA = 0.3;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,
@@ -28,5 +27,7 @@ export const COLORS = Object.freeze({
 
   mapCell: ({ lightness }: { lightness: number }) => {
     return `hsl(${MAP_HUE}, 45%, ${lightness}%)`;
-  }
+  },
+
+  fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
 });
