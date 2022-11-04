@@ -42,7 +42,6 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
 });
 
 let interpolatedEntities = new Map<string, EntityDto>();
-
 export const interpolateEntities = (now = performance.now()) => {
   const entries = state.entities.map((entity): [string, EntityDto] => {
     return [

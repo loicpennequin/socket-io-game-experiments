@@ -75,7 +75,9 @@ export const createRenderer = ({
 
   return {
     canvas,
-    isRunning,
+    get isRunning() {
+      return isRunning;
+    },
     pause,
     start
   };

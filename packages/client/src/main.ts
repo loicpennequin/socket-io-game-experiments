@@ -9,15 +9,14 @@ import { socket } from './utils/socket';
 
 const mainEl = document.querySelector('main') as HTMLElement;
 
-initKeyboardControls();
-trackMousePosition();
-
 const gameRenderer = createGameRenderer({ id: 'game' });
 const minimapRenderer = createMinimapRenderer({ id: 'minimap' });
 
 mainEl.appendChild(gameRenderer.canvas);
 mainEl.appendChild(Object.assign(minimapRenderer.canvas, { id: 'minimap' }));
 
+initKeyboardControls();
+trackMousePosition();
 socket.on('connect', () => {
   gameRenderer.start();
   minimapRenderer.start(); // ...
@@ -26,4 +25,12 @@ socket.on('connect', () => {
 if (import.meta.env.VITE_DEBUG) {
   const debugRenderer = createDebugRenderer();
   debugRenderer.start();
+  document.addEventListener('keyup', e => {
+    if (e.code === 'Enter') {
+      gameRenderer.isRunning ? gameRenderer.pause() : gameRenderer.start();
+      minimapRenderer.isRunning
+        ? minimapRenderer.pause()
+        : minimapRenderer.start();
+    }
+  });
 }

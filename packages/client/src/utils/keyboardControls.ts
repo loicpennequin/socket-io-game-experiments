@@ -35,7 +35,6 @@ const isOngoingAction = (x: string): x is OngoingAction => x in OngoingAction;
 
 export const initKeyboardControls = () => {
   const fireProjectile = throttle(() => {
-    console.log;
     socket.emit(PLAYER_ACTION, {
       action: PlayerAction.FIRE_PROJECTILE,
       meta: {
