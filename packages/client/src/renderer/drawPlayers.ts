@@ -29,6 +29,7 @@ export const drawPlayers = ({ ctx, size, camera }: DrawPlayersOptions) => {
             r: size / 2
           }
         );
+
         pushPop(ctx, () => {
           if (isHovered) ctx.filter = 'saturate(200%)';
 
@@ -45,23 +46,23 @@ export const drawPlayers = ({ ctx, size, camera }: DrawPlayersOptions) => {
         if (isHovered) {
           pushPop(ctx, () => {
             const { width } = ctx.measureText(entity.meta.name);
-            const padding = 8;
-
+            const padding = 12;
+            ctx.fillStyle = 'black';
             ctx.beginPath();
             ctx.rect(
               entity.x - padding - width / 2,
               entity.y - 40,
               width + padding * 2,
-              20
+              25
             );
             ctx.closePath();
+            ctx.fill();
 
             ctx.font = '12px Helvetica';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.fillText(entity.meta.name, entity.x, entity.y - 30);
+            ctx.fillText(entity.meta.name, entity.x, entity.y - 28);
           });
         }
       });

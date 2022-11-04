@@ -17,6 +17,7 @@ main {
 
 #debug-infos {
   position: fixed;
+  z-index: 2;
   top: 0;
   left: 0;
   font-size: 0.8rem;
@@ -24,18 +25,16 @@ main {
   line-height: 1.8;
 }
 
+#fog-of-war {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+}
+
 #minimap {
   position: fixed;
+  z-index: 2;
   top: 0;
   right: 0;
   outline: solid 1px white;
-}
-
-#mapcache-debug {
-  position: relative;
-  z-index: 999;
-}
-
-.hidden {
-  display: none;
 }
