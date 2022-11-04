@@ -7,6 +7,7 @@ export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 5;
 export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
+export const MAP_CELL_OPACITY_STEP = 0.03;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,
@@ -26,8 +27,8 @@ export const COLORS = Object.freeze({
   projectile: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
 
-  mapCell: ({ lightness }: { lightness: number }) => {
-    return `hsl(${MAP_HUE}, 30%, ${lightness}%)`;
+  mapCell: ({ lightness, opacity }: { lightness: number; opacity: number }) => {
+    return `hsla(${MAP_HUE}, 30%, ${lightness}%, ${opacity})`;
   },
 
   fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
