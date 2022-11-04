@@ -1,8 +1,8 @@
 export const TICK_RATE = 20;
 export const PING_INTERVAL = 1000;
 
-export const GRID_SIZE = 100;
-export const CELL_SIZE = 30;
+export const GRID_SIZE = 250;
+export const CELL_SIZE = 25;
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
 
 export const PLAYER_SIZE = 20;

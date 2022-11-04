@@ -1,7 +1,6 @@
-import { prevState, state } from '@/gameState';
+import { getInterpolatedEntity, state } from '@/gameState';
 import { socket } from '@/utils/socket';
 import { pushPop } from '@/utils/canvas';
-import { interpolate } from '@/utils/interpolate';
 import { MAP_SIZE } from '@game/shared-domain';
 import { clamp, type Coordinates, type Dimensions } from '@game/shared-utils';
 
@@ -22,25 +21,25 @@ export const applyCamera = (
   if (!player) return;
 
   pushPop(ctx, () => {
-    interpolate(player, prevState.entitiesById[player.id], ({ x, y }) => {
-      if (shouldReadjust) {
-        Object.assign(camera, {
-          x: clamp(x - canvas.width / 2, {
-            min: 0,
-            max: Math.max(MAP_SIZE - canvas.width, 0)
-          }),
-          y: clamp(y - canvas.height / 2, {
-            min: 0,
-            max: Math.max(MAP_SIZE - canvas.height, 0)
-          }),
-          w: canvas.width,
-          h: canvas.height
-        });
-      }
+    const { x, y } = getInterpolatedEntity(player.id);
 
-      ctx.rect(0, 0, camera.w, camera.h);
-      ctx.translate(camera.x * -1, camera.y * -1);
-      cb();
-    });
+    if (shouldReadjust) {
+      Object.assign(camera, {
+        x: clamp(x - canvas.width / 2, {
+          min: 0,
+          max: Math.max(MAP_SIZE - canvas.width, 0)
+        }),
+        y: clamp(y - canvas.height / 2, {
+          min: 0,
+          max: Math.max(MAP_SIZE - canvas.height, 0)
+        }),
+        w: canvas.width,
+        h: canvas.height
+      });
+    }
+
+    ctx.rect(0, 0, camera.w, camera.h);
+    ctx.translate(camera.x * -1, camera.y * -1);
+    cb();
   });
 };

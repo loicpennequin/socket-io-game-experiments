@@ -5,7 +5,7 @@ import { applyCamera, type Camera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
-import { setGlobalInterpolationTimestamp } from '@/utils/interpolate';
+import { setGlobalInterpolationTimestamp } from '@/gameState';
 
 export const camera: Camera = {
   x: 0,

@@ -3,7 +3,8 @@ import {
   type EntityDto,
   GAME_STATE_UPDATE
 } from '@game/shared-domain';
-import { indexBy } from '@game/shared-utils';
+import { indexBy, memoize } from '@game/shared-utils';
+import { interpolate } from './utils/interpolate';
 import { socket } from './utils/socket';
 
 export type SavedState = GameStateDto & {
@@ -34,5 +35,27 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
     discoveredCells: state.discoveredCells.concat(discoveredCells),
     timestamp: performance.now()
   });
-  console.log('STATE UPDATED');
 });
+
+let globalInterpolationTimeStamp = performance.now();
+
+export const setGlobalInterpolationTimestamp = (now = performance.now()) => {
+  globalInterpolationTimeStamp = now;
+};
+
+export const _getInterpolatedEntities = memoize((timestamp: number) => {
+  const entries = state.entities.map((entity): [string, EntityDto] => {
+    return [
+      entity.id,
+      {
+        ...entity,
+        ...interpolate(entity, prevState.entitiesById[entity.id], timestamp)
+      }
+    ];
+  });
+
+  return new Map<string, EntityDto>(entries);
+});
+
+export const getInterpolatedEntity = (id: string) =>
+  _getInterpolatedEntities(globalInterpolationTimeStamp).get(id) as EntityDto;

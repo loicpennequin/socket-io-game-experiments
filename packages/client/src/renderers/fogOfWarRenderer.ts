@@ -4,13 +4,12 @@ import {
   PROJECTILE_HARD_FIELD_OF_VIEW
 } from '@game/shared-domain';
 import type { Dimensions } from '@game/shared-utils';
-import { state, prevState } from '../gameState';
+import { state, getInterpolatedEntity } from '../gameState';
 import { applyCamera, type Camera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { socket } from '../utils/socket';
 import { pushPop } from '../utils/canvas';
 import { COLORS, FOG_OF_WAR_BLUR } from '../utils/constants';
-import { interpolate } from '../utils/interpolate';
 
 export const createFogOfWarRenderer = ({
   camera,
@@ -39,42 +38,26 @@ export const createFogOfWarRenderer = ({
         pushPop(ctx, () => {
           ctx.scale(scale, scale);
           [player, ...children].forEach(entity => {
-            interpolate(entity, prevState.entitiesById[entity.id], entity => {
-              const fov =
-                entity.type === EntityType.PLAYER
-                  ? PLAYER_HARD_FIELD_OF_VIEW
-                  : PROJECTILE_HARD_FIELD_OF_VIEW;
-              console.log(
-                `[FOW]: Drawing ${entity.id} | ${entity.x}, ${entity.y}`
-              );
+            const { x, y } = getInterpolatedEntity(entity.id);
+            const fov =
+              entity.type === EntityType.PLAYER
+                ? PLAYER_HARD_FIELD_OF_VIEW
+                : PROJECTILE_HARD_FIELD_OF_VIEW;
 
-              const gradient = ctx.createRadialGradient(
-                entity.x,
-                entity.y,
-                fov - FOG_OF_WAR_BLUR,
-                entity.x,
-                entity.y,
-                fov
-              );
+            const gradient = ctx.createRadialGradient(
+              x,
+              y,
+              fov - FOG_OF_WAR_BLUR,
+              x,
+              y,
+              fov
+            );
 
-              // Add three color stops
-              gradient.addColorStop(0, 'white');
-              gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            gradient.addColorStop(0, 'white');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
 
-              // Set the fill style and draw a rectangle
-              ctx.fillStyle = gradient;
-              ctx.fillRect(entity.x - fov, entity.y - fov, fov * 2, fov * 2);
-
-              // circle(ctx, {
-              //   x: entity.x,
-              //   y: entity.y,
-              //   radius:
-              //     entity.type === EntityType.PLAYER
-              //       ? PLAYER_HARD_FIELD_OF_VIEW
-              //       : PROJECTILE_HARD_FIELD_OF_VIEW
-              // });
-              // ctx.fill();
-            });
+            ctx.fillStyle = gradient;
+            ctx.fillRect(x - fov, y - fov, fov * 2, fov * 2);
           });
         });
       });

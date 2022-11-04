@@ -13,8 +13,6 @@ export type CreateRendererOptions = {
   id: string;
 };
 
-export const FRAME_RATE_CAP = 10;
-
 export const createRenderer = ({
   render,
   getDimensions,
@@ -45,9 +43,7 @@ export const createRenderer = ({
     if (!isRunning) return;
 
     render({ canvas, ctx });
-    setTimeout(() => {
-      rafId = window.requestAnimationFrame(loop);
-    }, 1000 / FRAME_RATE_CAP);
+    rafId = window.requestAnimationFrame(loop);
   };
 
   const start = () => {

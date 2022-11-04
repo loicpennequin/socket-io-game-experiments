@@ -3,9 +3,10 @@ import type { Dimensions, Coordinates, Matrix } from './types';
 export const indexBy = <T extends Record<string, any>>(
   arr: T[],
   key: keyof T
-) => Object.fromEntries(arr.map(item => [item[key], item]));
+) =>
+  Object.fromEntries(arr.map(item => [item[key], item])) as Record<string, T>;
 
-export const uniqBy = <T>(arr: T[], getKey: (item: T) => any): T[] => {
+export const uniqBy = <T>(arr: T[], getKey: (item: T) => string): T[] => {
   const uniq: Record<string, T> = {};
 
   for (const item of arr) {
@@ -43,12 +44,15 @@ export const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
   return debounced;
 };
 
-export const throttle = (fn: Function, wait: number = 300) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const throttle = (fn: Function, wait = 300) => {
   let inThrottle: boolean,
     lastFn: ReturnType<typeof setTimeout>,
     lastTime: number;
   return function (this: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-this-alias
     const context = this,
+      // eslint-disable-next-line prefer-rest-params
       args = arguments;
     if (!inThrottle) {
       fn.apply(context, args);
@@ -78,4 +82,20 @@ export const pipeBuilder = <A, B>(fn: (a: A) => B) => {
   };
 };
 
-export const noop = () => {};
+export const noop = () => void 0;
+
+export const memoize = <TArgs extends any[], TReturn>(
+  fn: (...args: TArgs) => TReturn
+) => {
+  const cache = new Map<string, TReturn>();
+
+  return (...args: TArgs) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key) as TReturn;
+
+    const val = fn(...args);
+    cache.set(key, val);
+
+    return val;
+  };
+};
