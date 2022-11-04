@@ -20,7 +20,6 @@ export const createDebugRenderer = () => {
     debugEl.innerHTML = /*html*/ `
       <div>FPS: ${Math.round(sum(...fps) / fps.length)}</div>
       <div>PING: ${Math.round(ping)}ms</div>
-      <div>Press enter to pause / restart the game</div>
     `;
   };
 

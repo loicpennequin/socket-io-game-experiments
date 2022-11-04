@@ -6,6 +6,7 @@ import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { interpolateEntities } from '@/gameState';
+import { createDebugRenderer } from './debugRenderer';
 
 export const camera: Camera = {
   x: 0,
@@ -29,10 +30,14 @@ export const createGameRenderer = ({ id }: { id: string }) => {
     camera,
     getDimensions
   });
-
+  const debugRenderer = createDebugRenderer();
   return createRenderer({
     id,
-    children: [mapRenderer, fogOfWarRenderer],
+    children: [
+      mapRenderer,
+      fogOfWarRenderer,
+      import.meta.env.VITE_DEBUG && debugRenderer
+    ].filter(Boolean),
 
     render: ({ canvas, ctx }) => {
       interpolateEntities();

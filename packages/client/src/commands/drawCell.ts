@@ -1,14 +1,12 @@
-import { COLORS } from '@/utils/constants';
+import { COLORS, DEFAULT_CELL_LIGHTNESS } from '@/utils/constants';
 import { type GameMapCell, CELL_SIZE } from '@game/shared-domain';
 
 type DrawCellOptions = {
   ctx: CanvasRenderingContext2D;
   showLightness: boolean;
-  cell: GameMapCell;
   opacity: number;
+  cell: GameMapCell;
 };
-
-const DEFAULT_LIGHTNESS = 50;
 
 export const drawCell = ({
   ctx,
@@ -16,9 +14,10 @@ export const drawCell = ({
   showLightness,
   opacity
 }: DrawCellOptions) => {
+  ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
   ctx.fillStyle = COLORS.mapCell({
-    lightness: showLightness ? cell.lightness * 100 : DEFAULT_LIGHTNESS,
-    opacity
+    l: showLightness ? cell.lightness * 100 : DEFAULT_CELL_LIGHTNESS,
+    a: opacity
   });
   ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };
