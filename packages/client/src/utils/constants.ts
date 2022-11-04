@@ -28,9 +28,5 @@ export const COLORS = Object.freeze({
   projectile: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
 
-  mapCell: ({ lightness, opacity }: { lightness: number; opacity: number }) => {
-    return `hsla(${MAP_HUE}, 30%, ${lightness}%, ${opacity})`;
-  },
-
   fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
 });
