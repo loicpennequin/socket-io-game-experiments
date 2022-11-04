@@ -12,28 +12,37 @@ type DrawPlayersOptions = {
   ctx: CanvasRenderingContext2D;
   size: number;
   camera?: Camera;
+  handleHover?: boolean;
 };
 
-export const drawPlayers = ({ ctx, size, camera }: DrawPlayersOptions) => {
+export const drawPlayers = ({
+  ctx,
+  size,
+  camera = { x: 0, y: 0, w: 0, h: 0 },
+  handleHover = true
+}: DrawPlayersOptions) => {
   state.entities.filter(isPlayerDto).forEach(player => {
     pushPop(ctx, () => {
       interpolate(player, prevState.entitiesById[player.id], entity => {
-        const isHovered = pointCircleCollision(
-          {
-            x: mousePosition.x + (camera?.x ?? 0),
-            y: mousePosition.y + (camera?.y ?? 0)
-          },
-          {
-            x: entity.x,
-            y: entity.y,
-            r: size / 2
-          }
-        );
+        const isHovered =
+          handleHover &&
+          pointCircleCollision(
+            {
+              x: mousePosition.x + camera?.x,
+              y: mousePosition.y + camera?.y
+            },
+            {
+              x: entity.x,
+              y: entity.y,
+              r: size / 2
+            }
+          );
 
         pushPop(ctx, () => {
           if (isHovered) ctx.filter = 'saturate(200%)';
 
           ctx.lineWidth = 0;
+          console.log(`[PLA]: Drawing ${entity.id} | ${entity.x}, ${entity.y}`);
           circle(ctx, {
             x: entity.x,
             y: entity.y,

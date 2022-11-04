@@ -1,17 +1,19 @@
 import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
 import { state } from '../gameState';
 import type { Camera } from '../commands/applyCamera';
-import { createRenderer } from '../commands/createRenderer';
+import { createRenderer } from '../factories/renderer';
 import { drawCell } from '../commands/drawMap';
 
 const getKey = (cell: GameMapCell) => `${cell.x}.${cell.y}`;
 
 export type CreateMapCacheRendererOptions = {
   showLightness: boolean;
+  id: string;
 };
 
 export const createMapRenderer = ({
-  showLightness
+  showLightness,
+  id
 }: CreateMapCacheRendererOptions) => {
   const drawnCells = new Map<string, GameMapCell>();
   window.addEventListener(
@@ -22,6 +24,7 @@ export const createMapRenderer = ({
     false
   );
   const renderer = createRenderer({
+    id,
     render: ({ ctx }) => {
       state.discoveredCells.forEach(cell => {
         if (drawnCells.has(getKey(cell))) return;

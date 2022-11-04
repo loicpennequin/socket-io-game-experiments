@@ -6,7 +6,7 @@ export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 5;
-export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.25;
+export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
 
 export const KEYBOARD_CONTROLS = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,

@@ -10,7 +10,10 @@ export type CreateRendererOptions = {
   render: (renderContext: RenderContext) => void;
   getDimensions: () => Dimensions;
   pauseOnDocumentHidden?: boolean;
+  id: string;
 };
+
+export const FRAME_RATE_CAP = 10;
 
 export const createRenderer = ({
   render,
@@ -42,7 +45,9 @@ export const createRenderer = ({
     if (!isRunning) return;
 
     render({ canvas, ctx });
-    rafId = window.requestAnimationFrame(loop);
+    setTimeout(() => {
+      rafId = window.requestAnimationFrame(loop);
+    }, 1000 / FRAME_RATE_CAP);
   };
 
   const start = () => {

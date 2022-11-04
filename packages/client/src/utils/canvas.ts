@@ -30,3 +30,6 @@ export const fillRectCentered = (
 ) => {
   context.fillRect(x - w / 2, y - h / 2, w, h);
 };
+
+export const randomHex = () =>
+  '#' + Math.floor(Math.random() * 16777215).toString(16);

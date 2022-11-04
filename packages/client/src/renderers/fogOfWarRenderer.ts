@@ -6,7 +6,7 @@ import {
 import type { Dimensions } from '@game/shared-utils';
 import { state, prevState } from '../gameState';
 import { applyCamera, type Camera } from '../commands/applyCamera';
-import { createRenderer } from '../commands/createRenderer';
+import { createRenderer } from '../factories/renderer';
 import { socket } from '../utils/socket';
 import { pushPop } from '../utils/canvas';
 import { COLORS, FOG_OF_WAR_BLUR } from '../utils/constants';
@@ -15,13 +15,16 @@ import { interpolate } from '../utils/interpolate';
 export const createFogOfWarRenderer = ({
   camera,
   getDimensions,
+  id,
   scale = 1
 }: {
   camera: Camera;
   getDimensions: () => Dimensions;
+  id: string;
   scale?: number;
 }) => {
   const renderer = createRenderer({
+    id,
     render: ({ canvas, ctx }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       applyCamera({ canvas, ctx, camera, shouldReadjust: false }, () => {
@@ -41,6 +44,10 @@ export const createFogOfWarRenderer = ({
                 entity.type === EntityType.PLAYER
                   ? PLAYER_HARD_FIELD_OF_VIEW
                   : PROJECTILE_HARD_FIELD_OF_VIEW;
+              console.log(
+                `[FOW]: Drawing ${entity.id} | ${entity.x}, ${entity.y}`
+              );
+
               const gradient = ctx.createRadialGradient(
                 entity.x,
                 entity.y,

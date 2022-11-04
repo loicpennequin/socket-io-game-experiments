@@ -2,9 +2,10 @@ import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createMapRenderer } from './mapRenderer';
 import { applyCamera, type Camera } from '../commands/applyCamera';
-import { createRenderer } from '../commands/createRenderer';
+import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
+import { setGlobalInterpolationTimestamp } from '@/utils/interpolate';
 
 export const camera: Camera = {
   x: 0,
@@ -18,9 +19,13 @@ const getDimensions = () => ({
   h: window.innerHeight
 });
 
-export const createGameRenderer = () => {
-  const mapRenderer = createMapRenderer({ showLightness: true });
+export const createGameRenderer = ({ id }: { id: string }) => {
+  const mapRenderer = createMapRenderer({
+    id: `${id}:map`,
+    showLightness: true
+  });
   const fogOfWarRenderer = createFogOfWarRenderer({
+    id: ` '${id}:fog-of-war`,
     camera,
     getDimensions
   });
@@ -29,7 +34,9 @@ export const createGameRenderer = () => {
   fogOfWarRenderer.start();
 
   return createRenderer({
+    id,
     render: ({ canvas, ctx }) => {
+      setGlobalInterpolationTimestamp();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       applyCamera({ canvas, ctx, camera }, () => {

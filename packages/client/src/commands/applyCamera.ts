@@ -27,17 +27,18 @@ export const applyCamera = (
         Object.assign(camera, {
           x: clamp(x - canvas.width / 2, {
             min: 0,
-            max: MAP_SIZE - canvas.width
+            max: Math.max(MAP_SIZE - canvas.width, 0)
           }),
           y: clamp(y - canvas.height / 2, {
             min: 0,
-            max: MAP_SIZE - canvas.height
+            max: Math.max(MAP_SIZE - canvas.height, 0)
           }),
           w: canvas.width,
           h: canvas.height
         });
       }
 
+      ctx.rect(0, 0, camera.w, camera.h);
       ctx.translate(camera.x * -1, camera.y * -1);
       cb();
     });

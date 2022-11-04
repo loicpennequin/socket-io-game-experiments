@@ -34,4 +34,5 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
     discoveredCells: state.discoveredCells.concat(discoveredCells),
     timestamp: performance.now()
   });
+  console.log('STATE UPDATED');
 });
