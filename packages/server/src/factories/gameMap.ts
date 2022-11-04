@@ -1,9 +1,4 @@
-import {
-  GRID_SIZE,
-  CELL_SIZE,
-  PLAYER_FIELD_OF_VIEW,
-  GameMapCell
-} from '@game/shared-domain';
+import { GRID_SIZE, CELL_SIZE, GameMapCell } from '@game/shared-domain';
 import {
   Coordinates,
   createMatrix,
@@ -47,8 +42,8 @@ export const createGameMap = () => {
     getVisibleCells(point: Coordinates, fieldOfView: number) {
       const coords = {
         min: {
-          x: point.x - PLAYER_FIELD_OF_VIEW,
-          y: point.y - PLAYER_FIELD_OF_VIEW
+          x: point.x - fieldOfView,
+          y: point.y - fieldOfView
         },
         max: {
           x: point.x + fieldOfView,

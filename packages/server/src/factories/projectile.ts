@@ -1,7 +1,8 @@
 import {
   EntityType,
   PROJECTILE_SIZE,
-  PROJECTILE_FIELD_OF_VIEW,
+  PROJECTILE_HARD_FIELD_OF_VIEW,
+  PROJECTILE_SOFT_FIELD_OF_VIEW,
   PROJECTILE_LIFESPAN,
   PROJECTILE_SPEED
 } from '@game/shared-domain';
@@ -36,7 +37,10 @@ export const createProjectile = ({
     parent,
     position: { ...parent.position },
     dimensions: { w: PROJECTILE_SIZE, h: PROJECTILE_SIZE },
-    fieldOfView: PROJECTILE_FIELD_OF_VIEW
+    fieldOfView: {
+      hard: PROJECTILE_HARD_FIELD_OF_VIEW,
+      soft: PROJECTILE_SOFT_FIELD_OF_VIEW
+    }
   });
 
   return Object.assign(entity, {
@@ -54,7 +58,7 @@ export const createProjectile = ({
 
     const visibleCells = world.map.getVisibleCells(
       entity.position,
-      PROJECTILE_FIELD_OF_VIEW
+      PROJECTILE_SOFT_FIELD_OF_VIEW
     );
 
     const player = entity.parent as Player;

@@ -1,14 +1,10 @@
-import {
-  PLAYER_FIELD_OF_VIEW,
-  PROJECTILE_SIZE,
-  PLAYER_SIZE
-} from '@game/shared-domain';
+import { PLAYER_HARD_FIELD_OF_VIEW } from '@game/shared-domain';
 import { createMapCacheRenderer } from './mapCacheRenderer';
 import { applyCamera, type Camera } from './renderer/applyCamera';
 import { createRenderer } from './renderer/createRenderer';
 import { drawMapInFieldOfView } from './renderer/drawMap';
-import { drawPlayers } from './renderer/drawPlayers';
-import { drawProjectiles } from './renderer/drawProjectiles';
+// import { drawPlayers } from './renderer/drawPlayers';
+// import { drawProjectiles } from './renderer/drawProjectiles';
 import { socket } from './socket';
 
 export const camera: Camera = {
@@ -26,20 +22,20 @@ export const createGameRenderer = () => {
     render: ({ canvas, ctx }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       applyCamera({ canvas, ctx, camera }, () => {
-        mapCache.draw(ctx, {
-          x: camera.x,
-          y: camera.y,
-          w: camera.w,
-          h: camera.h
-        });
+        // mapCache.draw(ctx, {
+        //   x: camera.x,
+        //   y: camera.y,
+        //   w: camera.w,
+        //   h: camera.h
+        // });
 
         drawMapInFieldOfView({
           ctx,
           entityId: socket.id,
-          fieldOfView: PLAYER_FIELD_OF_VIEW
+          fieldOfView: PLAYER_HARD_FIELD_OF_VIEW
         });
-        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        drawPlayers({ ctx, size: PLAYER_SIZE, camera });
+        // drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        // drawPlayers({ ctx, size: PLAYER_SIZE, camera });
       });
     },
     getDimensions: () => ({

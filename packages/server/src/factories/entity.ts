@@ -12,7 +12,10 @@ import { GameWorld } from './gameWorld';
 
 export type EntityLifecycleCallback = (entity: Entity) => void;
 export type EntityLifecycleEvent = 'update' | 'destroy';
-
+export type FieldOfView = {
+  hard: number;
+  soft: number;
+};
 export type Entity = {
   id: string;
   type: EntityType;
@@ -20,7 +23,7 @@ export type Entity = {
   position: Readonly<Coordinates>;
   dimensions: Readonly<Dimensions>;
   visibleEntities: Readonly<Entity[]>;
-  fieldOfView: number;
+  fieldOfView: FieldOfView;
   children: Set<Entity>;
   parent: Nullable<Entity>;
   world: GameWorld;
@@ -37,7 +40,7 @@ export type MakeEntityOptions = {
   type: EntityType;
   position: Coordinates;
   dimensions: Dimensions;
-  fieldOfView: number;
+  fieldOfView: FieldOfView;
   world: GameWorld;
   parent: Nullable<Entity>;
   meta?: AnyObject;
@@ -89,7 +92,7 @@ export const createEntity = ({
     get visibleEntities() {
       const entities = [this, ...this.children].map(entity =>
         world.map.grid
-          .findNearbyRadius(entity.position, entity.fieldOfView)
+          .findNearbyRadius(entity.position, entity.fieldOfView.hard)
           .map(gridItem => world.entities.get(gridItem.meta.id) as Entity)
       );
 

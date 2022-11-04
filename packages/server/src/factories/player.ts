@@ -4,7 +4,8 @@ import {
   GameMapCell,
   GRID_SIZE,
   PlayerMeta,
-  PLAYER_FIELD_OF_VIEW,
+  PLAYER_HARD_FIELD_OF_VIEW,
+  PLAYER_SOFT_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PLAYER_SPEED
 } from '@game/shared-domain';
@@ -59,18 +60,21 @@ export const createPlayer = ({
       y: randomInt(GRID_SIZE * CELL_SIZE)
     },
     dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE },
-    fieldOfView: PLAYER_FIELD_OF_VIEW
+    fieldOfView: {
+      hard: PLAYER_HARD_FIELD_OF_VIEW,
+      soft: PLAYER_SOFT_FIELD_OF_VIEW
+    }
   });
 
   return Object.assign(entity, {
     meta,
     allDiscoveredCells: world.map.getVisibleCells(
       entity.position,
-      PLAYER_FIELD_OF_VIEW
+      PLAYER_SOFT_FIELD_OF_VIEW
     ),
     newDiscoveredCells: world.map.getVisibleCells(
       entity.position,
-      PLAYER_FIELD_OF_VIEW
+      PLAYER_SOFT_FIELD_OF_VIEW
     ),
 
     consumeDiscoveredCells() {
@@ -90,7 +94,7 @@ export const createPlayer = ({
 
       const visibleCells = world.map.getVisibleCells(
         entity.position,
-        PLAYER_FIELD_OF_VIEW
+        PLAYER_SOFT_FIELD_OF_VIEW
       );
 
       for (const [key, cell] of visibleCells) {

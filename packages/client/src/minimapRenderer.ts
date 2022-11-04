@@ -1,5 +1,5 @@
 import {
-  PLAYER_FIELD_OF_VIEW,
+  PLAYER_HARD_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PROJECTILE_SIZE
 } from '@game/shared-domain';
@@ -40,7 +40,7 @@ export const createMinimapRenderer = () => {
         drawMapInFieldOfView({
           ctx,
           entityId: socket.id,
-          fieldOfView: PLAYER_FIELD_OF_VIEW
+          fieldOfView: PLAYER_HARD_FIELD_OF_VIEW
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
