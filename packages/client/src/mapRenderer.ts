@@ -14,7 +14,13 @@ export const createMapRenderer = ({
   showLightness
 }: CreateMapCacheRendererOptions) => {
   const drawnCells = new Map<string, GameMapCell>();
-
+  window.addEventListener(
+    'resize',
+    () => {
+      drawnCells.clear();
+    },
+    false
+  );
   const renderer = createRenderer({
     render: ({ ctx }) => {
       state.discoveredCells.forEach(cell => {
