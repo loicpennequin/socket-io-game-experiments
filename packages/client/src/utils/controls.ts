@@ -33,7 +33,7 @@ const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
 
 const isOngoingAction = (x: string): x is OngoingAction => x in OngoingAction;
 
-export const initKeyboardControls = () => {
+export const initControls = () => {
   const fireProjectile = throttle(() => {
     socket.emit(PLAYER_ACTION, {
       action: PlayerAction.FIRE_PROJECTILE,
@@ -57,8 +57,6 @@ export const initKeyboardControls = () => {
       case PlayerAction.MOVE_LEFT:
       case PlayerAction.MOVE_RIGHT:
         return socket.emit(PLAYER_ONGOING_ACTION_START, { action });
-      case PlayerAction.FIRE_PROJECTILE:
-        return fireProjectile();
     }
   });
 
@@ -69,4 +67,6 @@ export const initKeyboardControls = () => {
       socket.emit(PLAYER_ONGOING_ACTION_END, { action });
     }
   });
+
+  document.addEventListener('click', fireProjectile);
 };

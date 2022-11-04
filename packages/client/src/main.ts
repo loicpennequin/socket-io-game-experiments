@@ -1,6 +1,6 @@
 import './style.css';
 
-import { initKeyboardControls } from './utils/keyboardControls';
+import { initControls } from './utils/controls';
 import { createGameRenderer } from './renderers/gameRenderer';
 import { trackMousePosition } from './utils/mouseTracker';
 import { createMinimapRenderer } from './renderers/minimapRenderer';
@@ -14,8 +14,9 @@ const minimapRenderer = createMinimapRenderer({ id: 'minimap' });
 mainEl.appendChild(gameRenderer.canvas);
 mainEl.appendChild(Object.assign(minimapRenderer.canvas, { id: 'minimap' }));
 
-initKeyboardControls();
+initControls();
 trackMousePosition();
+
 socket.on('connect', () => {
   gameRenderer.start();
   minimapRenderer.start(); // ...
