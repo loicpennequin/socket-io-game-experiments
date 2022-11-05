@@ -2,8 +2,9 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import vue from '@vitejs/plugin-vue';
+import Pages from 'vite-plugin-pages';
+import AutoImport from 'unplugin-auto-import/vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
@@ -12,6 +13,11 @@ export default defineConfig({
       eslint: {
         lintCommand: 'eslint "./src/**/*.{ts,tsx,.vue}"' // for example, lint .ts & .tsx
       }
+    }),
+    Pages({ extensions: ['vue'] }),
+    AutoImport({
+      include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],
+      imports: ['vue', '@vueuse/core']
     })
   ],
   resolve: {

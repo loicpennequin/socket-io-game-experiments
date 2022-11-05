@@ -1,18 +1,11 @@
-* {
-  box-sizing: border-box;
+:root {
+  --color-background: hsl(250, 20%, 8%);
 }
 
 body {
-  margin: 0;
-  background: black;
+  background: var(--color-background);
   font-family: Helvetica;
   color: white;
-}
-
-main {
-  display: grid;
-  place-items: center;
-  height: 100vh;
 }
 
 canvas {
@@ -22,7 +15,7 @@ canvas {
 #debug-infos {
   position: fixed;
   z-index: 2;
-  top: 0;
+  top: 40px;
   left: 0;
   font-size: 0.8rem;
   padding: 1rem;
@@ -30,14 +23,8 @@ canvas {
   pointer-events: none;
 }
 
-#fog-of-war {
-  position: fixed;
-  z-index: 1;
-  inset: 0;
-}
-
 #minimap {
-  position: fixed;
+  position: absolute;
   z-index: 2;
   top: 0;
   right: 0;

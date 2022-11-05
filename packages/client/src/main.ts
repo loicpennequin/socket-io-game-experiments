@@ -1,32 +1,10 @@
-import './style.css';
-import humanoidsUrl from './assets/sprites.png';
-import magicalUrl from './assets/sprites2.png';
+import './styles/reset.css';
+import './styles/global.css';
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import { createGameRenderer } from './renderers/gameRenderer';
-import { socket } from './utils/socket';
+import router from './router';
 
-const mainEl = document.querySelector('main') as HTMLElement;
+import App from './components/App.vue';
 
-const assetPromise = Promise.all(
-  [humanoidsUrl, magicalUrl].map(
-    url =>
-      new Promise<HTMLImageElement>(resolve => {
-        const image = new Image();
-        image.src = url;
-        image.addEventListener('load', () => resolve(image));
-      })
-  )
-);
-
-const socketPromise = new Promise<void>(resolve =>
-  socket.on('connect', resolve)
-);
-
-Promise.all([assetPromise, socketPromise]).then(([assets]) => {
-  const gameRenderer = createGameRenderer({
-    id: 'game',
-    assets
-  });
-  mainEl.appendChild(gameRenderer.canvas);
-  gameRenderer.start();
-});
+createApp(App).use(createPinia()).use(router).mount('#app');

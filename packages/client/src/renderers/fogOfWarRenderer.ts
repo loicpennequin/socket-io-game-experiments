@@ -11,17 +11,19 @@ import { socket } from '../utils/socket';
 import { pushPop } from '../utils/canvas';
 import { COLORS, FOG_OF_WAR_BLUR } from '../utils/constants';
 
+type CreateFogOfWarRendererOptions = {
+  camera: Coordinates & Dimensions;
+  getDimensions: () => Dimensions;
+  id: string;
+  scale?: number;
+};
+
 export const createFogOfWarRenderer = ({
   camera,
   getDimensions,
   id,
   scale = 1
-}: {
-  camera: Coordinates & Dimensions;
-  getDimensions: () => Dimensions;
-  id: string;
-  scale?: number;
-}) => {
+}: CreateFogOfWarRendererOptions) => {
   const renderer = createRenderer({
     id,
     render: ({ canvas, ctx }) => {
@@ -37,15 +39,14 @@ export const createFogOfWarRenderer = ({
 
         const entitiesToRender = [player.id, ...player.children]
           .map(getInterpolatedEntity)
-          .filter(Boolean);
+          .filter(Boolean); // @fixme figure out why some entities are undefined sometimes
 
         pushPop(ctx, () => {
           ctx.scale(scale, scale);
-          entitiesToRender.forEach(entity => {
-            const { x, y } = entity;
-
+          entitiesToRender.forEach(({ x, y, type }) => {
+            // @fixme  server should probably send field of view in the EntityDto ?
             const fov =
-              entity.type === EntityType.PLAYER
+              type === EntityType.PLAYER
                 ? PLAYER_HARD_FIELD_OF_VIEW
                 : PROJECTILE_HARD_FIELD_OF_VIEW;
 

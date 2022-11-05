@@ -1,6 +1,6 @@
 import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
-import type { Coordinates } from '@game/shared-utils';
+import type { Coordinates, Dimensions } from '@game/shared-utils';
 import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayersSprites } from '../commands/drawPlayers';
@@ -16,14 +16,10 @@ import { createDebugRenderer } from './debugRenderer';
 import { createMinimapRenderer } from './minimapRenderer';
 import { createAssetMap } from '@/factories/assetMap';
 
-const getDimensions = () => ({
-  w: window.innerWidth,
-  h: window.innerHeight
-});
-
 export type CreateGameRendererOptions = {
   id: string;
   assets: HTMLImageElement[];
+  getDimensions: () => Dimensions;
 };
 
 export type Asset = {
@@ -36,7 +32,8 @@ export type DataUrl = string;
 
 export const createGameRenderer = ({
   id,
-  assets
+  assets,
+  getDimensions
 }: CreateGameRendererOptions) => {
   const camera = createCamera({
     x: 0,
