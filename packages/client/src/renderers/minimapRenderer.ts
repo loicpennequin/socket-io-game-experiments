@@ -66,7 +66,9 @@ export const createMinimapRenderer = ({
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
         drawPlayersCircles({
           ctx,
-          size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE
+          size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE,
+          mousePosition: { x: 0, y: 0 },
+          handleHover: false
         });
 
         ctx.resetTransform();

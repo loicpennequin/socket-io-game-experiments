@@ -82,7 +82,13 @@ export const createGameRenderer = ({
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        drawPlayersSprites({ ctx, size: PLAYER_SIZE, assetMap });
+        drawPlayersSprites({
+          ctx,
+          size: PLAYER_SIZE,
+          assetMap,
+          mousePosition,
+          camera
+        });
 
         fogOfWarRenderer.draw?.(ctx, {
           x: camera.x,

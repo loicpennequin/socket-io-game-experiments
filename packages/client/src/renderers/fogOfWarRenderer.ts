@@ -53,7 +53,7 @@ export const createFogOfWarRenderer = ({
             const gradient = ctx.createRadialGradient(
               x,
               y,
-              fov - FOG_OF_WAR_BLUR,
+              Math.max(0, fov - FOG_OF_WAR_BLUR * scale),
               x,
               y,
               fov

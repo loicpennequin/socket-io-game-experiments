@@ -1,5 +1,11 @@
 :root {
-  --color-background: hsl(250, 20%, 8%);
+  --color-background: hsl(230, 20%, 8%);
+  --color-surface: hsl(230, 20%, 12%);
+  --color-primary: hsl(230, 65%, 50%);
+  --color-primary-hover: hsl(230, 65%, 55%);
+  --color-primary-focus: hsl(230, 65%, 58%);
+
+  --sprite-base-size: 32px;
 }
 
 body {

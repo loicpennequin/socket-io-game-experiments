@@ -1,5 +1,4 @@
 import http from 'http';
-import randomName from 'random-name';
 import { Server } from 'socket.io';
 import {
   ClientToServerEvents,
@@ -11,13 +10,12 @@ import {
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ACTION,
   EntityOrientation,
-  PlayerJob
+  JOIN_GAME
 } from '@game/shared-domain';
 import { GameWorld } from './gameWorld';
 import { isPlayer } from '../utils';
-import { createPlayer } from './player';
+import { createPlayer, Player } from './player';
 import { PORT } from '../constants';
-import { randomInt } from 'crypto';
 
 export const createGameServer = (server: http.Server, world: GameWorld) => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -46,19 +44,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
   });
 
   io.on('connection', socket => {
-    const player = world.addEntity(
-      createPlayer({
-        id: socket.id,
-        world: world,
-        meta: {
-          name: randomName.first(),
-          orientation: EntityOrientation.RIGHT,
-          job: Object.values(PlayerJob)[
-            randomInt(Object.keys(PlayerJob).length)
-          ]
-        }
-      })
-    );
+    let player: Player;
 
     socket.on('disconnect', () => {
       player.destroy();
@@ -66,6 +52,22 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
 
     socket.on(PING, (timestamp, callback) => {
       callback(timestamp);
+    });
+
+    socket.on(JOIN_GAME, (payload, callback) => {
+      player = world.addEntity(
+        createPlayer({
+          id: socket.id,
+          world: world,
+          meta: {
+            name: payload.username,
+            orientation: EntityOrientation.RIGHT,
+            job: payload.job
+          }
+        })
+      );
+
+      callback();
     });
 
     socket.on(PLAYER_ONGOING_ACTION_START, ({ action }) => {

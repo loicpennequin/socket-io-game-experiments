@@ -7,7 +7,11 @@ import {
   isPlayerDto,
   type PlayerDto
 } from '@game/shared-domain';
-import type { Coordinates, Dimensions } from '@game/shared-utils';
+import {
+  pointCircleCollision,
+  type Coordinates,
+  type Dimensions
+} from '@game/shared-utils';
 import type { AssetMap } from '@/factories/assetMap';
 
 type DrawPlayersOptions = {
@@ -15,49 +19,61 @@ type DrawPlayersOptions = {
   size: number;
   camera?: Dimensions & Coordinates;
   handleHover?: boolean;
+  mousePosition: Coordinates;
   renderPlayer: (player: PlayerDto) => void;
 };
 
-export const drawPlayers = ({ ctx, renderPlayer }: DrawPlayersOptions) => {
+export const drawPlayers = ({
+  ctx,
+  renderPlayer,
+  handleHover = true,
+  mousePosition,
+  camera,
+  size
+}: DrawPlayersOptions) => {
   state.entities.filter(isPlayerDto).forEach(player => {
     pushPop(ctx, () => {
       const p = getInterpolatedEntity(player.id);
 
-      // const isHovered =
-      //   handleHover &&
-      //   pointCircleCollision(
-      //     {
-      //       x: mousePosition.x + camera?.x,
-      //       y: mousePosition.y + camera?.y
-      //     },
-      //     {
-      //       x,
-      //       y,
-      //       r: size / 2
-      //     }
-      //   );
+      const isHovered =
+        handleHover &&
+        pointCircleCollision(
+          {
+            x: mousePosition.x + (camera?.x ?? 0),
+            y: mousePosition.y + (camera?.y ?? 0)
+          },
+          {
+            x: p.x,
+            y: p.y,
+            r: size / 2
+          }
+        );
 
       pushPop(ctx, () => {
         renderPlayer(p as PlayerDto);
       });
 
-      // if (isHovered) {
-      //   pushPop(ctx, () => {
-      //     const { width } = ctx.measureText(player.meta.name);
-      //     const padding = 12;
-      //     ctx.fillStyle = 'black';
-      //     ctx.beginPath();
-      //     ctx.rect(x - padding - width / 2, y - 40, width + padding * 2, 25);
-      //     ctx.closePath();
-      //     ctx.fill();
-
-      //     ctx.font = '12px Helvetica';
-      //     ctx.textAlign = 'center';
-      //     ctx.textBaseline = 'middle';
-      //     ctx.fillStyle = 'white';
-      //     ctx.fillText(player.meta.name, x, y - 28);
-      //   });
-      // }
+      if (isHovered) {
+        // pushPop(ctx, () => {
+        //   const { width } = ctx.measureText(player.meta.name);
+        //   const padding = 12;
+        //   ctx.fillStyle = 'black';
+        //   ctx.beginPath();
+        //   ctx.rect(
+        //     p.x - padding - width / 2,
+        //     p.y - 70,
+        //     width + padding * 2,
+        //     25
+        //   );
+        //   ctx.closePath();
+        //   ctx.fill();
+        //   ctx.font = '12px Helvetica';
+        //   ctx.textAlign = 'center';
+        //   ctx.textBaseline = 'middle';
+        //   ctx.fillStyle = 'white';
+        //   ctx.fillText(player.meta.name, p.x, p.y - 58);
+        // });
+      }
     });
   });
 };
@@ -70,19 +86,27 @@ export const drawPlayersSprites = (
     renderPlayer: ({ x, y, meta }) => {
       const { ctx, assetMap, size } = opts;
       const isFlipped = meta.orientation === EntityOrientation.LEFT;
+      pushPop(ctx, () => {
+        ctx.filter = 'saturate(200%)';
+        if (isFlipped) ctx.scale(-1, 1);
 
-      if (isFlipped) ctx.scale(-1, 1);
+        ctx.drawImage(
+          assetMap.canvas,
+          ...assetMap.get(...SPRITE_LOCATIONS[meta.job]),
+          meta.orientation === EntityOrientation.LEFT
+            ? -1 * (x + size / 2)
+            : x - size / 2,
+          y - size / 2,
+          size,
+          size
+        );
+      });
 
-      ctx.drawImage(
-        assetMap.canvas,
-        ...assetMap.get(...SPRITE_LOCATIONS[meta.job]),
-        meta.orientation === EntityOrientation.LEFT
-          ? -1 * (x + size / 2)
-          : x - size / 2,
-        y - size / 2,
-        size,
-        size
-      );
+      ctx.font = '12px Helvetica';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+      ctx.fillText(meta.name, x, y + size / 2 + 12);
     }
   });
 

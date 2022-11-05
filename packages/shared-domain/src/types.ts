@@ -14,6 +14,7 @@ import type {
 
 import {
   GAME_STATE_UPDATE,
+  JOIN_GAME,
   PING,
   PLAYER_ACTION,
   PLAYER_ONGOING_ACTION_END,
@@ -64,12 +65,14 @@ export type FireProjectileActionPayload = {
 export type ActionPayload = FireProjectileActionPayload;
 export type OngoingActionStartPayload = MoveActionPayload;
 export type OngoingActionEndPayload = { action: OngoingAction };
+export type JoinGamePayload = { username: string; job: PlayerJob };
 
 export type ServerToClientEvents = {
   [GAME_STATE_UPDATE]: (state: GameStateDto) => void;
 };
 export type ClientToServerEvents = {
   [PING]: (timestamp: number, callback: (e: number) => void) => void;
+  [JOIN_GAME]: (payload: JoinGamePayload, callback: () => void) => void;
   [PLAYER_ONGOING_ACTION_START]: (payload: OngoingActionStartPayload) => void;
   [PLAYER_ONGOING_ACTION_END]: (payload: OngoingActionEndPayload) => void;
   [PLAYER_ACTION]: (payload: ActionPayload) => void;
