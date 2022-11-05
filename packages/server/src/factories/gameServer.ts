@@ -28,7 +28,8 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
   });
 
   world.onStateUpdate(gameState => {
-    [...gameState.entities.values()].filter(isPlayer).forEach(player => {
+    const players = [...gameState.entities.values()].filter(isPlayer);
+    players.forEach(player => {
       const socket = io.sockets.sockets.get(player.id);
 
       if (!socket) {
@@ -37,7 +38,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
       }
 
       socket.emit(GAME_STATE_UPDATE, {
-        playerCount: gameState.entities.size,
+        playerCount: players.length,
         entities: player.visibleEntities.map(entity => entity.toDto()),
         discoveredCells: player.consumeDiscoveredCells()
       });
