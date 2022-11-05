@@ -43,8 +43,8 @@ export type MakePlayerOptions = Override<
   { meta: PlayerMeta }
 >;
 
-const clampToGrid = (n: number) =>
-  clamp(n, { min: 0, max: GRID_SIZE * CELL_SIZE });
+const clampToGrid = (n: number, size: number) =>
+  clamp(n, { min: size / 2, max: GRID_SIZE * CELL_SIZE - size / 2 });
 
 export const createPlayer = ({
   id,
@@ -57,8 +57,8 @@ export const createPlayer = ({
     world,
     parent: null,
     position: {
-      x: randomInt(GRID_SIZE * CELL_SIZE),
-      y: randomInt(GRID_SIZE * CELL_SIZE)
+      x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
+      y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
     },
     dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE },
     fieldOfView: {
@@ -89,8 +89,14 @@ export const createPlayer = ({
       if (x === 0 && y === 0) return;
 
       Object.assign(entity.gridItem.position, {
-        x: clampToGrid(entity.position.x + x * PLAYER_SPEED),
-        y: clampToGrid(entity.position.y + y * PLAYER_SPEED)
+        x: clampToGrid(
+          entity.position.x + x * PLAYER_SPEED,
+          entity.dimensions.w
+        ),
+        y: clampToGrid(
+          entity.position.y + y * PLAYER_SPEED,
+          entity.dimensions.h
+        )
       });
 
       if (x !== 0) {

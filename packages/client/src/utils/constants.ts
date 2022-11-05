@@ -27,7 +27,7 @@ export const COLORS = Object.freeze({
     return `hsla(${MAP_HUE}, 30%, ${l}%, ${a})`;
   },
 
-  fogOfWar: () => 'rgba(0, 0, 0, 0.0)'
+  fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
 });
 
 export const CameraControls = {
