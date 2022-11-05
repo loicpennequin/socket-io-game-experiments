@@ -28,3 +28,11 @@ export const EntityOrientation = {
   RIGHT: 'RIGHT'
 };
 export type EntityOrientation = Values<typeof EntityOrientation>;
+
+export const PlayerJob = {
+  RANGER: 'RANGER',
+  ROGUE: 'ROGUE',
+  WIZARD: 'WIZARD',
+  BARBARIAN: 'BARBARIAN'
+};
+export type PlayerJob = Values<typeof PlayerJob>;

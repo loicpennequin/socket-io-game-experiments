@@ -1,5 +1,10 @@
 import type { Values } from '@game/shared-utils';
-import { CELL_SIZE, MAP_SIZE, PlayerAction } from '@game/shared-domain';
+import {
+  CELL_SIZE,
+  MAP_SIZE,
+  PlayerAction,
+  PlayerJob
+} from '@game/shared-domain';
 
 export const ONE_FRAME = 1000 / 60;
 export const MAP_HUE = 120;
@@ -29,6 +34,13 @@ export const COLORS = Object.freeze({
 
   fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
 });
+
+export const SPRITE_LOCATIONS: Record<string, [number, number, number]> = {
+  [PlayerJob.RANGER]: [2, 0, 1],
+  [PlayerJob.ROGUE]: [3, 0, 1],
+  [PlayerJob.WIZARD]: [7, 0, 1],
+  [PlayerJob.BARBARIAN]: [10, 0, 1]
+};
 
 export const CameraControls = {
   MOVE_UP: 'MOVE_CAMERA_UP',

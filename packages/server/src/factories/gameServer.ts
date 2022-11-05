@@ -10,12 +10,14 @@ import {
   PlayerAction,
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ACTION,
-  EntityOrientation
+  EntityOrientation,
+  PlayerJob
 } from '@game/shared-domain';
 import { GameWorld } from './gameWorld';
 import { isPlayer } from '../utils';
 import { createPlayer } from './player';
 import { PORT } from '../constants';
+import { randomInt } from 'crypto';
 
 export const createGameServer = (server: http.Server, world: GameWorld) => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -49,7 +51,10 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
         world: world,
         meta: {
           name: randomName.first(),
-          orientation: EntityOrientation.RIGHT
+          orientation: EntityOrientation.RIGHT,
+          job: Object.values(PlayerJob)[
+            randomInt(Object.keys(PlayerJob).length)
+          ]
         }
       })
     );

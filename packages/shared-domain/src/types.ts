@@ -8,7 +8,8 @@ import type {
   EntityOrientation,
   EntityType,
   OngoingAction,
-  PlayerAction
+  PlayerAction,
+  PlayerJob
 } from './enums';
 
 import {
@@ -27,7 +28,11 @@ export type EntityDto = Coordinates & {
   meta: AnyObject;
 };
 
-export type PlayerMeta = { name: string; orientation: EntityOrientation };
+export type PlayerMeta = {
+  name: string;
+  orientation: EntityOrientation;
+  job: PlayerJob;
+};
 export type PlayerDto = Override<EntityDto, { meta: PlayerMeta }>;
 
 export type ProjectileDto = EntityDto;

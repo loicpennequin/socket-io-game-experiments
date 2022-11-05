@@ -1,5 +1,5 @@
 import { pushPop, circle } from '@/utils/canvas';
-import { COLORS } from '@/utils/constants';
+import { COLORS, SPRITE_LOCATIONS } from '@/utils/constants';
 import { getInterpolatedEntity, state } from '@/gameState';
 import { socket } from '@/utils/socket';
 import {
@@ -75,7 +75,7 @@ export const drawPlayersSprites = (
 
       ctx.drawImage(
         assetMap.canvas,
-        ...assetMap.get(0, 0, 1),
+        ...assetMap.get(...SPRITE_LOCATIONS[meta.job]),
         meta.orientation === EntityOrientation.LEFT
           ? -1 * (x + size / 2)
           : x - size / 2,
