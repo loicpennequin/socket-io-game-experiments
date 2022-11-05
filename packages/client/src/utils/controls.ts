@@ -1,4 +1,4 @@
-import { throttle, type Nullable } from '@game/shared-utils';
+import { throttle, type Coordinates } from '@game/shared-utils';
 import {
   CameraControls,
   CameraMode,
@@ -6,9 +6,7 @@ import {
   PROJECTILE_THROTTLE_RATE
 } from './constants';
 import { socket } from './socket';
-import { mousePosition } from './mouseTracker';
 import {
-  OngoingAction,
   PLAYER_ACTION,
   PlayerAction,
   PLAYER_ONGOING_ACTION_START,
@@ -16,30 +14,9 @@ import {
 } from '@game/shared-domain';
 import type { Camera } from '@/factories/camera';
 import { state } from '@/gameState';
+import { isOngoingAction, useKeydownOnce } from './helpers';
 
-const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
-  let hasFired = false;
-  let code: Nullable<string>;
-
-  document.addEventListener('keydown', e => {
-    if (hasFired && e.code === code) return;
-    hasFired = true;
-    code = e.code;
-
-    cb(e);
-  });
-
-  document.addEventListener('keyup', e => {
-    if (e.code === code) {
-      code = undefined;
-      hasFired = false;
-    }
-  });
-};
-
-const isOngoingAction = (x: string): x is OngoingAction => x in OngoingAction;
-
-export const initControls = (camera: Camera) => {
+export const initControls = (camera: Camera, mousePosition: Coordinates) => {
   const fireProjectile = throttle(() => {
     socket.emit(PLAYER_ACTION, {
       action: PlayerAction.FIRE_PROJECTILE,

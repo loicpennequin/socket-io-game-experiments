@@ -6,20 +6,23 @@ import {
   CAMERA_SPEED
 } from '@/utils/constants';
 import { MAP_SIZE } from '@game/shared-domain';
-import { clamp } from '@game/shared-utils';
+import { clamp, type Coordinates } from '@game/shared-utils';
 import { applyEdgeHandler } from './applyEdgeHandler';
 
 export type HandleManualCameraOptions = {
   canvas: HTMLCanvasElement;
   camera: Camera;
+  mousePosition: Coordinates;
 };
 
 export const handleManualCamera = ({
   canvas,
-  camera
+  camera,
+  mousePosition
 }: HandleManualCameraOptions) => {
   applyEdgeHandler({
     canvas,
+    mousePosition,
     edgeSize: MANUAL_CAMERA_BOUNDARIES,
     cb: ({ top, bottom, left, right }) => {
       if (state.isCameraLocked) return;

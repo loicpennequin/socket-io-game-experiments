@@ -1,32 +1,19 @@
-import { MAP_SIZE, PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
+import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
-import { createMapRenderer } from './mapRenderer';
 import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { interpolateEntities } from '@/gameState';
-import { createDebugRenderer } from './debugRenderer';
 import { createCamera } from '@/factories/camera';
 import { socket } from '@/utils/socket';
-import {
-  CameraMode,
-  CAMERA_SPEED,
-  MANUAL_CAMERA_BOUNDARIES,
-  MANUAL_CAMERA_SWITCH_TIMEOUT
-} from '@/utils/constants';
 import { initControls } from '@/utils/controls';
 import { trackMousePosition } from '@/utils/mouseTracker';
-import { applyEdgeHandler } from '@/commands/applyEdgeHandler';
-import { clamp, type Nullable } from '@game/shared-utils';
 import { handleManualCamera } from '@/commands/handleManualCamera';
-
-export const camera = createCamera({
-  x: 0,
-  y: 0,
-  w: 0,
-  h: 0
-});
+import { createMapRenderer } from './mapRenderer';
+import { createDebugRenderer } from './debugRenderer';
+import { createMinimapRenderer } from './minimapRenderer';
+import type { Coordinates } from '@game/shared-utils';
 
 const getDimensions = () => ({
   w: window.innerWidth,
@@ -34,6 +21,15 @@ const getDimensions = () => ({
 });
 
 export const createGameRenderer = ({ id }: { id: string }) => {
+  const camera = createCamera({
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0
+  });
+
+  let mousePosition: Coordinates;
+
   return createRenderer({
     id,
     getDimensions,
@@ -48,12 +44,16 @@ export const createGameRenderer = ({ id }: { id: string }) => {
         camera,
         getDimensions
       }),
+      createMinimapRenderer({
+        id: 'minimap',
+        camera
+      }),
       createDebugRenderer()
     ],
 
     render: ({ canvas, ctx, children: [mapRenderer, fogOfWarRenderer] }) => {
       interpolateEntities();
-      handleManualCamera({ canvas, camera });
+      handleManualCamera({ canvas, camera, mousePosition });
       camera.update();
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -67,7 +67,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        drawPlayers({ ctx, size: PLAYER_SIZE, camera });
+        drawPlayers({ ctx, size: PLAYER_SIZE });
 
         fogOfWarRenderer.draw?.(ctx, {
           x: camera.x,
@@ -78,9 +78,12 @@ export const createGameRenderer = ({ id }: { id: string }) => {
       });
     },
 
-    onStart({ canvas }) {
-      initControls(camera);
-      trackMousePosition(canvas);
+    onStart({ canvas, children: [, , minimapRenderer] }) {
+      canvas.parentElement?.appendChild(
+        Object.assign(minimapRenderer.canvas, { id: 'minimap' })
+      );
+      mousePosition = trackMousePosition(canvas);
+      initControls(camera, mousePosition);
 
       camera.setTarget(socket.id);
       camera.setCanvas(canvas);

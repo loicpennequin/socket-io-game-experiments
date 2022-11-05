@@ -1,9 +1,9 @@
-import { mousePosition } from '@/utils/mouseTracker';
-import { pointRectCollision } from '@game/shared-utils';
+import { pointRectCollision, type Coordinates } from '@game/shared-utils';
 
 export type ApplyEdgeHandlerOptions = {
   canvas: HTMLCanvasElement;
   edgeSize: number;
+  mousePosition: Coordinates;
   cb: (edges: EdgesResult) => void;
 };
 
@@ -16,6 +16,7 @@ export type EdgesResult = {
 export const applyEdgeHandler = ({
   canvas,
   edgeSize,
+  mousePosition,
   cb
 }: ApplyEdgeHandlerOptions) => {
   const edgesResult = {

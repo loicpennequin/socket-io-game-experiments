@@ -5,20 +5,26 @@ import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { pushPop } from '../utils/canvas';
-import { camera } from './gameRenderer';
 import {
   COLORS,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
 } from '../utils/constants';
+import type { Camera } from '@/factories/camera';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,
   h: MINIMAP_SIZE
 });
 
-export const createMinimapRenderer = ({ id }: { id: string }) => {
+export const createMinimapRenderer = ({
+  id,
+  camera
+}: {
+  id: string;
+  camera: Camera;
+}) => {
   const mapRenderer = createMapRenderer({
     id: `${id}:map`,
     showLightness: false
@@ -38,6 +44,7 @@ export const createMinimapRenderer = ({ id }: { id: string }) => {
 
   return createRenderer({
     id,
+    getDimensions,
     children: [mapRenderer, fogOfWarRenderer],
     render({ canvas, ctx }) {
       ctx.fillStyle = COLORS.minimapBackground();
@@ -56,8 +63,7 @@ export const createMinimapRenderer = ({ id }: { id: string }) => {
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
         drawPlayers({
           ctx,
-          size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE,
-          handleHover: false
+          size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE
         });
 
         ctx.resetTransform();
@@ -74,6 +80,8 @@ export const createMinimapRenderer = ({ id }: { id: string }) => {
         ctx.strokeRect(camera.x, camera.y, camera.w, camera.h);
       });
     },
-    getDimensions
+    onStart({ canvas }) {
+      canvas.addEventListener('click', () => {});
+    }
   });
 };

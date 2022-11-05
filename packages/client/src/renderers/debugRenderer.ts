@@ -21,6 +21,7 @@ export const createDebugRenderer = () => {
     if (!import.meta.env.VITE_DEBUG) return;
 
     const seenPlayers = state.entities.filter(isPlayerDto).length;
+
     debugEl.innerHTML = /*html*/ `
       <div>FPS: ${Math.round(sum(...fps) / fps.length)}</div>
       <div>PING: ${Math.round(ping)}ms</div>

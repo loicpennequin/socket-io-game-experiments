@@ -23,6 +23,7 @@ main {
   font-size: 0.8rem;
   padding: 1rem;
   line-height: 1.8;
+  pointer-events: none;
 }
 
 #fog-of-war {

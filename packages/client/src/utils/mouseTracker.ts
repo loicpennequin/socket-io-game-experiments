@@ -1,11 +1,11 @@
 import type { Coordinates } from '@game/shared-utils';
 
-export const mousePosition: Coordinates = {
-  x: -9999,
-  y: -9999
-};
-
 export const trackMousePosition = (canvas: HTMLCanvasElement) => {
+  const mousePosition: Coordinates = {
+    x: -9999,
+    y: -9999
+  };
+
   canvas.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect();
 
@@ -16,9 +16,12 @@ export const trackMousePosition = (canvas: HTMLCanvasElement) => {
   });
 
   canvas.addEventListener('mouseleave', () => {
+    console.log('mouseleave');
     Object.assign(mousePosition, {
       x: -9999,
       y: -9999
     });
   });
+
+  return mousePosition;
 };
