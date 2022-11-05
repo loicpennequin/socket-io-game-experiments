@@ -10,6 +10,7 @@ import { socket } from './utils/socket';
 export type SavedState = GameStateDto & {
   timestamp: number;
   entitiesById: Record<string, EntityDto>;
+  isCameraLocked: boolean;
 };
 
 const createEmptyState = (): SavedState => ({
@@ -17,7 +18,8 @@ const createEmptyState = (): SavedState => ({
   entities: [],
   entitiesById: {},
   playerCount: 0,
-  timestamp: performance.now()
+  timestamp: performance.now(),
+  isCameraLocked: true
 });
 
 export const state = createEmptyState();

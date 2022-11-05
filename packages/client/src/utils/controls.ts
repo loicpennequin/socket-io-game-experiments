@@ -15,6 +15,7 @@ import {
   PLAYER_ONGOING_ACTION_END
 } from '@game/shared-domain';
 import type { Camera } from '@/factories/camera';
+import { state } from '@/gameState';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   let hasFired = false;
@@ -73,6 +74,11 @@ export const initControls = (camera: Camera) => {
     switch (action) {
       case CameraControls.RESET:
         return camera.setMode(CameraMode.AUTO);
+      case CameraControls.TOGGLE_LOCK:
+        state.isCameraLocked = !state.isCameraLocked;
+        if (state.isCameraLocked) {
+          camera.setMode(CameraMode.AUTO);
+        }
     }
   });
 

@@ -1,4 +1,5 @@
 import type { Camera } from '@/factories/camera';
+import { state } from '@/gameState';
 import {
   MANUAL_CAMERA_BOUNDARIES,
   CameraMode,
@@ -21,6 +22,7 @@ export const handleManualCamera = ({
     canvas,
     edgeSize: MANUAL_CAMERA_BOUNDARIES,
     cb: ({ top, bottom, left, right }) => {
+      if (state.isCameraLocked) return;
       if (!top && !bottom && !left && !right) return;
       camera.setMode(CameraMode.MANUAL);
 

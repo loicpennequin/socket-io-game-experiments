@@ -25,6 +25,7 @@ export const createDebugRenderer = () => {
       <div>FPS: ${Math.round(sum(...fps) / fps.length)}</div>
       <div>PING: ${Math.round(ping)}ms</div>
       <div>PLAYERS SEEN: ${seenPlayers} / ${state.playerCount}</div>
+      <div>CAMERA LOCK: ${state.isCameraLocked ? 'ON' : 'OFF'}</div>
     `;
   };
 
