@@ -11,14 +11,28 @@ export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
 export const MAP_CELL_OPACITY_STEP = 0.1;
 export const DEFAULT_CELL_LIGHTNESS = 50;
 
-export const KEYBOARD_CONTROLS = Object.freeze({
+export const CameraControls = {
+  MOVE_UP: 'MOVE_CAMERA_UP',
+  MOVE_DOWN: 'MOVE_CAMERA_DOWN',
+  MOVE_LEFT: 'MOVE_CAMERA_LEFT',
+  MOVE_RIGHT: 'MOVE_CAMERA_RIGHT',
+  RESET: 'RESET'
+};
+export type CameraControls = Values<typeof CameraControls>;
+
+export const KeyboardControls = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,
   KeyS: PlayerAction.MOVE_DOWN,
   KeyA: PlayerAction.MOVE_LEFT,
-  KeyD: PlayerAction.MOVE_RIGHT
+  KeyD: PlayerAction.MOVE_RIGHT,
+  ArrowUp: CameraControls.MOVE_UP,
+  ArrowDown: CameraControls.MOVE_DOWN,
+  ArrowLeft: CameraControls.MOVE_LEFT,
+  ArrowRight: CameraControls.MOVE_RIGHT
 });
 
-export type KeyboardControls = Values<typeof KEYBOARD_CONTROLS>;
+export type KeyboardControls = Values<typeof KeyboardControls>;
+
 export const COLORS = Object.freeze({
   minimapBackground: () => 'black',
 

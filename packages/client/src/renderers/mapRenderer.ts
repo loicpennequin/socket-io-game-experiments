@@ -1,9 +1,12 @@
 import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
 import { state } from '../gameState';
-import type { Camera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { MAP_CELL_OPACITY_STEP } from '@/utils/constants';
-import { debounce } from '@game/shared-utils';
+import {
+  debounce,
+  type Coordinates,
+  type Dimensions
+} from '@game/shared-utils';
 import { drawCell } from '@/commands/drawCell';
 
 const getKey = (cell: GameMapCell) => `${cell.x}.${cell.y}`;
@@ -59,7 +62,7 @@ export const createMapRenderer = ({
 
   return {
     ...renderer,
-    draw(ctx: CanvasRenderingContext2D, camera: Camera) {
+    draw(ctx: CanvasRenderingContext2D, camera: Coordinates & Dimensions) {
       ctx.drawImage(
         renderer.canvas,
         camera.x,

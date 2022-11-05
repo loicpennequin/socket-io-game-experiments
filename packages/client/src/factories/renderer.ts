@@ -20,12 +20,16 @@ export type CreateRendererOptions = {
   pauseOnDocumentHidden?: boolean;
   id: string;
   children?: Renderer[];
+  onStart?: (opts: RenderContext) => void;
+  onPause?: (opts: RenderContext) => void;
 };
 
 export const createRenderer = ({
   render,
   getDimensions,
   pauseOnDocumentHidden = true,
+  onStart,
+  onPause,
   children = []
 }: CreateRendererOptions): Renderer => {
   let isRunning = false;
@@ -59,6 +63,7 @@ export const createRenderer = ({
   const start = () => {
     if (!isRunning) {
       isRunning = true;
+      onStart?.({ ctx, canvas, children });
       loop();
       children.forEach(child => child.start());
     }
@@ -69,6 +74,7 @@ export const createRenderer = ({
     if (rafId != null) {
       window.cancelAnimationFrame(rafId);
       rafId = null;
+      onPause?.({ ctx, canvas, children });
       children.forEach(child => child.pause());
     }
   };

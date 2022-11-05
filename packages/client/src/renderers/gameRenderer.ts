@@ -1,19 +1,21 @@
 import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createMapRenderer } from './mapRenderer';
-import { applyCamera, type Camera } from '../commands/applyCamera';
+import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { interpolateEntities } from '@/gameState';
 import { createDebugRenderer } from './debugRenderer';
+import { createCamera } from '@/factories/camera';
+import { socket } from '@/utils/socket';
 
-export const camera: Camera = {
+export const camera = createCamera({
   x: 0,
   y: 0,
   w: 0,
   h: 0
-};
+});
 
 const getDimensions = () => ({
   w: window.innerWidth,
@@ -31,6 +33,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
     getDimensions
   });
   const debugRenderer = createDebugRenderer();
+
   return createRenderer({
     id,
     children: [
@@ -39,8 +42,13 @@ export const createGameRenderer = ({ id }: { id: string }) => {
       import.meta.env.VITE_DEBUG && debugRenderer
     ].filter(Boolean),
 
+    onStart({ canvas }) {
+      camera.setCanvas(canvas);
+    },
+
     render: ({ canvas, ctx }) => {
       interpolateEntities();
+      camera.update(socket.id);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 

@@ -3,9 +3,9 @@ import {
   PLAYER_HARD_FIELD_OF_VIEW,
   PROJECTILE_HARD_FIELD_OF_VIEW
 } from '@game/shared-domain';
-import type { Dimensions } from '@game/shared-utils';
+import type { Coordinates, Dimensions } from '@game/shared-utils';
 import { state, getInterpolatedEntity } from '../gameState';
-import { applyCamera, type Camera } from '../commands/applyCamera';
+import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { socket } from '../utils/socket';
 import { pushPop } from '../utils/canvas';
@@ -17,7 +17,7 @@ export const createFogOfWarRenderer = ({
   id,
   scale = 1
 }: {
-  camera: Camera;
+  camera: Coordinates & Dimensions;
   getDimensions: () => Dimensions;
   id: string;
   scale?: number;
@@ -26,7 +26,7 @@ export const createFogOfWarRenderer = ({
     id,
     render: ({ canvas, ctx }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      applyCamera({ canvas, ctx, camera, shouldReadjust: false }, () => {
+      applyCamera({ canvas, ctx, camera }, () => {
         ctx.fillStyle = COLORS.fogOfWar();
         ctx.fillRect(camera.x, camera.y, camera.w, camera.h);
 
@@ -73,7 +73,7 @@ export const createFogOfWarRenderer = ({
 
   return {
     ...renderer,
-    draw(ctx: CanvasRenderingContext2D, camera: Camera) {
+    draw(ctx: CanvasRenderingContext2D, camera: Coordinates & Dimensions) {
       ctx.drawImage(
         renderer.canvas,
         0,

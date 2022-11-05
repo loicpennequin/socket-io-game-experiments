@@ -1,5 +1,5 @@
 import { throttle, type Nullable } from '@game/shared-utils';
-import { KEYBOARD_CONTROLS, PROJECTILE_THROTTLE_RATE } from './constants';
+import { KeyboardControls, PROJECTILE_THROTTLE_RATE } from './constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
 import { camera } from '../renderers/gameRenderer';
@@ -47,7 +47,7 @@ export const initControls = () => {
   }, PROJECTILE_THROTTLE_RATE);
 
   useKeydownOnce(e => {
-    const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
+    const action = KeyboardControls[e.code as keyof typeof KeyboardControls];
 
     if (!action) return;
 
@@ -61,7 +61,7 @@ export const initControls = () => {
   });
 
   document.addEventListener('keyup', e => {
-    const action = KEYBOARD_CONTROLS[e.code as keyof typeof KEYBOARD_CONTROLS];
+    const action = KeyboardControls[e.code as keyof typeof KeyboardControls];
 
     if (isOngoingAction(action)) {
       socket.emit(PLAYER_ONGOING_ACTION_END, { action });
