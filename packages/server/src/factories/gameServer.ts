@@ -9,7 +9,8 @@ import {
   PLAYER_ONGOING_ACTION_START,
   PlayerAction,
   PLAYER_ONGOING_ACTION_END,
-  PLAYER_ACTION
+  PLAYER_ACTION,
+  EntityOrientation
 } from '@game/shared-domain';
 import { GameWorld } from './gameWorld';
 import { isPlayer } from '../utils';
@@ -47,7 +48,8 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
         id: socket.id,
         world: world,
         meta: {
-          name: randomName.first()
+          name: randomName.first(),
+          orientation: EntityOrientation.RIGHT
         }
       })
     );

@@ -6,7 +6,7 @@ export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
-export const MINIMAP_ENTITY_SCALE = 10;
+export const MINIMAP_ENTITY_SCALE = 1;
 export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
 export const MAP_CELL_OPACITY_STEP = 0.1;
 export const DEFAULT_CELL_LIGHTNESS = 50;
@@ -27,7 +27,7 @@ export const COLORS = Object.freeze({
     return `hsla(${MAP_HUE}, 30%, ${l}%, ${a})`;
   },
 
-  fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
+  fogOfWar: () => 'rgba(0, 0, 0, 0.0)'
 });
 
 export const CameraControls = {
@@ -58,5 +58,4 @@ export const KeyboardControls = Object.freeze({
   ArrowRight: CameraControls.MOVE_RIGHT,
   Space: CameraControls.RESET
 });
-
 export type KeyboardControls = Values<typeof KeyboardControls>;

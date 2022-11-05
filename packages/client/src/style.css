@@ -15,6 +15,10 @@ main {
   height: 100vh;
 }
 
+canvas {
+  image-rendering: pixelated;
+}
+
 #debug-infos {
   position: fixed;
   z-index: 2;

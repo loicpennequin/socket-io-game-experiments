@@ -35,16 +35,15 @@ export const createFogOfWarRenderer = ({
         const player = state.entitiesById[socket.id];
         if (!player) return;
 
-        const entitiesToRender = [
-          player,
-          ...player.children.map(id => state.entitiesById[id])
-        ];
+        const entitiesToRender = [player.id, ...player.children]
+          .map(getInterpolatedEntity)
+          .filter(Boolean);
 
         pushPop(ctx, () => {
           ctx.scale(scale, scale);
-
           entitiesToRender.forEach(entity => {
-            const { x, y } = getInterpolatedEntity(entity.id);
+            const { x, y } = entity;
+
             const fov =
               entity.type === EntityType.PLAYER
                 ? PLAYER_HARD_FIELD_OF_VIEW

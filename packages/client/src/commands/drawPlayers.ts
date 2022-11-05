@@ -2,20 +2,26 @@ import { pushPop, circle } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
 import { getInterpolatedEntity, state } from '@/gameState';
 import { socket } from '@/utils/socket';
-import { isPlayerDto } from '@game/shared-domain';
+import {
+  EntityOrientation,
+  isPlayerDto,
+  type PlayerDto
+} from '@game/shared-domain';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
+import type { AssetMap } from '@/factories/assetMap';
 
 type DrawPlayersOptions = {
   ctx: CanvasRenderingContext2D;
   size: number;
   camera?: Dimensions & Coordinates;
   handleHover?: boolean;
+  renderPlayer: (player: PlayerDto) => void;
 };
 
-export const drawPlayers = ({ ctx, size }: DrawPlayersOptions) => {
+export const drawPlayers = ({ ctx, renderPlayer }: DrawPlayersOptions) => {
   state.entities.filter(isPlayerDto).forEach(player => {
     pushPop(ctx, () => {
-      const { x, y } = getInterpolatedEntity(player.id);
+      const p = getInterpolatedEntity(player.id);
 
       // const isHovered =
       //   handleHover &&
@@ -32,10 +38,7 @@ export const drawPlayers = ({ ctx, size }: DrawPlayersOptions) => {
       //   );
 
       pushPop(ctx, () => {
-        ctx.lineWidth = 0;
-        circle(ctx, { x, y, radius: size / 2 });
-        ctx.fillStyle = COLORS.player(player.id === socket.id);
-        ctx.fill();
+        renderPlayer(p as PlayerDto);
       });
 
       // if (isHovered) {
@@ -58,3 +61,42 @@ export const drawPlayers = ({ ctx, size }: DrawPlayersOptions) => {
     });
   });
 };
+
+export const drawPlayersSprites = (
+  opts: Omit<DrawPlayersOptions, 'renderPlayer'> & { assetMap: AssetMap }
+) =>
+  drawPlayers({
+    ...opts,
+    renderPlayer: ({ x, y, meta }) => {
+      const { ctx, assetMap, size } = opts;
+      const isFlipped = meta.orientation === EntityOrientation.LEFT;
+
+      if (isFlipped) ctx.scale(-1, 1);
+
+      ctx.drawImage(
+        assetMap.canvas,
+        ...assetMap.get(0, 0, 1),
+        meta.orientation === EntityOrientation.LEFT
+          ? -1 * (x + size / 2)
+          : x - size / 2,
+        y - size / 2,
+        size,
+        size
+      );
+    }
+  });
+
+export const drawPlayersCircles = (
+  opts: Omit<DrawPlayersOptions, 'renderPlayer'>
+) =>
+  drawPlayers({
+    ...opts,
+    renderPlayer: ({ x, y, id }) => {
+      const { ctx, size } = opts;
+
+      ctx.lineWidth = 0;
+      circle(ctx, { x, y, radius: size / 2 });
+      ctx.fillStyle = COLORS.player(id === socket.id);
+      ctx.fill();
+    }
+  });

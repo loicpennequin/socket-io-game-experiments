@@ -7,7 +7,8 @@ import {
   PLAYER_HARD_FIELD_OF_VIEW,
   PLAYER_SOFT_FIELD_OF_VIEW,
   PLAYER_SIZE,
-  PLAYER_SPEED
+  PLAYER_SPEED,
+  EntityOrientation
 } from '@game/shared-domain';
 import {
   clamp,
@@ -91,6 +92,11 @@ export const createPlayer = ({
         x: clampToGrid(entity.position.x + x * PLAYER_SPEED),
         y: clampToGrid(entity.position.y + y * PLAYER_SPEED)
       });
+
+      if (x !== 0) {
+        entity.meta.orientation =
+          x > 0 ? EntityOrientation.RIGHT : EntityOrientation.LEFT;
+      }
 
       const visibleCells = world.map.getVisibleCells(
         entity.position,

@@ -10,8 +10,8 @@ export type RenderContext = {
 export type Renderer = {
   canvas: HTMLCanvasElement & { width: number; height: number };
   isRunning: boolean;
-  start: () => void;
-  pause: () => void;
+  start: () => void | Promise<void>;
+  pause: () => void | Promise<void>;
   // @fixme
   draw?: (...args: any[]) => void;
 };
@@ -63,15 +63,16 @@ export const createRenderer = ({
   };
 
   const start = () => {
-    if (!isRunning) {
-      isRunning = true;
-      onStart?.({ ctx, canvas, children });
-      loop();
-      children.forEach(child => child.start());
-    }
+    if (isRunning) return;
+    isRunning = true;
+    onStart?.({ ctx, canvas, children });
+    loop();
+    children.forEach(child => child.start());
   };
 
   const pause = () => {
+    if (!isRunning) return;
+
     isRunning = false;
     if (rafId != null) {
       window.cancelAnimationFrame(rafId);

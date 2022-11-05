@@ -1,8 +1,9 @@
 import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
+import type { Coordinates } from '@game/shared-utils';
 import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
-import { drawPlayers } from '../commands/drawPlayers';
+import { drawPlayersSprites } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { interpolateEntities } from '@/gameState';
 import { createCamera } from '@/factories/camera';
@@ -13,14 +14,30 @@ import { handleManualCamera } from '@/commands/handleManualCamera';
 import { createMapRenderer } from './mapRenderer';
 import { createDebugRenderer } from './debugRenderer';
 import { createMinimapRenderer } from './minimapRenderer';
-import type { Coordinates } from '@game/shared-utils';
+import { createAssetMap } from '@/factories/assetMap';
 
 const getDimensions = () => ({
   w: window.innerWidth,
   h: window.innerHeight
 });
 
-export const createGameRenderer = ({ id }: { id: string }) => {
+export type CreateGameRendererOptions = {
+  id: string;
+  assets: HTMLImageElement[];
+};
+
+export type Asset = {
+  url: string;
+  width: number;
+  height: number;
+};
+
+export type DataUrl = string;
+
+export const createGameRenderer = ({
+  id,
+  assets
+}: CreateGameRendererOptions) => {
   const camera = createCamera({
     x: 0,
     y: 0,
@@ -29,6 +46,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
   });
 
   let mousePosition: Coordinates;
+  const assetMap = createAssetMap(assets, { baseSize: 32, gap: 4 });
 
   return createRenderer({
     id,
@@ -67,7 +85,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        drawPlayers({ ctx, size: PLAYER_SIZE });
+        drawPlayersSprites({ ctx, size: PLAYER_SIZE, assetMap });
 
         fogOfWarRenderer.draw?.(ctx, {
           x: camera.x,
@@ -78,7 +96,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
       });
     },
 
-    onStart({ canvas, children: [, , minimapRenderer] }) {
+    async onStart({ canvas, children: [, , minimapRenderer] }) {
       canvas.parentElement?.appendChild(
         Object.assign(minimapRenderer.canvas, { id: 'minimap' })
       );

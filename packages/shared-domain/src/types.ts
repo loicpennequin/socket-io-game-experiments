@@ -4,7 +4,12 @@ import type {
   Nullable,
   Override
 } from '@game/shared-utils';
-import type { EntityType, OngoingAction, PlayerAction } from './enums';
+import type {
+  EntityOrientation,
+  EntityType,
+  OngoingAction,
+  PlayerAction
+} from './enums';
 
 import {
   GAME_STATE_UPDATE,
@@ -22,7 +27,7 @@ export type EntityDto = Coordinates & {
   meta: AnyObject;
 };
 
-export type PlayerMeta = { name: string };
+export type PlayerMeta = { name: string; orientation: EntityOrientation };
 export type PlayerDto = Override<EntityDto, { meta: PlayerMeta }>;
 
 export type ProjectileDto = EntityDto;

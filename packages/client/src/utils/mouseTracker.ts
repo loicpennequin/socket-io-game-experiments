@@ -16,7 +16,6 @@ export const trackMousePosition = (canvas: HTMLCanvasElement) => {
   });
 
   canvas.addEventListener('mouseleave', () => {
-    console.log('mouseleave');
     Object.assign(mousePosition, {
       x: -9999,
       y: -9999

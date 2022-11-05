@@ -2,7 +2,7 @@ import { MAP_SIZE, PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createMapRenderer } from './mapRenderer';
 import { createRenderer } from '../factories/renderer';
-import { drawPlayers } from '../commands/drawPlayers';
+import { drawPlayersCircles } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { pushPop } from '../utils/canvas';
 import {
@@ -64,7 +64,7 @@ export const createMinimapRenderer = ({
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        drawPlayers({
+        drawPlayersCircles({
           ctx,
           size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE
         });
@@ -85,7 +85,7 @@ export const createMinimapRenderer = ({
     },
     onStart({ canvas }) {
       const mousePosition = trackMousePosition(canvas);
-      canvas.addEventListener('click', e => {
+      canvas.addEventListener('click', () => {
         state.isCameraLocked = false;
         camera.setMode(CameraMode.MANUAL);
         camera.setPosition({
