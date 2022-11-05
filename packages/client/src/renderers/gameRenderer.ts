@@ -19,6 +19,7 @@ import { initControls } from '@/utils/controls';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { applyEdgeHandler } from '@/commands/applyEdgeHandler';
 import { clamp, type Nullable } from '@game/shared-utils';
+import { handleManualCamera } from '@/commands/handleManualCamera';
 
 export const camera = createCamera({
   x: 0,
@@ -33,8 +34,6 @@ const getDimensions = () => ({
 });
 
 export const createGameRenderer = ({ id }: { id: string }) => {
-  let manualCameraModeTimeout: Nullable<ReturnType<typeof setTimeout>> = null;
-
   return createRenderer({
     id,
     getDimensions,
@@ -54,6 +53,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
 
     render: ({ canvas, ctx, children: [mapRenderer, fogOfWarRenderer] }) => {
       interpolateEntities();
+      handleManualCamera({ canvas, camera });
       camera.update();
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,48 +74,6 @@ export const createGameRenderer = ({ id }: { id: string }) => {
           y: camera.y,
           w: camera.w,
           h: camera.h
-        });
-
-        applyEdgeHandler({
-          canvas,
-          edgeSize: MANUAL_CAMERA_BOUNDARIES,
-          cb: ({ top, bottom, left, right }) => {
-            if (!top && !bottom && !left && !right) {
-              if (camera.mode === CameraMode.AUTO && manualCameraModeTimeout) {
-                clearTimeout(manualCameraModeTimeout);
-                manualCameraModeTimeout = null;
-              }
-              return;
-            }
-
-            if (camera.mode === CameraMode.AUTO) {
-              if (!manualCameraModeTimeout) {
-                manualCameraModeTimeout = setTimeout(() => {
-                  camera.setMode(CameraMode.MANUAL);
-                }, MANUAL_CAMERA_SWITCH_TIMEOUT);
-              }
-
-              return;
-            }
-
-            const newPosition = {
-              x: clamp(
-                camera.x +
-                  (left ? CAMERA_SPEED * -1 : right ? CAMERA_SPEED : 0),
-                { min: 0, max: MAP_SIZE - camera.w }
-              ),
-              y: clamp(
-                camera.y +
-                  (top ? CAMERA_SPEED * -1 : bottom ? CAMERA_SPEED : 0),
-                {
-                  min: 0,
-                  max: MAP_SIZE - camera.h
-                }
-              )
-            };
-
-            camera.setPosition(newPosition);
-          }
         });
       });
     },
