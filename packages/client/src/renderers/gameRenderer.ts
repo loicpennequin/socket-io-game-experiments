@@ -83,7 +83,7 @@ export const createGameRenderer = ({ id }: { id: string }) => {
         Object.assign(minimapRenderer.canvas, { id: 'minimap' })
       );
       mousePosition = trackMousePosition(canvas);
-      initControls(camera, mousePosition);
+      initControls(canvas, camera, mousePosition);
 
       camera.setTarget(socket.id);
       camera.setCanvas(canvas);

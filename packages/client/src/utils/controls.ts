@@ -16,7 +16,11 @@ import type { Camera } from '@/factories/camera';
 import { state } from '@/gameState';
 import { isOngoingAction, useKeydownOnce } from './helpers';
 
-export const initControls = (camera: Camera, mousePosition: Coordinates) => {
+export const initControls = (
+  canvas: HTMLCanvasElement,
+  camera: Camera,
+  mousePosition: Coordinates
+) => {
   const fireProjectile = throttle(() => {
     socket.emit(PLAYER_ACTION, {
       action: PlayerAction.FIRE_PROJECTILE,
@@ -67,5 +71,5 @@ export const initControls = (camera: Camera, mousePosition: Coordinates) => {
     }
   });
 
-  document.addEventListener('click', fireProjectile);
+  canvas.addEventListener('click', fireProjectile);
 };

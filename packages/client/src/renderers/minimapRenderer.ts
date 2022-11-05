@@ -1,4 +1,4 @@
-import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
+import { MAP_SIZE, PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createMapRenderer } from './mapRenderer';
 import { createRenderer } from '../factories/renderer';
@@ -6,12 +6,15 @@ import { drawPlayers } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { pushPop } from '../utils/canvas';
 import {
+  CameraMode,
   COLORS,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
 } from '../utils/constants';
 import type { Camera } from '@/factories/camera';
+import { trackMousePosition } from '@/utils/mouseTracker';
+import { state } from '@/gameState';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,
@@ -81,7 +84,15 @@ export const createMinimapRenderer = ({
       });
     },
     onStart({ canvas }) {
-      canvas.addEventListener('click', () => {});
+      const mousePosition = trackMousePosition(canvas);
+      canvas.addEventListener('click', e => {
+        state.isCameraLocked = false;
+        camera.setMode(CameraMode.MANUAL);
+        camera.setPosition({
+          x: (mousePosition.x * MAP_SIZE) / MINIMAP_SIZE,
+          y: (mousePosition.y * MAP_SIZE) / MINIMAP_SIZE
+        });
+      });
     }
   });
 };
