@@ -10,7 +10,7 @@ export const MINIMAP_ENTITY_SCALE = 10;
 export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
 export const MAP_CELL_OPACITY_STEP = 0.1;
 export const DEFAULT_CELL_LIGHTNESS = 50;
-export const MANUAL_CAMERA_BOUNDARIES = 60;
+export const MANUAL_CAMERA_BOUNDARIES = 85;
 export const MANUAL_CAMERA_SWITCH_TIMEOUT = 250;
 export const CAMERA_SPEED = 15;
 
