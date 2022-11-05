@@ -1,8 +1,12 @@
 import { throttle, type Nullable } from '@game/shared-utils';
-import { KeyboardControls, PROJECTILE_THROTTLE_RATE } from './constants';
+import {
+  CameraControls,
+  CameraMode,
+  KeyboardControls,
+  PROJECTILE_THROTTLE_RATE
+} from './constants';
 import { socket } from './socket';
 import { mousePosition } from './mouseTracker';
-import { camera } from '../renderers/gameRenderer';
 import {
   OngoingAction,
   PLAYER_ACTION,
@@ -10,6 +14,7 @@ import {
   PLAYER_ONGOING_ACTION_START,
   PLAYER_ONGOING_ACTION_END
 } from '@game/shared-domain';
+import type { Camera } from '@/factories/camera';
 
 const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
   let hasFired = false;
@@ -33,7 +38,7 @@ const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
 
 const isOngoingAction = (x: string): x is OngoingAction => x in OngoingAction;
 
-export const initControls = () => {
+export const initControls = (camera: Camera) => {
   const fireProjectile = throttle(() => {
     socket.emit(PLAYER_ACTION, {
       action: PlayerAction.FIRE_PROJECTILE,
@@ -57,6 +62,17 @@ export const initControls = () => {
       case PlayerAction.MOVE_LEFT:
       case PlayerAction.MOVE_RIGHT:
         return socket.emit(PLAYER_ONGOING_ACTION_START, { action });
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    const action = KeyboardControls[e.code as keyof typeof KeyboardControls];
+
+    if (!action) return;
+
+    switch (action) {
+      case CameraControls.RESET:
+        return camera.setMode(CameraMode.AUTO);
     }
   });
 

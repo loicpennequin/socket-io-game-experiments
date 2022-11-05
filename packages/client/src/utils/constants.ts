@@ -10,6 +10,9 @@ export const MINIMAP_ENTITY_SCALE = 10;
 export const FOG_OF_WAR_BLUR = CELL_SIZE * 0.75;
 export const MAP_CELL_OPACITY_STEP = 0.1;
 export const DEFAULT_CELL_LIGHTNESS = 50;
+export const MANUAL_CAMERA_BOUNDARIES = 50;
+export const MANUAL_CAMERA_SWITCH_TIMEOUT = 250;
+export const CAMERA_SPEED = 15;
 
 export const CameraControls = {
   MOVE_UP: 'MOVE_CAMERA_UP',
@@ -20,6 +23,12 @@ export const CameraControls = {
 };
 export type CameraControls = Values<typeof CameraControls>;
 
+export const CameraMode = {
+  AUTO: 'AUTO',
+  MANUAL: 'MANUAL'
+};
+export type CameraMode = Values<typeof CameraMode>;
+
 export const KeyboardControls = Object.freeze({
   KeyW: PlayerAction.MOVE_UP,
   KeyS: PlayerAction.MOVE_DOWN,
@@ -28,7 +37,8 @@ export const KeyboardControls = Object.freeze({
   ArrowUp: CameraControls.MOVE_UP,
   ArrowDown: CameraControls.MOVE_DOWN,
   ArrowLeft: CameraControls.MOVE_LEFT,
-  ArrowRight: CameraControls.MOVE_RIGHT
+  ArrowRight: CameraControls.MOVE_RIGHT,
+  Space: CameraControls.RESET
 });
 
 export type KeyboardControls = Values<typeof KeyboardControls>;

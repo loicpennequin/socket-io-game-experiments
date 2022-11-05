@@ -12,6 +12,7 @@ export type Renderer = {
   isRunning: boolean;
   start: () => void;
   pause: () => void;
+  draw?: (...args: any[]) => void;
 };
 
 export type CreateRendererOptions = {
