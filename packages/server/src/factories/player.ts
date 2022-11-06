@@ -3,12 +3,13 @@ import {
   EntityType,
   GameMapCell,
   GRID_SIZE,
-  PlayerMeta,
   PLAYER_HARD_FIELD_OF_VIEW,
   PLAYER_SOFT_FIELD_OF_VIEW,
   PLAYER_SIZE,
   PLAYER_SPEED,
-  EntityOrientation
+  EntityOrientation,
+  PlayerDto,
+  Directions
 } from '@game/shared-domain';
 import {
   clamp,
@@ -17,6 +18,7 @@ import {
   randomInt,
   uniqBy
 } from '@game/shared-utils';
+import { Dir } from 'fs';
 import { Entity, createEntity, MakeEntityOptions } from './entity';
 import { createProjectile, Projectile } from './projectile';
 
@@ -24,13 +26,13 @@ export type Player = Override<
   Entity,
   {
     // overrides
-    meta: PlayerMeta;
+    meta: PlayerDto['meta'];
 
     // new properties
     newDiscoveredCells: Map<string, GameMapCell>;
     allDiscoveredCells: Map<string, GameMapCell>;
     consumeDiscoveredCells: () => GameMapCell[];
-    move: (coords: Coordinates) => void;
+    move: (directions: Directions) => void;
     fireProjectile: (target: Coordinates) => Projectile;
   }
 >;
@@ -40,7 +42,7 @@ export type MakePlayerOptions = Override<
     MakeEntityOptions,
     'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
   >,
-  { meta: PlayerMeta }
+  { meta: PlayerDto['meta'] }
 >;
 
 const clampToGrid = (n: number, size: number) =>
@@ -67,6 +69,13 @@ export const createPlayer = ({
     }
   });
 
+  const directions: Directions = {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+  };
+
   return Object.assign(entity, {
     meta,
     allDiscoveredCells: world.map.getVisibleCells(
@@ -85,23 +94,20 @@ export const createPlayer = ({
       return uniqBy(cells.flat(), cell => `${cell.x}.${cell.y}`);
     },
 
-    move({ x, y }: Coordinates) {
-      if (x === 0 && y === 0) return;
-
+    update() {
+      const diff = { x: 0, y: 0 };
+      if (directions.up) diff.y -= PLAYER_SPEED;
+      if (directions.down) diff.y += PLAYER_SPEED;
+      if (directions.left) diff.x -= PLAYER_SPEED;
+      if (directions.right) diff.x += PLAYER_SPEED;
       Object.assign(entity.gridItem.position, {
-        x: clampToGrid(
-          entity.position.x + x * PLAYER_SPEED,
-          entity.dimensions.w
-        ),
-        y: clampToGrid(
-          entity.position.y + y * PLAYER_SPEED,
-          entity.dimensions.h
-        )
+        x: clampToGrid(entity.position.x + diff.x, entity.dimensions.w),
+        y: clampToGrid(entity.position.y + diff.y, entity.dimensions.h)
       });
 
-      if (x !== 0) {
+      if (diff.x !== 0) {
         entity.meta.orientation =
-          x > 0 ? EntityOrientation.RIGHT : EntityOrientation.LEFT;
+          diff.x > 0 ? EntityOrientation.RIGHT : EntityOrientation.LEFT;
       }
 
       const visibleCells = world.map.getVisibleCells(
@@ -117,6 +123,12 @@ export const createPlayer = ({
       }
 
       world.map.grid.update(entity.gridItem);
+
+      entity.dispatch('update');
+    },
+
+    move(newDirection: Directions) {
+      Object.assign(directions, newDirection);
     },
 
     fireProjectile(target: Coordinates) {
@@ -126,8 +138,9 @@ export const createPlayer = ({
         parent: entity as Player
       });
 
-      entity.children.add(projectile);
       projectile.on('destroy', () => entity.children.delete(projectile));
+      entity.children.add(projectile);
+      entity.world.addEntity(projectile);
 
       return projectile;
     }

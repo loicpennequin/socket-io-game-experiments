@@ -1,8 +1,4 @@
-import {
-  ActionPayload,
-  OngoingActionStartPayload,
-  TICK_RATE
-} from '@game/shared-domain';
+import { ActionPayload, TICK_RATE } from '@game/shared-domain';
 import { createTaskQueue } from '@game/shared-utils';
 import { Entity } from './entity';
 import { GameMap } from './gameMap';
@@ -13,10 +9,7 @@ export type StateUpdateCallback = (
   state: Readonly<{ entities: EntityMap }>
 ) => void;
 
-export type OngoingActionKey = `${string}.${string}`;
-
 export type GameAction = ActionPayload & { player: Player };
-export type GameOngoingAction = OngoingActionStartPayload & { player: Player };
 
 export type CreateGameWorldOptions = {
   map: GameMap;
@@ -25,17 +18,11 @@ export type CreateGameWorldOptions = {
 export const createGameWorld = ({ map }: CreateGameWorldOptions) => {
   const entities = new Map<string, Entity>();
   const actionsQueue = createTaskQueue();
-  const ongoingActionsQueue = createTaskQueue();
-  const ongoingActions = new Map<string, () => void>();
   const updateCallbacks = new Set<StateUpdateCallback>();
   let isRunning = false;
 
   const update = () => {
-    ongoingActions.forEach(action => {
-      ongoingActionsQueue.schedule(action);
-    });
     actionsQueue.process();
-    ongoingActionsQueue.process();
     entities.forEach(entity => {
       entity.update();
     });
@@ -77,14 +64,6 @@ export const createGameWorld = ({ map }: CreateGameWorldOptions) => {
 
     addAction: (action: () => void) => {
       actionsQueue.schedule(action);
-    },
-
-    addOngoingAction: (actionKey: string, action: () => void) => {
-      ongoingActions.set(actionKey, action);
-    },
-
-    stopOngoingAction: (actionKey: string) => {
-      ongoingActions.delete(actionKey);
     }
   };
 };

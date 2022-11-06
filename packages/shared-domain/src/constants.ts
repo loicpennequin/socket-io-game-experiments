@@ -6,7 +6,7 @@ export const CELL_SIZE = 16;
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
 
 export const PLAYER_SIZE = 64;
-export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 20;
+export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 30;
 export const PLAYER_SPEED = PLAYER_SPEED_PER_SECOND / TICK_RATE;
 export const PLAYER_HARD_FIELD_OF_VIEW = CELL_SIZE * 25;
 export const PLAYER_SOFT_FIELD_OF_VIEW = CELL_SIZE * 35;

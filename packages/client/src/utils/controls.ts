@@ -1,6 +1,5 @@
 import { throttle, type Coordinates } from '@game/shared-utils';
 import {
-  CameraControls,
   CameraMode,
   KeyboardControls,
   PROJECTILE_THROTTLE_RATE
@@ -9,53 +8,79 @@ import { socket } from './socket';
 import {
   PLAYER_ACTION,
   PlayerAction,
-  PLAYER_ONGOING_ACTION_START,
-  PLAYER_ONGOING_ACTION_END
+  type Directions
 } from '@game/shared-domain';
 import type { Camera } from '@/factories/camera';
 import { state } from '@/stores/gameState';
-import { isOngoingAction, useKeydownOnce } from './helpers';
+import { useKeydownOnce } from './helpers';
 
 export const initControls = (
   canvas: HTMLCanvasElement,
   camera: Camera,
   mousePosition: Coordinates
 ) => {
-  const fireProjectile = throttle(() => {
-    socket.emit(PLAYER_ACTION, {
-      action: PlayerAction.FIRE_PROJECTILE,
-      meta: {
-        target: {
-          x: mousePosition.x + camera.x,
-          y: mousePosition.y + camera.y
-        }
-      }
-    });
-  }, PROJECTILE_THROTTLE_RATE);
+  const directions: Directions = {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+  };
 
   useKeydownOnce(e => {
-    const action = KeyboardControls[e.code as keyof typeof KeyboardControls];
+    switch (e.code as KeyboardControls) {
+      case KeyboardControls.W:
+        directions.up = true;
+        break;
 
-    if (!action) return;
+      case KeyboardControls.A:
+        directions.left = true;
+        break;
 
-    switch (action) {
-      case PlayerAction.MOVE_UP:
-      case PlayerAction.MOVE_DOWN:
-      case PlayerAction.MOVE_LEFT:
-      case PlayerAction.MOVE_RIGHT:
-        return socket.emit(PLAYER_ONGOING_ACTION_START, { action });
+      case KeyboardControls.S:
+        directions.down = true;
+        break;
+
+      case KeyboardControls.D:
+        directions.right = true;
+        break;
     }
+
+    return socket.emit(PLAYER_ACTION, {
+      type: PlayerAction.MOVE,
+      meta: { directions }
+    });
+  });
+
+  document.addEventListener('keyup', e => {
+    switch (e.code as KeyboardControls) {
+      case KeyboardControls.W:
+        directions.up = false;
+        break;
+
+      case KeyboardControls.A:
+        directions.left = false;
+        break;
+
+      case KeyboardControls.S:
+        directions.down = false;
+        break;
+
+      case KeyboardControls.D:
+        directions.right = false;
+        break;
+    }
+
+    return socket.emit(PLAYER_ACTION, {
+      type: PlayerAction.MOVE,
+      meta: { directions }
+    });
   });
 
   document.addEventListener('keydown', e => {
-    const action = KeyboardControls[e.code as keyof typeof KeyboardControls];
-
-    if (!action) return;
-
-    switch (action) {
-      case CameraControls.RESET:
+    switch (e.code as KeyboardControls) {
+      case KeyboardControls.Space:
         return camera.setMode(CameraMode.AUTO);
-      case CameraControls.TOGGLE_LOCK:
+      case KeyboardControls.Y:
         state.isCameraLocked = !state.isCameraLocked;
         if (state.isCameraLocked) {
           camera.setMode(CameraMode.AUTO);
@@ -63,13 +88,18 @@ export const initControls = (
     }
   });
 
-  document.addEventListener('keyup', e => {
-    const action = KeyboardControls[e.code as keyof typeof KeyboardControls];
-
-    if (isOngoingAction(action)) {
-      socket.emit(PLAYER_ONGOING_ACTION_END, { action });
-    }
-  });
-
-  canvas.addEventListener('click', fireProjectile);
+  canvas.addEventListener(
+    'click',
+    throttle(() => {
+      socket.emit(PLAYER_ACTION, {
+        type: PlayerAction.FIRE_PROJECTILE,
+        meta: {
+          target: {
+            x: mousePosition.x + camera.x,
+            y: mousePosition.y + camera.y
+          }
+        }
+      });
+    }, PROJECTILE_THROTTLE_RATE)
+  );
 };

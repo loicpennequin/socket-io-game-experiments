@@ -1,10 +1,5 @@
 import type { Values } from '@game/shared-utils';
-import {
-  CELL_SIZE,
-  MAP_SIZE,
-  PlayerAction,
-  PlayerJob
-} from '@game/shared-domain';
+import { CELL_SIZE, MAP_SIZE, PlayerJob } from '@game/shared-domain';
 
 export const ONE_FRAME = 1000 / 60;
 export const MAP_HUE = 120;
@@ -59,15 +54,15 @@ export const CameraMode = {
 export type CameraMode = Values<typeof CameraMode>;
 
 export const KeyboardControls = Object.freeze({
-  KeyW: PlayerAction.MOVE_UP,
-  KeyS: PlayerAction.MOVE_DOWN,
-  KeyA: PlayerAction.MOVE_LEFT,
-  KeyD: PlayerAction.MOVE_RIGHT,
-  KeyY: CameraControls.TOGGLE_LOCK,
-  ArrowUp: CameraControls.MOVE_UP,
-  ArrowDown: CameraControls.MOVE_DOWN,
-  ArrowLeft: CameraControls.MOVE_LEFT,
-  ArrowRight: CameraControls.MOVE_RIGHT,
-  Space: CameraControls.RESET
+  W: 'KeyW',
+  S: 'KeyS',
+  A: 'KeyA',
+  D: 'KeyD',
+  Y: 'KeyY',
+  UP: 'ArrowUp',
+  DOWN: 'ArrowDown',
+  LEFT: 'ArrowLeft',
+  RIGHT: 'ArrowRight',
+  Space: 'Space'
 });
 export type KeyboardControls = Values<typeof KeyboardControls>;

@@ -1,4 +1,3 @@
-import { OngoingAction } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
 
 export const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
@@ -20,6 +19,3 @@ export const useKeydownOnce = (cb: (e: KeyboardEvent) => void) => {
     }
   });
 };
-
-export const isOngoingAction = (x: string): x is OngoingAction =>
-  x in OngoingAction;

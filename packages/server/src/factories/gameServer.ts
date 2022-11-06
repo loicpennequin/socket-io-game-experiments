@@ -12,7 +12,9 @@ import {
   EntityOrientation,
   JOIN_GAME,
   BOTS_COUNT,
-  PlayerJob
+  PlayerJob,
+  FireProjectileActionPayload,
+  MoveActionPayload
 } from '@game/shared-domain';
 import { GameWorld } from './gameWorld';
 import { isPlayer } from '../utils';
@@ -88,36 +90,15 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
       callback();
     });
 
-    socket.on(PLAYER_ONGOING_ACTION_START, ({ action }) => {
-      if (!player) return;
-      const actionKey = `${player.id}.${action}`;
-
-      return world.addOngoingAction(actionKey, () => {
-        switch (action) {
-          case PlayerAction.MOVE_UP:
-            return player.move({ x: 0, y: -1 });
-          case PlayerAction.MOVE_DOWN:
-            return player.move({ x: 0, y: 1 });
-          case PlayerAction.MOVE_LEFT:
-            return player.move({ x: -1, y: 0 });
-          case PlayerAction.MOVE_RIGHT:
-            return player.move({ x: 1, y: 0 });
-        }
-      });
-    });
-
-    socket.on(PLAYER_ONGOING_ACTION_END, ({ action }) => {
-      if (!player) return;
-      world.stopOngoingAction(`${player.id}.${action}`);
-    });
-
-    socket.on(PLAYER_ACTION, ({ action, meta }) => {
+    socket.on(PLAYER_ACTION, action => {
       if (!player) return;
 
-      switch (action) {
+      switch (action.type) {
+        case PlayerAction.MOVE:
+          return world.addAction(() => player.move(action.meta.directions));
         case PlayerAction.FIRE_PROJECTILE:
-          world.addAction(() =>
-            world.addEntity(player.fireProjectile(meta.target))
+          return world.addAction(() =>
+            player.fireProjectile(action.meta.target)
           );
       }
     });
