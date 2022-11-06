@@ -11,6 +11,7 @@ import {
 import { Constructor, Coordinates, uniqBy } from '@game/shared-utils';
 import { Entity } from './Entity';
 import { createProjectile } from '../factories/projectile';
+import { Projectile } from './Projectile';
 
 function withPlayerMixin<TBase extends Constructor<Entity>>(Base: TBase) {
   return class Player extends Base {
@@ -101,22 +102,17 @@ function withPlayerMixin<TBase extends Constructor<Entity>>(Base: TBase) {
       Object.assign(this.directions, newDirection);
     }
 
-    fireProjectile(target: Coordinates) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    fireProjectile(target: Coordinates): Projectile {
       const projectile = createProjectile({
-        target,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        world: this.world as any,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        parent: this as any
-      }) as any;
+        meta: { target },
+        world: this.world,
+        parent: this
+      });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
       projectile.on('destroy', () => this.children.delete(projectile));
-      // this.children.add(projectile);
       this.world.addEntity(projectile);
+      this.children.add(projectile);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return projectile;
     }
   };

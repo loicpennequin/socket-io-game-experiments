@@ -1,22 +1,11 @@
 import EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter';
-
-import { ActionPayload, TICK_RATE } from '@game/shared-domain';
+import { TICK_RATE } from '@game/shared-domain';
 import { AnyFunction, createTaskQueue, Nullable } from '@game/shared-utils';
 import { Entity } from '../models/Entity';
 import { GameMap } from '../models/GameMap';
-import { Player } from '../factories/player';
 
 export type EntityMap = Map<string, Entity>;
-export type StateUpdateCallback = (
-  state: Readonly<{ entities: EntityMap }>
-) => void;
-
-export type GameAction = ActionPayload & { player: Player };
-
-export type CreateGameWorldOptions = {
-  map: GameMap;
-};
 
 export type GameWorldEvents = {
   update: (state: Readonly<{ entities: EntityMap }>) => void;
@@ -32,7 +21,7 @@ export class GameWorld {
 
   private isRunning = false;
 
-  private entities = new Map<string, Entity>();
+  private entities: EntityMap = new Map();
 
   constructor(public map: GameMap) {}
 
@@ -48,8 +37,9 @@ export class GameWorld {
     this.emitter.emit('update', { entities: this.entities });
   }
 
-  on(...args: Parameters<GameWorldEmitter['on']>) {
-    return this.emitter.on(...args);
+  on<E extends keyof GameWorldEvents>(event: E, listener: GameWorldEvents[E]) {
+    this.emitter.on(event, listener);
+    return this;
   }
 
   start() {

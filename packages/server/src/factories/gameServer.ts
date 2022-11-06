@@ -5,24 +5,19 @@ import {
   ServerToClientEvents,
   GAME_STATE_UPDATE,
   PING,
-  PLAYER_ONGOING_ACTION_START,
   PlayerAction,
-  PLAYER_ONGOING_ACTION_END,
   PLAYER_ACTION,
   EntityOrientation,
   JOIN_GAME,
-  BOTS_COUNT,
-  PlayerJob,
-  FireProjectileActionPayload,
-  MoveActionPayload
+  BOTS_COUNT
 } from '@game/shared-domain';
-import { GameWorld } from './gameWorld';
+import { GameWorld } from '../models/GameWorld';
 import { isPlayer } from '../utils';
-import { createPlayer, Player } from './player';
+import { Player } from '../models/Player';
+import { createPlayer } from './player';
 import { PORT } from '../constants';
 import { v4 as uuid } from 'uuid';
 import randomNames from 'random-name';
-import { randomInt } from '@game/shared-utils';
 
 export const createGameServer = (server: http.Server, world: GameWorld) => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -32,8 +27,8 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     }
   });
 
-  world.onStateUpdate(gameState => {
-    const players = [...gameState.entities.values()].filter(isPlayer);
+  world.on('update', state => {
+    const players = [...state.entities.values()].filter(isPlayer);
     players.forEach(player => {
       const socket = io.sockets.sockets.get(player.id);
 
@@ -50,7 +45,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     });
   });
 
-  for (let i = 0; i <= BOTS_COUNT; i++) {
+  for (let i = 0; i < BOTS_COUNT; i++) {
     world.addEntity(
       createPlayer({
         id: uuid(),
@@ -63,6 +58,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
       })
     );
   }
+
   io.on('connection', socket => {
     let player: Player;
 
@@ -95,9 +91,11 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
 
       switch (action.type) {
         case PlayerAction.MOVE:
-          return world.addAction(() => player.move(action.meta.directions));
+          return world.scheduleAction(() =>
+            player.move(action.meta.directions)
+          );
         case PlayerAction.FIRE_PROJECTILE:
-          return world.addAction(() =>
+          return world.scheduleAction(() =>
             player.fireProjectile(action.meta.target)
           );
       }

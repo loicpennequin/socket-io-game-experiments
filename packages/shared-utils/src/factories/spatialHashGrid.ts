@@ -157,12 +157,12 @@ export const createSpatialHashGrid = <TMeta = unknown>({
       for (let y = min.y; y <= max.y; ++y) {
         const cell = cells[x]?.[y];
         if (!cell) continue;
+
         cell.items.forEach(item => {
           const isWithinBounds = pointCircleCollision(item.position, {
             ...position,
             r: radius
           });
-
           if (!isWithinBounds) return;
           if (item.queryId === currentQueryId) return;
 
@@ -171,7 +171,6 @@ export const createSpatialHashGrid = <TMeta = unknown>({
         });
       }
     }
-
     return nearby;
   };
 

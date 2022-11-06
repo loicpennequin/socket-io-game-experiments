@@ -11,4 +11,4 @@ export const isBoolean = (x: unknown): x is boolean =>
   x === true || x === false;
 
 export const isDefined = <T>(arg: Nullable<T>): arg is T =>
-  arg !== undefined && arg == null;
+  arg !== undefined && arg !== null;

@@ -84,6 +84,7 @@ export class Entity {
   }
 
   get visibleEntities(): Entity[] {
+    console.log(this.children.size);
     const entities = [this, ...this.children]
       .map(entity =>
         this.world.map.grid
