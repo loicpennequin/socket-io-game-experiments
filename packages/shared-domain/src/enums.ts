@@ -27,8 +27,12 @@ export const PlayerJob = {
 export type PlayerJob = Values<typeof PlayerJob>;
 
 export const TerrainType = {
-  GRASS: 'GRASS',
+  DEEP_WATER: 'DEEP_WATER',
   WATER: 'WATER',
-  MOUNTAIN: 'MOUNTAIN'
+  SAND: 'SAND',
+  GRASS: 'GRASS',
+  LOW_MOUNTAIN: 'MOUNTAIN',
+  HIGH_MOUNTAIN: 'HIGH_MOUNTAIN',
+  SNOW: 'SNOW'
 };
 export type TerrainType = Values<typeof TerrainType>;

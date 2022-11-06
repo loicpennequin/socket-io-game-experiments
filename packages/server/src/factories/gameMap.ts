@@ -20,14 +20,23 @@ export type MapGridMeta = {
 
 export type MapGridItem = SpatialHashGridItem<MapGridMeta>;
 
-const GRASS_THRESHOLD = 0.35;
-const HILL_THRESHOLD = 0.7;
+const NOISE_TO_TERRAIN_MAP: Record<number, TerrainType> = {
+  0: TerrainType.DEEP_WATER,
+  1: TerrainType.DEEP_WATER,
+  2: TerrainType.WATER,
+  3: TerrainType.WATER,
+  4: TerrainType.SAND,
+  5: TerrainType.GRASS,
+  6: TerrainType.GRASS,
+  7: TerrainType.LOW_MOUNTAIN,
+  8: TerrainType.LOW_MOUNTAIN,
+  9: TerrainType.HIGH_MOUNTAIN,
+  10: TerrainType.SNOW
+};
 
 export const createGameMap = () => {
   const getCellTerrain = (noise: number): TerrainType => {
-    if (noise < GRASS_THRESHOLD) return TerrainType.WATER;
-    if (noise < HILL_THRESHOLD) return TerrainType.GRASS;
-    return TerrainType.MOUNTAIN;
+    return NOISE_TO_TERRAIN_MAP[Math.round(noise * 10)];
   };
   const grid = createSpatialHashGrid<MapGridMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },

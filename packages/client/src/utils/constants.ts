@@ -36,12 +36,20 @@ export const COLORS = Object.freeze({
     lightness: number;
   }) => {
     switch (type) {
-      case TerrainType.WATER:
+      case TerrainType.DEEP_WATER:
         return `hsla(230, 55%, ${lightness}%, ${alpha})`;
+      case TerrainType.WATER:
+        return `hsla(245, 45%, ${lightness}%, ${alpha})`;
+      case TerrainType.SAND:
+        return `hsla(50, 15%, ${lightness}%, ${alpha})`;
       case TerrainType.GRASS:
         return `hsla(110, 50%, ${lightness}%, ${alpha})`;
-      case TerrainType.MOUNTAIN:
-        return `hsla(45, 40%, ${lightness}%, ${alpha})`;
+      case TerrainType.LOW_MOUNTAIN:
+        return `hsla(45, 35%, ${lightness}%, ${alpha})`;
+      case TerrainType.HIGH_MOUNTAIN:
+        return `hsla(30, 45%, ${lightness}%, ${alpha})`;
+      case TerrainType.SNOW:
+        return `hsla(190, 0%, ${lightness}%, ${alpha})`;
       default:
         throw new Error(`Wrong type provided to cell : ${type}`);
     }
@@ -51,9 +59,13 @@ export const COLORS = Object.freeze({
 });
 
 export const TERRAIN_LIGHTNESS_BOUNDARIES = {
+  [TerrainType.DEEP_WATER]: { min: 15, max: 30 },
+  [TerrainType.WATER]: { min: 35, max: 50 },
+  [TerrainType.SAND]: { min: 60, max: 75 },
   [TerrainType.GRASS]: { min: 30, max: 45 },
-  [TerrainType.WATER]: { min: 30, max: 45 },
-  [TerrainType.MOUNTAIN]: { min: 10, max: 30 }
+  [TerrainType.LOW_MOUNTAIN]: { min: 25, max: 35 },
+  [TerrainType.HIGH_MOUNTAIN]: { min: 10, max: 30 },
+  [TerrainType.SNOW]: { min: 85, max: 95 }
 };
 
 export const SPRITE_LOCATIONS: Record<string, [number, number, number]> = {
