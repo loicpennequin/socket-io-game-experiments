@@ -9,19 +9,19 @@ const PERLIN_SIZE = 4095;
 const scaled_cosine = (i: number) => 0.5 * (1.0 - Math.cos(i * Math.PI));
 
 export const createNoise = () => {
-  let perlin_octaves = 4;
-  let perlin_amp_falloff = 0.5;
+  const perlin_octaves = 4;
+  const perlin_amp_falloff = 0.5;
   const perlin = Array.from({ length: PERLIN_SIZE + 1 }, () => Math.random());
 
   return {
-    setDetail: (lod: number, falloff: number) => {
-      if (lod > 0) {
-        perlin_octaves = lod;
-      }
-      if (falloff > 0) {
-        perlin_amp_falloff = falloff;
-      }
-    },
+    // setDetail: (lod: number, falloff: number) => {
+    //   if (lod > 0) {
+    //     perlin_octaves = lod;
+    //   }
+    //   if (falloff > 0) {
+    //     perlin_amp_falloff = falloff;
+    //   }
+    // },
 
     get: ({ x, y }: Coordinates) => {
       const z = 0;

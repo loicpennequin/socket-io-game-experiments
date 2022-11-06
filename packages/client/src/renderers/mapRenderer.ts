@@ -30,7 +30,6 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
   const cachedCells = new Map<string, MapRendererCell>();
 
   const redrawMap = () => {
-    console.log(`redrawing map: ${cachedCells.size} cells cached`);
     const ctx = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
     ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
 

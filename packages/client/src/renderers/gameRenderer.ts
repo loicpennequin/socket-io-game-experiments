@@ -83,7 +83,6 @@ export const createGameRenderer = ({
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
-        // const start = performance.now();
         drawPlayersSprites({
           ctx,
           size: PLAYER_SIZE,
@@ -91,8 +90,6 @@ export const createGameRenderer = ({
           mousePosition,
           camera
         });
-        // const end = performance.now();
-        // console.log(`${id}:drawing sprites took ${end - start}ms`);
 
         fogOfWarRenderer.draw?.(ctx, {
           x: camera.x,
