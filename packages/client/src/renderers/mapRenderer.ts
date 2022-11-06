@@ -1,9 +1,14 @@
 import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
 import { state } from '../stores/gameState';
 import { createRenderer } from '../factories/renderer';
-import { MAP_CELL_OPACITY_STEP, ONE_FRAME } from '@/utils/constants';
+import {
+  MAP_CELL_OPACITY_STEP,
+  ONE_FRAME,
+  TERRAIN_LIGHTNESS_BOUNDARIES
+} from '@/utils/constants';
 import {
   debounce,
+  randomInRange,
   type Coordinates,
   type Dimensions
 } from '@game/shared-utils';
@@ -15,9 +20,14 @@ export type CreateMapCacheRendererOptions = {
   id: string;
 };
 
+export type MapRendererCell = GameMapCell & {
+  opacity: number;
+  lightness: number;
+};
+
 export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
-  const cellsToDraw = new Map<string, GameMapCell & { opacity: number }>();
-  const cachedCells = new Map<string, GameMapCell & { opacity: number }>();
+  const cellsToDraw = new Map<string, MapRendererCell>();
+  const cachedCells = new Map<string, MapRendererCell>();
 
   const redrawMap = () => {
     console.log(`redrawing map: ${cachedCells.size} cells cached`);
@@ -25,7 +35,7 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
     ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
 
     cachedCells.forEach(cell => {
-      drawCell({ ctx, cell, opacity: cell.opacity });
+      drawCell({ ctx, cell });
     });
   };
   window.addEventListener('resize', debounce(redrawMap, ONE_FRAME), false);
@@ -36,7 +46,14 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
       state.discoveredCells.forEach(cell => {
         const key = getKey(cell);
         if (cellsToDraw.has(key)) return;
-        cellsToDraw.set(key, { ...cell, opacity: 0 });
+        cellsToDraw.set(key, {
+          ...cell,
+          opacity: 0,
+          lightness: randomInRange({
+            min: TERRAIN_LIGHTNESS_BOUNDARIES[cell.type].min,
+            max: TERRAIN_LIGHTNESS_BOUNDARIES[cell.type].max
+          })
+        });
       });
       // terrible hack, we need accumulate cells in the state then remove the processed ones in the mapRenderer
       // otherwise we run the risk of missing discovered cells
@@ -44,7 +61,7 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
       cellsToDraw.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
 
-        drawCell({ ctx, cell, opacity: cell.opacity });
+        drawCell({ ctx, cell });
 
         if (cell.opacity >= 1) {
           cell.opacity = 1;

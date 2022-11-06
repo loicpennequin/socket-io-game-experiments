@@ -1,17 +1,18 @@
+import type { MapRendererCell } from '@/renderers/mapRenderer';
 import { COLORS } from '@/utils/constants';
-import { type GameMapCell, CELL_SIZE } from '@game/shared-domain';
+import { CELL_SIZE } from '@game/shared-domain';
 
 type DrawCellOptions = {
   ctx: CanvasRenderingContext2D;
-  opacity: number;
-  cell: GameMapCell;
+  cell: MapRendererCell;
 };
 
-export const drawCell = ({ ctx, cell, opacity }: DrawCellOptions) => {
+export const drawCell = ({ ctx, cell }: DrawCellOptions) => {
   ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
   ctx.fillStyle = COLORS.mapCell({
     type: cell.type,
-    alpha: opacity
+    lightness: cell.lightness,
+    alpha: cell.opacity
   });
   ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };

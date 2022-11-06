@@ -26,14 +26,22 @@ export const COLORS = Object.freeze({
   projectile: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
 
-  mapCell: ({ type, alpha }: { type: TerrainType; alpha: number }) => {
+  mapCell: ({
+    type,
+    alpha,
+    lightness
+  }: {
+    type: TerrainType;
+    alpha: number;
+    lightness: number;
+  }) => {
     switch (type) {
       case TerrainType.WATER:
-        return `hsla(230, 55%, 40%, ${alpha})`;
+        return `hsla(230, 55%, ${lightness}%, ${alpha})`;
       case TerrainType.GRASS:
-        return `hsla(110, 50%, 40%, ${alpha})`;
+        return `hsla(110, 50%, ${lightness}%, ${alpha})`;
       case TerrainType.MOUNTAIN:
-        return `hsla(45, 40%, 20%, ${alpha})`;
+        return `hsla(45, 40%, ${lightness}%, ${alpha})`;
       default:
         throw new Error(`Wrong type provided to cell : ${type}`);
     }
@@ -41,6 +49,12 @@ export const COLORS = Object.freeze({
 
   fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
 });
+
+export const TERRAIN_LIGHTNESS_BOUNDARIES = {
+  [TerrainType.GRASS]: { min: 30, max: 45 },
+  [TerrainType.WATER]: { min: 30, max: 45 },
+  [TerrainType.MOUNTAIN]: { min: 10, max: 30 }
+};
 
 export const SPRITE_LOCATIONS: Record<string, [number, number, number]> = {
   [PlayerJob.RANGER]: [2, 0, 1],

@@ -39,6 +39,9 @@ export const random = (max: number) => Math.random() * max;
 
 export const randomInt = (max: number) => Math.round(random(max));
 
+export const randomInRange = ({ min, max }: Boundaries) =>
+  min + Math.random() * (max - min);
+
 export const randomVector = (): Coordinates => {
   const angle = random(2 * Math.PI);
 
