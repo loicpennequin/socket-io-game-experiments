@@ -10,7 +10,8 @@ import {
   EntityOrientation,
   PlayerDto,
   Directions,
-  TerrainType
+  TerrainType,
+  WALKABLE_TERRAIN
 } from '@game/shared-domain';
 import {
   clamp,
@@ -19,10 +20,8 @@ import {
   randomInt,
   uniqBy
 } from '@game/shared-utils';
-import { Dir } from 'fs';
 import { Entity, createEntity, MakeEntityOptions } from './entity';
 import { GameMap } from './gameMap';
-import { GameWorld } from './gameWorld';
 import { createProjectile, Projectile } from './projectile';
 
 export type Player = Override<
@@ -51,23 +50,20 @@ export type MakePlayerOptions = Override<
 const clampToGrid = (n: number, size: number) =>
   clamp(n, { min: size / 2, max: GRID_SIZE * CELL_SIZE - size / 2 });
 
+const getRandomPosition = () => ({
+  x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
+  y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
+});
+
 const getInitialPosition = (map: GameMap) => {
-  let position = {
-    x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
-    y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
-  };
+  let position = getRandomPosition();
 
-  let cellIndex = map.grid.getCellIndex(position);
-  let terrain = map.cells[cellIndex.x][cellIndex.y].type;
-  const allowed = [TerrainType.GRASS, TerrainType.SAND];
-  while (!allowed.includes(terrain)) {
-    position = {
-      x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
-      y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
-    };
+  let terrain = map.getTerrainAtPosition(position);
 
-    cellIndex = map.grid.getCellIndex(position);
-    terrain = map.cells[cellIndex.x][cellIndex.y].type;
+  while (!WALKABLE_TERRAIN.includes(terrain)) {
+    position = getRandomPosition();
+
+    terrain = map.getTerrainAtPosition(position);
   }
 
   return position;
@@ -122,10 +118,16 @@ export const createPlayer = ({
       if (directions.down) diff.y += PLAYER_SPEED;
       if (directions.left) diff.x -= PLAYER_SPEED;
       if (directions.right) diff.x += PLAYER_SPEED;
-      Object.assign(entity.gridItem.position, {
+
+      const newPosition = {
         x: clampToGrid(entity.position.x + diff.x, entity.dimensions.w),
         y: clampToGrid(entity.position.y + diff.y, entity.dimensions.h)
-      });
+      };
+
+      const terrain = world.map.getTerrainAtPosition(newPosition);
+      if (!WALKABLE_TERRAIN.includes(terrain)) return;
+
+      Object.assign(entity.gridItem.position, newPosition);
 
       if (diff.x !== 0) {
         entity.meta.orientation =

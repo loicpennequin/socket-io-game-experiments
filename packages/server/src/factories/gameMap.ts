@@ -75,6 +75,10 @@ export const createGameMap = () => {
   return {
     grid,
     cells,
+    getTerrainAtPosition(position: Coordinates) {
+      const cellIndex = grid.getCellIndex(position);
+      return cells[cellIndex.x][cellIndex.y].type;
+    },
     getVisibleCells(point: Coordinates, fieldOfView: number) {
       const coords = {
         min: {
