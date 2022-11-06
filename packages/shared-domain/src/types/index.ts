@@ -12,5 +12,10 @@ export type Directions = {
   right: boolean;
 };
 
+export type FieldOfView = {
+  hard: number;
+  soft: number;
+};
+
 export * from './dtos';
 export * from './payloads';

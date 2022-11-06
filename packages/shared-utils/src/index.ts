@@ -1,3 +1,4 @@
+export * from './assertions';
 export * from './collision';
 export * from './entityInterpolation';
 export * from './helpers';

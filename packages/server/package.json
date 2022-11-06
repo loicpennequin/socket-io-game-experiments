@@ -13,6 +13,7 @@
     "random-name": "^0.1.2",
     "socket.io": "^4.5.3",
     "ts-node": "^10.9.1",
+    "typed-emitter": "^2.1.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

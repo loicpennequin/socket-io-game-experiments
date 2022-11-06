@@ -15,11 +15,14 @@ export type EntityDto = Coordinates & {
   meta: AnyObject;
 };
 
-export type PlayerDto = Override<
-  EntityDto,
-  { meta: { name: string; orientation: EntityOrientation; job: PlayerJob } }
->;
+export type PlayerMeta = {
+  name: string;
+  orientation: EntityOrientation;
+  job: PlayerJob;
+};
+export type PlayerDto = Override<EntityDto, { meta: PlayerMeta }>;
 
+export type ProjectileMeta = { target: Coordinates };
 export type ProjectileDto = EntityDto;
 
 export type GameStateDto = {
