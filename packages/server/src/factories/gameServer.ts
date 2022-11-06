@@ -67,7 +67,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     let player: Player;
 
     socket.on('disconnect', () => {
-      player.destroy();
+      player?.destroy();
     });
 
     socket.on(PING, (timestamp, callback) => {

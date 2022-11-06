@@ -2,14 +2,14 @@ import {
   GRID_SIZE,
   CELL_SIZE,
   GameMapCell,
-  TerrainType
+  TerrainType,
+  MAP_NOISE_DETAIL
 } from '@game/shared-domain';
 import {
   Coordinates,
   createMatrix,
   dist,
   createSpatialHashGrid,
-  perlinMatrix,
   SpatialHashGridItem,
   createNoise
 } from '@game/shared-utils';
@@ -50,7 +50,10 @@ export const createGameMap = () => {
   const noiseSeed = createNoise();
 
   const cells = createMatrix<GameMapCell>(mapDimensions, ({ x, y }) => {
-    const noise = noiseSeed.get({ x: x * 0.1, y: y * 0.1 });
+    const noise = noiseSeed.get({
+      x: x * MAP_NOISE_DETAIL,
+      y: y * MAP_NOISE_DETAIL
+    });
 
     return {
       x,

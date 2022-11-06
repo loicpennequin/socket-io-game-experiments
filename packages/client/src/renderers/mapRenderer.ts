@@ -14,7 +14,7 @@ import {
 } from '@game/shared-utils';
 import { drawCell } from '@/commands/drawCell';
 
-const getKey = (cell: GameMapCell) => `${cell.x}.${cell.y}`;
+const getKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
 
 export type CreateMapCacheRendererOptions = {
   id: string;
@@ -60,7 +60,6 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
       state.discoveredCells = [];
       cellsToDraw.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
-
         drawCell({ ctx, cell });
 
         if (cell.opacity >= 1) {

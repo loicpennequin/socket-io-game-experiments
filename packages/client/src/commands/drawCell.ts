@@ -9,10 +9,6 @@ type DrawCellOptions = {
 
 export const drawCell = ({ ctx, cell }: DrawCellOptions) => {
   ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-  ctx.fillStyle = COLORS.mapCell({
-    type: cell.type,
-    lightness: cell.lightness,
-    alpha: cell.opacity
-  });
+  ctx.fillStyle = COLORS.mapCell(cell);
   ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };

@@ -5,6 +5,7 @@ import {
   PlayerJob,
   TerrainType
 } from '@game/shared-domain';
+import type { MapRendererCell } from '@/renderers/mapRenderer';
 
 export const ONE_FRAME = 1000 / 60;
 export const PROJECTILE_THROTTLE_RATE = 500;
@@ -26,36 +27,28 @@ export const COLORS = Object.freeze({
   projectile: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
 
-  mapCell: ({
-    type,
-    alpha,
-    lightness
-  }: {
-    type: TerrainType;
-    alpha: number;
-    lightness: number;
-  }) => {
+  mapCell: ({ type, opacity, lightness }: MapRendererCell) => {
     switch (type) {
       case TerrainType.DEEP_WATER:
-        return `hsla(230, 55%, ${lightness}%, ${alpha})`;
+        return `hsla(230, 55%, ${lightness}%, ${opacity})`;
       case TerrainType.WATER:
-        return `hsla(245, 45%, ${lightness}%, ${alpha})`;
+        return `hsla(245, 45%, ${lightness}%, ${opacity})`;
       case TerrainType.SAND:
-        return `hsla(50, 15%, ${lightness}%, ${alpha})`;
+        return `hsla(50, 15%, ${lightness}%, ${opacity})`;
       case TerrainType.GRASS:
-        return `hsla(110, 50%, ${lightness}%, ${alpha})`;
+        return `hsla(110, 50%, ${lightness}%, ${opacity})`;
       case TerrainType.LOW_MOUNTAIN:
-        return `hsla(45, 35%, ${lightness}%, ${alpha})`;
+        return `hsla(45, 35%, ${lightness}%, ${opacity})`;
       case TerrainType.HIGH_MOUNTAIN:
-        return `hsla(30, 45%, ${lightness}%, ${alpha})`;
+        return `hsla(30, 45%, ${lightness}%, ${opacity})`;
       case TerrainType.SNOW:
-        return `hsla(190, 0%, ${lightness}%, ${alpha})`;
+        return `hsla(190, 0%, ${lightness}%, ${opacity})`;
       default:
         throw new Error(`Wrong type provided to cell : ${type}`);
     }
   },
 
-  fogOfWar: () => 'rgba(0, 0, 0, 0.8)'
+  fogOfWar: () => 'hsla(0, 0%, 0%, 0.8)'
 });
 
 export const TERRAIN_LIGHTNESS_BOUNDARIES = {
@@ -63,7 +56,7 @@ export const TERRAIN_LIGHTNESS_BOUNDARIES = {
   [TerrainType.WATER]: { min: 35, max: 50 },
   [TerrainType.SAND]: { min: 60, max: 75 },
   [TerrainType.GRASS]: { min: 30, max: 45 },
-  [TerrainType.LOW_MOUNTAIN]: { min: 25, max: 35 },
+  [TerrainType.LOW_MOUNTAIN]: { min: 15, max: 30 },
   [TerrainType.HIGH_MOUNTAIN]: { min: 10, max: 30 },
   [TerrainType.SNOW]: { min: 85, max: 95 }
 };

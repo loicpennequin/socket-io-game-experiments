@@ -13,6 +13,7 @@
   "dependencies": {
     "@game/shared-domain": "*",
     "@game/shared-utils": "*",
+    "@types/chroma-js": "^2.1.4",
     "@vueuse/core": "^9.4.0",
     "pinia": "^2.0.23",
     "socket.io-client": "^4.5.3",

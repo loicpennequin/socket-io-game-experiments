@@ -29,7 +29,7 @@ const isDisplayed = import.meta.env.VITE_DEBUG;
 .debug {
   position: absolute;
   z-index: 2;
-  top: 0;
+  bottom: 0;
   left: 0;
   font-size: 0.8rem;
   padding-left: 0.5rem;
