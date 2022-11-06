@@ -35,7 +35,7 @@ if (!state.value.username || !state.value.job) {
   router.push('/');
 }
 
-onMounted(() => {
+const startGame = () => {
   const el = gameContainer.value!;
 
   const assetPromise = Promise.all(
@@ -73,12 +73,15 @@ onMounted(() => {
   });
 
   socket.connect();
-});
+};
 
-onUnmounted(() => {
+const stopGame = () => {
   socket.disconnect();
   gameRenderer?.pause();
-});
+};
+
+onMounted(startGame);
+onUnmounted(stopGame);
 </script>
 
 <template>

@@ -45,22 +45,25 @@ export const createGameRenderer = ({
   let mousePosition: Coordinates;
   const assetMap = createAssetMap(assets, { baseSize: 32, gap: 4 });
 
+  const mapRenderer = createMapRenderer({
+    id: `${id}:map`
+  });
+
   return createRenderer({
     id,
     getDimensions,
 
     children: [
-      createMapRenderer({
-        id: `${id}:map`
-      }),
+      mapRenderer,
       createFogOfWarRenderer({
-        id: ` '${id}:fog-of-war`,
+        id: `${id}:fog-of-war`,
         camera,
         getDimensions
       }),
       createMinimapRenderer({
         id: 'minimap',
-        camera
+        camera,
+        mapRenderer
       }),
       createDebugRenderer()
     ],
@@ -69,7 +72,6 @@ export const createGameRenderer = ({
       interpolateEntities();
       handleManualCamera({ canvas, camera, mousePosition });
       camera.update();
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       applyCamera({ canvas, ctx, camera }, () => {
@@ -81,6 +83,7 @@ export const createGameRenderer = ({
         });
 
         drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        // const start = performance.now();
         drawPlayersSprites({
           ctx,
           size: PLAYER_SIZE,
@@ -88,6 +91,8 @@ export const createGameRenderer = ({
           mousePosition,
           camera
         });
+        // const end = performance.now();
+        // console.log(`${id}:drawing sprites took ${end - start}ms`);
 
         fogOfWarRenderer.draw?.(ctx, {
           x: camera.x,

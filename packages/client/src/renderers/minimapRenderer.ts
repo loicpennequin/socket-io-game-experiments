@@ -1,6 +1,5 @@
 import { MAP_SIZE, PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
-import { createMapRenderer } from './mapRenderer';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayersCircles } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
@@ -15,6 +14,7 @@ import {
 import type { Camera } from '@/factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { state } from '@/stores/gameState';
+import type { MapRenderer } from './mapRenderer';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,
@@ -23,15 +23,13 @@ const getDimensions = () => ({
 
 export const createMinimapRenderer = ({
   id,
-  camera
+  camera,
+  mapRenderer
 }: {
   id: string;
   camera: Camera;
+  mapRenderer: MapRenderer;
 }) => {
-  const mapRenderer = createMapRenderer({
-    id: `${id}:map`
-  });
-
   const fogOfWarRenderer = createFogOfWarRenderer({
     id: `${id}:fog-of-war`,
     camera: {
@@ -47,7 +45,7 @@ export const createMinimapRenderer = ({
   return createRenderer({
     id,
     getDimensions,
-    children: [mapRenderer, fogOfWarRenderer],
+    children: [fogOfWarRenderer],
     render({ canvas, ctx }) {
       ctx.fillStyle = COLORS.minimapBackground();
       ctx.fillRect(0, 0, canvas.width, canvas.height);

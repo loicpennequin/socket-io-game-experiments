@@ -38,6 +38,9 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
         if (cellsToDraw.has(key)) return;
         cellsToDraw.set(key, { ...cell, opacity: 0 });
       });
+      // terrible hack, we need accumulate cells in the state then remove the processed ones in the mapRenderer
+      // otherwise we run the risk of missing discovered cells
+      state.discoveredCells = [];
       cellsToDraw.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
 

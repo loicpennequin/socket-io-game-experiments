@@ -60,7 +60,6 @@ export const createRenderer = ({
 
   const loop = () => {
     if (!isRunning) return;
-
     render({ canvas, ctx, children });
     rafId = window.requestAnimationFrame(loop);
   };
