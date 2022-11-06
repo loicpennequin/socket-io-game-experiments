@@ -2,9 +2,6 @@
 import { useDebugStore } from '@/stores/debug';
 import { storeToRefs } from 'pinia';
 
-const emit = defineEmits<{
-  (e: 'redraw-map'): void;
-}>();
 const { fpsAverage, ping } = storeToRefs(useDebugStore());
 const isDisplayed = import.meta.env.VITE_DEBUG;
 </script>
@@ -21,7 +18,6 @@ const isDisplayed = import.meta.env.VITE_DEBUG;
         <dd>{{ Math.round(ping) }}ms</dd>
       </div>
     </dl>
-    <button @click="emit('redraw-map')">Redraw map</button>
   </div>
 </template>
 
@@ -29,7 +25,7 @@ const isDisplayed = import.meta.env.VITE_DEBUG;
 .debug {
   position: absolute;
   z-index: 2;
-  bottom: 0;
+  bottom: top;
   left: 0;
   font-size: 0.8rem;
   padding-left: 0.5rem;

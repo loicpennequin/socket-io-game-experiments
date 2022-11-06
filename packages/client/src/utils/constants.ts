@@ -48,7 +48,7 @@ export const COLORS = Object.freeze({
     }
   },
 
-  fogOfWar: () => 'hsla(0, 0%, 0%, 0.8)'
+  fogOfWar: () => 'hsla(0, 0%, 0%, 0.7)'
 });
 
 export const TERRAIN_LIGHTNESS_BOUNDARIES = {
