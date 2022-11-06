@@ -25,3 +25,10 @@ export const PlayerJob = {
   BARBARIAN: 'BARBARIAN'
 };
 export type PlayerJob = Values<typeof PlayerJob>;
+
+export const TerrainType = {
+  GRASS: 'GRASS',
+  WATER: 'WATER',
+  MOUNTAIN: 'MOUNTAIN'
+};
+export type TerrainType = Values<typeof TerrainType>;

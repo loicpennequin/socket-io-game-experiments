@@ -51,8 +51,7 @@ export const createGameRenderer = ({
 
     children: [
       createMapRenderer({
-        id: `${id}:map`,
-        showLightness: true
+        id: `${id}:map`
       }),
       createFogOfWarRenderer({
         id: ` '${id}:fog-of-war`,

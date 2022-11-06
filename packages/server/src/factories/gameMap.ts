@@ -1,12 +1,17 @@
-import { GRID_SIZE, CELL_SIZE, GameMapCell } from '@game/shared-domain';
+import {
+  GRID_SIZE,
+  CELL_SIZE,
+  GameMapCell,
+  TerrainType
+} from '@game/shared-domain';
 import {
   Coordinates,
   createMatrix,
   dist,
   createSpatialHashGrid,
-  mapRange,
   perlinMatrix,
-  SpatialHashGridItem
+  SpatialHashGridItem,
+  createNoise
 } from '@game/shared-utils';
 
 export type MapGridMeta = {
@@ -15,7 +20,15 @@ export type MapGridMeta = {
 
 export type MapGridItem = SpatialHashGridItem<MapGridMeta>;
 
+const GRASS_THRESHOLD = 0.35;
+const HILL_THRESHOLD = 0.7;
+
 export const createGameMap = () => {
+  const getCellTerrain = (noise: number): TerrainType => {
+    if (noise < GRASS_THRESHOLD) return TerrainType.WATER;
+    if (noise < HILL_THRESHOLD) return TerrainType.GRASS;
+    return TerrainType.MOUNTAIN;
+  };
   const grid = createSpatialHashGrid<MapGridMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },
     bounds: {
@@ -25,14 +38,15 @@ export const createGameMap = () => {
   });
 
   const mapDimensions = { w: GRID_SIZE, h: GRID_SIZE };
-  const noiseSeed = perlinMatrix(mapDimensions);
+  const noiseSeed = createNoise();
 
-  const cells = createMatrix(mapDimensions, ({ x, y }) => {
-    const noise = Math.round(noiseSeed[x][y] * 100) / 100;
+  const cells = createMatrix<GameMapCell>(mapDimensions, ({ x, y }) => {
+    const noise = noiseSeed.get({ x: x * 0.1, y: y * 0.1 });
+
     return {
       x,
       y,
-      lightness: mapRange(noise, { min: 0, max: 1 }, { min: 0.3, max: 0.75 })
+      type: getCellTerrain(noise)
     };
   });
 

@@ -1,15 +1,18 @@
 import type { Values } from '@game/shared-utils';
-import { CELL_SIZE, MAP_SIZE, PlayerJob } from '@game/shared-domain';
+import {
+  CELL_SIZE,
+  MAP_SIZE,
+  PlayerJob,
+  TerrainType
+} from '@game/shared-domain';
 
 export const ONE_FRAME = 1000 / 60;
-export const MAP_HUE = 120;
 export const PROJECTILE_THROTTLE_RATE = 500;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 3;
 export const FOG_OF_WAR_BLUR = CELL_SIZE * 8;
 export const MAP_CELL_OPACITY_STEP = 0.1;
-export const DEFAULT_CELL_LIGHTNESS = 50;
 export const MANUAL_CAMERA_BOUNDARIES = 85;
 export const MANUAL_CAMERA_SWITCH_TIMEOUT = 250;
 export const CAMERA_SPEED = 15;
@@ -23,8 +26,17 @@ export const COLORS = Object.freeze({
   projectile: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
 
-  mapCell: ({ l, a }: { l: number; a: number }) => {
-    return `hsla(${MAP_HUE}, 30%, ${l}%, ${a})`;
+  mapCell: ({ type, alpha }: { type: TerrainType; alpha: number }) => {
+    switch (type) {
+      case TerrainType.WATER:
+        return `hsla(230, 55%, 40%, ${alpha})`;
+      case TerrainType.GRASS:
+        return `hsla(110, 50%, 40%, ${alpha})`;
+      case TerrainType.MOUNTAIN:
+        return `hsla(45, 40%, 20%, ${alpha})`;
+      default:
+        throw new Error(`Wrong type provided to cell : ${type}`);
+    }
   },
 
   fogOfWar: () => 'rgba(0, 0, 0, 0.8)'

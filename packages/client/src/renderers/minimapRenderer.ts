@@ -29,8 +29,7 @@ export const createMinimapRenderer = ({
   camera: Camera;
 }) => {
   const mapRenderer = createMapRenderer({
-    id: `${id}:map`,
-    showLightness: false
+    id: `${id}:map`
   });
 
   const fogOfWarRenderer = createFogOfWarRenderer({

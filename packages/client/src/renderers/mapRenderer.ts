@@ -1,7 +1,7 @@
 import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
 import { state } from '../stores/gameState';
 import { createRenderer } from '../factories/renderer';
-import { MAP_CELL_OPACITY_STEP } from '@/utils/constants';
+import { MAP_CELL_OPACITY_STEP, ONE_FRAME } from '@/utils/constants';
 import {
   debounce,
   type Coordinates,
@@ -12,14 +12,10 @@ import { drawCell } from '@/commands/drawCell';
 const getKey = (cell: GameMapCell) => `${cell.x}.${cell.y}`;
 
 export type CreateMapCacheRendererOptions = {
-  showLightness: boolean;
   id: string;
 };
 
-export const createMapRenderer = ({
-  showLightness,
-  id
-}: CreateMapCacheRendererOptions) => {
+export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
   const cellsToDraw = new Map<string, GameMapCell & { opacity: number }>();
   const cachedCells = new Map<string, GameMapCell & { opacity: number }>();
 
@@ -29,10 +25,10 @@ export const createMapRenderer = ({
     ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
 
     cachedCells.forEach(cell => {
-      drawCell({ ctx, cell, showLightness, opacity: cell.opacity });
+      drawCell({ ctx, cell, opacity: cell.opacity });
     });
   };
-  window.addEventListener('resize', debounce(redrawMap, 16), false);
+  window.addEventListener('resize', debounce(redrawMap, ONE_FRAME), false);
 
   const renderer = createRenderer({
     id,
@@ -45,7 +41,7 @@ export const createMapRenderer = ({
       cellsToDraw.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
 
-        drawCell({ ctx, cell, showLightness, opacity: cell.opacity });
+        drawCell({ ctx, cell, opacity: cell.opacity });
 
         if (cell.opacity >= 1) {
           cell.opacity = 1;
