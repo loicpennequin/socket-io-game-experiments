@@ -12,12 +12,20 @@ import {
 } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
 import { useRouter } from 'vue-router';
+import type { MapRenderer } from '@/renderers/mapRenderer';
 
 const router = useRouter();
 
 const gameContainer = ref<HTMLDivElement>();
 let gameRenderer: Renderer;
 
+const redrawMap = () => {
+  const mapRenderer = gameRenderer.children.find(
+    r => r.id === 'game:map'
+  ) as MapRenderer;
+
+  mapRenderer.redrawMap();
+};
 const state = useStorage<{
   username: string;
   job: Nullable<PlayerJob>;
@@ -76,7 +84,7 @@ onUnmounted(() => {
 <template>
   <div class="wrapper">
     <div ref="gameContainer">
-      <DebugInfos />
+      <DebugInfos @redraw-map="redrawMap" />
     </div>
   </div>
 </template>

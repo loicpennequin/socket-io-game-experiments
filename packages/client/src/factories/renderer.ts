@@ -14,6 +14,8 @@ export type Renderer = {
   pause: () => void | Promise<void>;
   // @fixme
   draw?: (...args: any[]) => void;
+  children: Renderer[];
+  id: string;
 };
 
 export type CreateRendererOptions = {
@@ -32,6 +34,7 @@ export const createRenderer = ({
   pauseOnDocumentHidden = true,
   onStart,
   onPause,
+  id,
   children = []
 }: CreateRendererOptions): Renderer => {
   let isRunning = false;
@@ -88,6 +91,8 @@ export const createRenderer = ({
       return isRunning;
     },
     pause,
-    start
+    start,
+    id,
+    children
   };
 };

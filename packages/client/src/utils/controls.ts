@@ -13,7 +13,7 @@ import {
   PLAYER_ONGOING_ACTION_END
 } from '@game/shared-domain';
 import type { Camera } from '@/factories/camera';
-import { state } from '@/gameState';
+import { state } from '@/stores/gameState';
 import { isOngoingAction, useKeydownOnce } from './helpers';
 
 export const initControls = (

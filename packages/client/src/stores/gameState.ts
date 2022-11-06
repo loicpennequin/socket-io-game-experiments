@@ -4,8 +4,8 @@ import {
   GAME_STATE_UPDATE
 } from '@game/shared-domain';
 import { indexBy } from '@game/shared-utils';
-import { interpolate } from './utils/interpolate';
-import { socket } from './utils/socket';
+import { interpolate } from '../utils/interpolate';
+import { socket } from '../utils/socket';
 
 export type SavedState = GameStateDto & {
   timestamp: number;
@@ -53,5 +53,13 @@ export const interpolateEntities = (now = performance.now()) => {
   interpolatedEntities = new Map<string, EntityDto>(entries);
 };
 
-export const getInterpolatedEntity = (id: string) =>
-  interpolatedEntities.get(id) as EntityDto;
+export const getInterpolatedEntity = (id: string) => {
+  const entity = interpolatedEntities.get(id) as EntityDto;
+  if (!entity) {
+    console.warn(`Interpolated entity not found: ${id}`);
+    interpolateEntities();
+    return interpolatedEntities.get(id) as EntityDto;
+  }
+
+  return entity;
+};

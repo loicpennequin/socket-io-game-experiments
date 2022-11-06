@@ -10,12 +10,17 @@ import {
   PLAYER_ONGOING_ACTION_END,
   PLAYER_ACTION,
   EntityOrientation,
-  JOIN_GAME
+  JOIN_GAME,
+  BOTS_COUNT,
+  PlayerJob
 } from '@game/shared-domain';
 import { GameWorld } from './gameWorld';
 import { isPlayer } from '../utils';
 import { createPlayer, Player } from './player';
 import { PORT } from '../constants';
+import { v4 as uuid } from 'uuid';
+import randomNames from 'random-name';
+import { randomInt } from '@game/shared-utils';
 
 export const createGameServer = (server: http.Server, world: GameWorld) => {
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(server, {
@@ -31,7 +36,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
       const socket = io.sockets.sockets.get(player.id);
 
       if (!socket) {
-        player.destroy();
+        // player.destroy();
         return;
       }
 
@@ -43,6 +48,19 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     });
   });
 
+  for (let i = 0; i <= BOTS_COUNT; i++) {
+    world.addEntity(
+      createPlayer({
+        id: uuid(),
+        world: world,
+        meta: {
+          name: randomNames.first(),
+          orientation: EntityOrientation.RIGHT,
+          job: 'ROGUE'
+        }
+      })
+    );
+  }
   io.on('connection', socket => {
     let player: Player;
 
@@ -71,6 +89,7 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     });
 
     socket.on(PLAYER_ONGOING_ACTION_START, ({ action }) => {
+      if (!player) return;
       const actionKey = `${player.id}.${action}`;
 
       return world.addOngoingAction(actionKey, () => {
@@ -88,10 +107,13 @@ export const createGameServer = (server: http.Server, world: GameWorld) => {
     });
 
     socket.on(PLAYER_ONGOING_ACTION_END, ({ action }) => {
+      if (!player) return;
       world.stopOngoingAction(`${player.id}.${action}`);
     });
 
     socket.on(PLAYER_ACTION, ({ action, meta }) => {
+      if (!player) return;
+
       switch (action) {
         case PlayerAction.FIRE_PROJECTILE:
           world.addAction(() =>

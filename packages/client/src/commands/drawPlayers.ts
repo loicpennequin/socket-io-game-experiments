@@ -1,6 +1,6 @@
 import { pushPop, circle } from '@/utils/canvas';
 import { COLORS, SPRITE_LOCATIONS } from '@/utils/constants';
-import { getInterpolatedEntity, state } from '@/gameState';
+import { getInterpolatedEntity, state } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import {
   EntityOrientation,

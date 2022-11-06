@@ -30,7 +30,9 @@ const onSubmit = () => {
   <div class="page">
     <section>
       <h2>Join a magical world</h2>
-      <img :src="gifMap[state.job]" v-if="state.job" class="job-img" />
+      <div class="job-img">
+        <img :src="gifMap[state.job]" v-if="state.job" :alt="state.job" />
+      </div>
       <form @submit.prevent="onSubmit">
         <fieldset>
           <label for="login-username">Username</label>
@@ -42,7 +44,7 @@ const onSubmit = () => {
           <div class="job-list">
             <template v-for="job in Object.values(PlayerJob)" :key="job">
               <input :id="job" type="radio" v-model="state.job" :value="job" />
-              <label for="job">
+              <label :for="job">
                 {{ job }}
               </label>
             </template>
@@ -134,7 +136,14 @@ input[type='radio']:checked {
 .job-img {
   width: calc(var(--sprite-base-size) * 2);
   aspect-ratio: 1;
-  image-rendering: pixelated;
   margin: 1rem 0;
+  border: solid 2px var(--color-primary);
+  border-radius: 1rem;
+  padding: 0.25rem;
+}
+
+.job-img > img {
+  image-rendering: pixelated;
+  height: 100%;
 }
 </style>

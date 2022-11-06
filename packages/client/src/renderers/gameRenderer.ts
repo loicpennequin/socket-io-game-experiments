@@ -5,7 +5,7 @@ import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayersSprites } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
-import { interpolateEntities } from '@/gameState';
+import { interpolateEntities } from '@/stores/gameState';
 import { createCamera } from '@/factories/camera';
 import { socket } from '@/utils/socket';
 import { initControls } from '@/utils/controls';

@@ -42,13 +42,15 @@ export const createGameWorld = ({ map }: CreateGameWorldOptions) => {
   };
 
   const tick = () => {
+    // const start = performance.now();
     update();
     updateCallbacks.forEach(cb => cb({ entities }));
+    // const now = performance.now();
+    // console.log(`tick duration : ${now - start}ms`);
   };
 
   return {
     entities,
-
     map,
 
     start() {

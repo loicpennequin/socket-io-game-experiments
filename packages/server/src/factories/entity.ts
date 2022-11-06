@@ -96,7 +96,9 @@ export const createEntity = ({
           .map(gridItem => world.entities.get(gridItem.meta.id) as Entity)
       );
 
-      return uniqBy(entities.flat(), entity => entity.id);
+      // @fixme sometimes the server would crash because one of the entities is undefined
+      // I added a .filter(Boolean) for now, will need to revisit it later
+      return uniqBy(entities.flat().filter(Boolean), entity => entity.id);
     },
 
     update() {

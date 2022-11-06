@@ -14,7 +14,7 @@ import {
 } from '../utils/constants';
 import type { Camera } from '@/factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
-import { state } from '@/gameState';
+import { state } from '@/stores/gameState';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,

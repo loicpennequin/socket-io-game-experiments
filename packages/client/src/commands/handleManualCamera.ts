@@ -1,5 +1,5 @@
 import type { Camera } from '@/factories/camera';
-import { state } from '@/gameState';
+import { state } from '@/stores/gameState';
 import {
   MANUAL_CAMERA_BOUNDARIES,
   CameraMode,

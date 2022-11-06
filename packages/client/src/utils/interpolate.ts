@@ -1,4 +1,4 @@
-import { prevState, state } from '@/gameState';
+import { prevState, state } from '@/stores/gameState';
 import { TICK_RATE } from '@game/shared-domain';
 import { interpolateEntity, type Coordinates } from '@game/shared-utils';
 

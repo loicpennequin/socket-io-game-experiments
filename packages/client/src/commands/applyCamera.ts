@@ -1,4 +1,4 @@
-import { state } from '@/gameState';
+import { state } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import { pushPop } from '@/utils/canvas';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
