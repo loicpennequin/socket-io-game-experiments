@@ -9,7 +9,8 @@ import {
   PLAYER_SPEED,
   EntityOrientation,
   PlayerDto,
-  Directions
+  Directions,
+  TerrainType
 } from '@game/shared-domain';
 import {
   clamp,
@@ -20,6 +21,8 @@ import {
 } from '@game/shared-utils';
 import { Dir } from 'fs';
 import { Entity, createEntity, MakeEntityOptions } from './entity';
+import { GameMap } from './gameMap';
+import { GameWorld } from './gameWorld';
 import { createProjectile, Projectile } from './projectile';
 
 export type Player = Override<
@@ -48,6 +51,28 @@ export type MakePlayerOptions = Override<
 const clampToGrid = (n: number, size: number) =>
   clamp(n, { min: size / 2, max: GRID_SIZE * CELL_SIZE - size / 2 });
 
+const getInitialPosition = (map: GameMap) => {
+  let position = {
+    x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
+    y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
+  };
+
+  let cellIndex = map.grid.getCellIndex(position);
+  let terrain = map.cells[cellIndex.x][cellIndex.y].type;
+  const allowed = [TerrainType.GRASS, TerrainType.SAND];
+  while (!allowed.includes(terrain)) {
+    position = {
+      x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
+      y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
+    };
+
+    cellIndex = map.grid.getCellIndex(position);
+    terrain = map.cells[cellIndex.x][cellIndex.y].type;
+  }
+
+  return position;
+};
+
 export const createPlayer = ({
   id,
   world,
@@ -58,10 +83,7 @@ export const createPlayer = ({
     type: EntityType.PLAYER,
     world,
     parent: null,
-    position: {
-      x: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE),
-      y: clampToGrid(randomInt(GRID_SIZE * CELL_SIZE), PLAYER_SIZE)
-    },
+    position: getInitialPosition(world.map),
     dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE },
     fieldOfView: {
       hard: PLAYER_HARD_FIELD_OF_VIEW,

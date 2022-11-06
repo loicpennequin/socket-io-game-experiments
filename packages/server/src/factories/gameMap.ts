@@ -22,21 +22,31 @@ export type MapGridItem = SpatialHashGridItem<MapGridMeta>;
 
 const NOISE_TO_TERRAIN_MAP: Record<number, TerrainType> = {
   0: TerrainType.DEEP_WATER,
-  1: TerrainType.DEEP_WATER,
-  2: TerrainType.WATER,
-  3: TerrainType.WATER,
-  4: TerrainType.SAND,
-  5: TerrainType.GRASS,
-  6: TerrainType.GRASS,
-  7: TerrainType.LOW_MOUNTAIN,
-  8: TerrainType.LOW_MOUNTAIN,
-  9: TerrainType.HIGH_MOUNTAIN,
-  10: TerrainType.SNOW
+  5: TerrainType.DEEP_WATER,
+  10: TerrainType.DEEP_WATER,
+  15: TerrainType.DEEP_WATER,
+  20: TerrainType.DEEP_WATER,
+  25: TerrainType.WATER,
+  30: TerrainType.WATER,
+  35: TerrainType.WATER,
+  40: TerrainType.SAND,
+  45: TerrainType.GRASS,
+  50: TerrainType.GRASS,
+  55: TerrainType.GRASS,
+  60: TerrainType.GRASS,
+  65: TerrainType.LOW_MOUNTAIN,
+  70: TerrainType.LOW_MOUNTAIN,
+  75: TerrainType.HIGH_MOUNTAIN,
+  80: TerrainType.HIGH_MOUNTAIN,
+  85: TerrainType.SNOW,
+  90: TerrainType.SNOW,
+  95: TerrainType.SNOW,
+  100: TerrainType.SNOW
 };
 
 export const createGameMap = () => {
   const getCellTerrain = (noise: number): TerrainType => {
-    return NOISE_TO_TERRAIN_MAP[Math.round(noise * 10)];
+    return NOISE_TO_TERRAIN_MAP[(Math.round(noise * 20) / 2) * 10];
   };
   const grid = createSpatialHashGrid<MapGridMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },
