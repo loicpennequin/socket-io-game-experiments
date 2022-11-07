@@ -1,6 +1,4 @@
 import {
-  GameMapCell,
-  PLAYER_SOFT_FIELD_OF_VIEW,
   PLAYER_SPEED,
   EntityOrientation,
   Directions,
@@ -9,39 +7,21 @@ import {
   PlayerMeta
 } from '@game/shared-domain';
 import { Constructor, Coordinates, uniqBy } from '@game/shared-utils';
-import { Entity } from './Entity';
+import { Entity, EntityOptions } from './Entity';
 import { createProjectile } from '../factories/projectile';
 import { Projectile } from './Projectile';
+import { withMapAwareness, MapAwareEntity } from '../mixins/withMapAwareness';
 
-function withPlayerMixin<TBase extends Constructor<Entity>>(Base: TBase) {
+function withPlayer<TBase extends MapAwareEntity>(Base: TBase) {
   return class Player extends Base {
     meta!: PlayerMeta;
 
-    newDiscoveredCells: Map<string, GameMapCell>;
-
-    allDiscoveredCells: Map<string, GameMapCell>;
-
-    private directions = {
+    directions = {
       up: false,
       down: false,
       left: false,
       right: false
     };
-
-    constructor(...args: any[]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      super(...args);
-
-      this.allDiscoveredCells = this.world.map.getVisibleCells(
-        this.position,
-        PLAYER_SOFT_FIELD_OF_VIEW
-      );
-
-      this.newDiscoveredCells = this.world.map.getVisibleCells(
-        this.position,
-        PLAYER_SOFT_FIELD_OF_VIEW
-      );
-    }
 
     private updatePosition() {
       const diff = { x: 0, y: 0 };
@@ -67,35 +47,14 @@ function withPlayerMixin<TBase extends Constructor<Entity>>(Base: TBase) {
         this.meta.orientation = EntityOrientation.RIGHT;
     }
 
-    private updateVisibleCells() {
-      const visibleCells = this.world.map.getVisibleCells(
-        this.position,
-        this.fieldOfView.soft
-      );
-
-      for (const [key, cell] of visibleCells) {
-        if (!this.allDiscoveredCells.has(key)) {
-          this.allDiscoveredCells.set(key, cell);
-          this.newDiscoveredCells.set(key, cell);
-        }
-      }
-    }
-
     update() {
       this.updatePosition();
       this.updateOrientation();
-      this.updateVisibleCells();
+      super.updateVisibleCells();
 
       this.world.map.grid.update(this.gridItem);
 
       super.update();
-    }
-
-    consumeDiscoveredCells() {
-      const cells = Array.from(this.newDiscoveredCells.values());
-      this.newDiscoveredCells.clear();
-
-      return uniqBy(cells.flat(), cell => `${cell.x}.${cell.y}`);
     }
 
     move(newDirection: Directions) {
@@ -106,10 +65,20 @@ function withPlayerMixin<TBase extends Constructor<Entity>>(Base: TBase) {
       const projectile = createProjectile({
         meta: { target },
         world: this.world,
-        parent: this
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        parent: this as any
       });
 
       projectile.on('destroy', () => this.children.delete(projectile));
+      projectile.on('update', () => {
+        for (const cell of projectile.discoveredCells) {
+          const key = this.getCellKey(cell);
+          if (!this.allDiscoveredCells.has(key)) {
+            this.allDiscoveredCells.set(key, cell);
+            this.newDiscoveredCells.set(key, cell);
+          }
+        }
+      });
       this.world.addEntity(projectile);
       this.children.add(projectile);
 
@@ -118,5 +87,5 @@ function withPlayerMixin<TBase extends Constructor<Entity>>(Base: TBase) {
   };
 }
 
-export const Player = withPlayerMixin(Entity);
+export const Player = withPlayer(withMapAwareness(Entity));
 export type Player = InstanceType<typeof Player>;

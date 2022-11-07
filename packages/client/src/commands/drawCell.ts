@@ -69,4 +69,7 @@ export const drawCell = ({ ctx, cell }: DrawCellOptions) => {
     baseCords.w,
     baseCords.h
   );
+
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+  ctx.strokeRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };

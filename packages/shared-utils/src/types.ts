@@ -12,6 +12,8 @@ export type AnyObject = { [key: string]: any };
 export type AnyFunction = (...args: any[]) => any;
 export type Values<T> = T[keyof T];
 export type Override<A, B> = Omit<A, keyof B> & B;
-export type Constructor<T = AnyObject> = new (...args: any[]) => T;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Constructor<T = {}> = new (...args: any[]) => T;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type AnyConstructor = new (...args: any[]) => {};

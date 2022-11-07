@@ -6,12 +6,27 @@ import {
   AnyObject,
   Coordinates,
   Dimensions,
-  isDefined,
-  Nullable,
-  uniqBy
+  Nullable
 } from '@game/shared-utils';
-import { MapGridItem } from './GameMap';
+import { GameMapGridItem } from './GameMap';
 import { GameWorld } from './GameWorld';
+
+export type TEntity = {
+  id: string;
+  type: EntityType;
+  gridItem: GameMapGridItem;
+  fieldOfView: FieldOfView;
+  children: Set<TEntity>;
+  parent: Nullable<Readonly<TEntity>>;
+  world: GameWorld;
+  meta: AnyObject;
+  position: Coordinates;
+  dimensions: Dimensions;
+  on(...args: Parameters<EntityEmitter['on']>): void;
+  update(): void;
+  destroy(): void;
+  toDto(): EntityDto;
+};
 
 export type EntityOptions = {
   id?: string;
@@ -31,10 +46,11 @@ export type EntityEvents = {
 
 export type EntityEmitter = TypedEmitter<EntityEvents>;
 
-export class Entity {
-  protected gridItem: MapGridItem;
-
+export class Entity implements TEntity {
   private emitter = new EventEmitter() as EntityEmitter;
+
+  gridItem: GameMapGridItem;
+
   id: string;
 
   type: EntityType;
@@ -43,7 +59,7 @@ export class Entity {
 
   children: Set<Entity> = new Set();
 
-  parent: Nullable<Readonly<Entity>>;
+  parent: Nullable<Readonly<TEntity>>;
 
   world: GameWorld;
 
@@ -81,19 +97,6 @@ export class Entity {
 
   get dimensions() {
     return this.gridItem.dimensions;
-  }
-
-  get visibleEntities(): Entity[] {
-    const entities = [this, ...this.children]
-      .map(entity =>
-        this.world.map.grid
-          .findNearbyRadius(entity.position, entity.fieldOfView.hard)
-          .map(gridItem => this.world.getEntity(gridItem.meta.id))
-      )
-      .flat()
-      .filter(isDefined);
-
-    return uniqBy(entities, entity => entity.id);
   }
 
   on(...args: Parameters<EntityEmitter['on']>) {

@@ -8,7 +8,7 @@ import {
 import type { MapRendererCell } from '@/renderers/mapRenderer';
 
 export const ONE_FRAME = 1000 / 60;
-export const PROJECTILE_THROTTLE_RATE = 500;
+export const PROJECTILE_THROTTLE_RATE = 10;
 export const MINIMAP_SIZE = 200;
 export const MINIMAP_SCALE = MINIMAP_SIZE / MAP_SIZE;
 export const MINIMAP_ENTITY_SCALE = 3;
@@ -25,7 +25,7 @@ export const COLORS = Object.freeze({
     isCurrentPlayer ? 'hsl(15, 80%, 50%)' : 'hsl(250, 80%, 50%)',
 
   projectile: (isCurrentPlayer: boolean) =>
-    isCurrentPlayer ? 'hsl(15, 80%, 75%)' : 'hsl(250, 80%, 75%)',
+    isCurrentPlayer ? 'hsl(250, 100%, 60%)' : 'hsl(10, 100%, 60%)',
 
   mapCell: ({ type, opacity, lightness }: MapRendererCell) => {
     switch (type) {

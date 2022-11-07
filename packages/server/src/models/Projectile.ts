@@ -4,10 +4,11 @@ import {
   ProjectileMeta
 } from '@game/shared-domain';
 import { Constructor, getAngleFromVector } from '@game/shared-utils';
+import { MapAwareEntity, withMapAwareness } from '../mixins/withMapAwareness';
 import { Entity } from './Entity';
 import { Player } from './Player';
 
-function withProjectileMixin<TBase extends Constructor<Entity>>(Base: TBase) {
+function withProjectile<TBase extends MapAwareEntity>(Base: TBase) {
   return class Projectile extends Base {
     private angle: number;
 
@@ -33,18 +34,7 @@ function withProjectileMixin<TBase extends Constructor<Entity>>(Base: TBase) {
         y: this.position.y + Math.sin(this.angle) * PROJECTILE_SPEED
       });
 
-      const visibleCells = this.world.map.getVisibleCells(
-        this.position,
-        this.fieldOfView.soft
-      );
-
-      for (const [key, cell] of visibleCells) {
-        if (!this.parent.allDiscoveredCells.has(key)) {
-          this.parent.allDiscoveredCells.set(key, cell);
-          this.parent.newDiscoveredCells.set(key, cell);
-        }
-      }
-
+      this.updateVisibleCells();
       this.world.map.grid.update(this.gridItem);
 
       this.lifeSpan--;
@@ -58,5 +48,5 @@ function withProjectileMixin<TBase extends Constructor<Entity>>(Base: TBase) {
   };
 }
 
-export const Projectile = withProjectileMixin(Entity);
+export const Projectile = withProjectile(withMapAwareness(Entity));
 export type Projectile = InstanceType<typeof Projectile>;

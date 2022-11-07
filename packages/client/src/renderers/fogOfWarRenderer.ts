@@ -74,6 +74,9 @@ export const createFogOfWarRenderer = ({
   return {
     ...renderer,
     draw(ctx: CanvasRenderingContext2D, camera: Coordinates & Dimensions) {
+      // avoid the fog of war crashing during HMR
+      if (renderer.canvas.width === 0 || renderer.canvas.width === 0) return;
+
       ctx.drawImage(
         renderer.canvas,
         0,

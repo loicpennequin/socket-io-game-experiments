@@ -49,7 +49,7 @@ export class GameServer {
         socket.emit(GAME_STATE_UPDATE, {
           playerCount: players.length,
           entities: player.visibleEntities.map(entity => entity.toDto()),
-          discoveredCells: player.consumeDiscoveredCells()
+          discoveredCells: player.discoveredCells
         });
       });
     });

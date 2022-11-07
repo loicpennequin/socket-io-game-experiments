@@ -15,14 +15,14 @@ import {
   Matrix
 } from '@game/shared-utils';
 
-export type MapGridMeta = {
+export type GameMapGridMeta = {
   id: string;
 };
 
-export type MapGridItem = SpatialHashGridItem<MapGridMeta>;
+export type GameMapGridItem = SpatialHashGridItem<GameMapGridMeta>;
 
 export class GameMap {
-  public grid = createSpatialHashGrid<MapGridMeta>({
+  public grid = createSpatialHashGrid<GameMapGridMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },
     bounds: {
       start: { x: 0, y: 0 },

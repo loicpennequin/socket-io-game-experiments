@@ -13,7 +13,10 @@ export const drawProjectiles = ({ ctx, size }: DrawProjectilesOptions) => {
       ctx.lineWidth = 0;
       circle(ctx, { x, y, radius: size / 2 });
       ctx.fillStyle = COLORS.projectile(projectile.parent === socket.id);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 3;
       ctx.fill();
+      ctx.stroke();
     });
   });
 };

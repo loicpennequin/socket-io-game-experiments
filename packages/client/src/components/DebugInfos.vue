@@ -31,6 +31,7 @@ const isDisplayed = import.meta.env.VITE_DEBUG;
   padding: 0.5rem;
   line-height: 1.8;
   background-color: rgba(0, 0, 0, 0.5);
+  user-select: none;
 }
 
 dl {
