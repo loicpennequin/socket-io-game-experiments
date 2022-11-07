@@ -10,9 +10,9 @@ import { Coordinates } from '@game/shared-utils';
 import { Entity } from './Entity';
 import { createProjectile } from '../factories/projectile';
 import { Projectile } from './Projectile';
-import { withMapAwareness, MapAwareEntity } from '../mixins/withMapAwareness';
+import { withMapAwareness, MapAware } from '../mixins/withMapAwareness';
 
-function withPlayer<TBase extends MapAwareEntity>(Base: TBase) {
+function withPlayer<TBase extends MapAware>(Base: TBase) {
   return class Player extends Base {
     meta!: PlayerMeta;
 

@@ -20,7 +20,6 @@ export type GameMapGridMeta = {
 };
 
 export type GameMapGridItem = SpatialHashGridItem<GameMapGridMeta>;
-
 export class GameMap {
   public grid = createSpatialHashGrid<GameMapGridMeta>({
     dimensions: { w: GRID_SIZE, h: GRID_SIZE },

@@ -4,10 +4,10 @@ import {
   ProjectileMeta
 } from '@game/shared-domain';
 import { getAngleFromVector } from '@game/shared-utils';
-import { MapAwareEntity, withMapAwareness } from '../mixins/withMapAwareness';
+import { MapAware, withMapAwareness } from '../mixins/withMapAwareness';
 import { Entity } from './Entity';
 
-function withProjectile<TBase extends MapAwareEntity>(Base: TBase) {
+function withProjectile<TBase extends MapAware>(Base: TBase) {
   return class Projectile extends Base {
     private angle: number;
 

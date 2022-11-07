@@ -36,22 +36,22 @@ export class GameServer {
   }
 
   private setupWorldListener() {
-    this.world.on('update', state => {
-      const players = [...state.entities.values()].filter(isPlayer);
-      players.forEach(player => {
-        const socket = this.io.sockets.sockets.get(player.id);
-
-        if (!socket) {
-          // player.destroy();
-          return;
-        }
-
-        socket.emit(GAME_STATE_UPDATE, {
-          playerCount: players.length,
-          entities: player.visibleEntities.map(entity => entity.toDto()),
-          discoveredCells: player.discoveredCells
+    this.world.on('update', () => {
+      this.io
+        .fetchSockets()
+        .then(sockets => {
+          sockets.forEach(socket => {
+            const player = this.world.getEntity<Player>(socket.id);
+            if (!player) return;
+            socket.emit(GAME_STATE_UPDATE, {
+              entities: player.visibleEntities.map(entity => entity.toDto()),
+              discoveredCells: player.discoveredCells
+            });
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
-      });
     });
   }
 

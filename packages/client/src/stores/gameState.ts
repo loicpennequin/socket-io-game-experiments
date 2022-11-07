@@ -17,7 +17,6 @@ const createEmptyState = (): SavedState => ({
   discoveredCells: [],
   entities: [],
   entitiesById: {},
-  playerCount: 0,
   timestamp: performance.now(),
   isCameraLocked: true
 });
@@ -28,10 +27,9 @@ export const prevState = createEmptyState();
 socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
   Object.assign(prevState, state);
 
-  const { entities, playerCount, discoveredCells } = payload;
+  const { entities, discoveredCells } = payload;
 
   Object.assign(state, {
-    playerCount,
     entities,
     discoveredCells: state.discoveredCells.concat(discoveredCells),
     entitiesById: indexBy(payload.entities, 'id'),

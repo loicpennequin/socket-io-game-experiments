@@ -27,6 +27,5 @@ export type ProjectileDto = EntityDto;
 
 export type GameStateDto = {
   entities: EntityDto[];
-  playerCount: number;
   discoveredCells: GameMapCell[];
 };

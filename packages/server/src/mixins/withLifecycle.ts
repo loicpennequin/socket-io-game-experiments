@@ -38,4 +38,4 @@ export const withLifeCycle = <TBase extends AnyConstructor>(Base: TBase) => {
   };
 };
 
-export type Lifecyclable = ReturnType<typeof withLifeCycle>;
+export type LifeCyclable = ReturnType<typeof withLifeCycle>;

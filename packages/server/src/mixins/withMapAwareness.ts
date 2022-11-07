@@ -1,14 +1,11 @@
 import { Constructor, isDefined, uniqBy } from '@game/shared-utils';
-import { GameMapGridItem } from '../models/GameMap';
 import { Entity } from '../models/Entity';
 import { GameMapCell } from '@game/shared-domain';
-
-export type GameMapGridClient = Constructor<{ gridItem: GameMapGridItem }>;
 
 export const withMapAwareness = <TBase extends Constructor<Entity>>(
   Base: TBase
 ) => {
-  return class MapAwareEntity extends Base {
+  return class MapAware extends Base {
     protected newDiscoveredCells: Map<string, GameMapCell>;
 
     protected allDiscoveredCells: Map<string, GameMapCell>;
@@ -68,4 +65,4 @@ export const withMapAwareness = <TBase extends Constructor<Entity>>(
   };
 };
 
-export type MapAwareEntity = ReturnType<typeof withMapAwareness>;
+export type MapAware = ReturnType<typeof withMapAwareness>;
