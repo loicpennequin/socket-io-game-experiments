@@ -4,7 +4,7 @@
       <router-link to="/"><h1>Game Name</h1></router-link>
     </header>
     <main>
-      <router-view />
+      <slot />
     </main>
     <footer>
       © 2022 Daria aka "CEO of based", All rights reserved or you go to gulag.

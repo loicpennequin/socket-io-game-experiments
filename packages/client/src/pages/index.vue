@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { PlayerJob } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
-import { useRouter } from 'vue-router';
 import barbarianGif from '@/assets/barbarian.gif';
 import rogueGif from '@/assets/rogue.gif';
 import rangerGif from '@/assets/ranger.gif';

@@ -2,7 +2,7 @@ import { PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
 import { applyCamera } from '../commands/applyCamera';
-import { createRenderer } from '../factories/renderer';
+import { createRenderer, type RenderContext } from '../factories/renderer';
 import { drawPlayersSprites } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { interpolateEntities } from '@/stores/gameState';
@@ -20,6 +20,7 @@ export type CreateGameRendererOptions = {
   id: string;
   assets: HTMLImageElement[];
   getDimensions: () => Dimensions;
+  onStart?: (ctx: RenderContext) => void;
 };
 
 export type Asset = {
@@ -33,7 +34,8 @@ export type DataUrl = string;
 export const createGameRenderer = ({
   id,
   assets,
-  getDimensions
+  getDimensions,
+  onStart
 }: CreateGameRendererOptions) => {
   const camera = createCamera({
     x: 0,
@@ -46,7 +48,7 @@ export const createGameRenderer = ({
   const assetMap = createAssetMap(assets, { baseSize: 32, gap: 4 });
 
   const mapRenderer = createMapRenderer({
-    id: `${id}:map`
+    id: `map`
   });
 
   return createRenderer({
@@ -56,7 +58,7 @@ export const createGameRenderer = ({
     children: [
       mapRenderer,
       createFogOfWarRenderer({
-        id: `${id}:fog-of-war`,
+        id: `fog-of-war`,
         camera,
         getDimensions
       }),
@@ -100,15 +102,15 @@ export const createGameRenderer = ({
       });
     },
 
-    async onStart({ canvas, children: [, , minimapRenderer] }) {
-      canvas.parentElement?.appendChild(
-        Object.assign(minimapRenderer.canvas, { id: 'minimap' })
-      );
+    async onStart(renderContext) {
+      const { canvas } = renderContext;
       mousePosition = trackMousePosition(canvas);
       initControls(canvas, camera, mousePosition);
 
       camera.setTarget(socket.id);
       camera.setCanvas(canvas);
+
+      onStart?.(renderContext);
     }
   });
 };

@@ -17,7 +17,7 @@ export default defineConfig({
     Pages({ extensions: ['vue'] }),
     AutoImport({
       include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],
-      imports: ['vue', '@vueuse/core']
+      imports: ['vue', '@vueuse/core', 'vue-router']
     })
   ],
   resolve: {
