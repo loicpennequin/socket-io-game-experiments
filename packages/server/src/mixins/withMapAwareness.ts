@@ -1,11 +1,11 @@
 import { Constructor, isDefined, uniqBy } from '@game/shared-utils';
 import { GameMapGridItem } from '../models/GameMap';
-import { Entity, TEntity } from '../models/Entity';
+import { Entity } from '../models/Entity';
 import { GameMapCell } from '@game/shared-domain';
 
 export type GameMapGridClient = Constructor<{ gridItem: GameMapGridItem }>;
 
-export const withMapAwareness = <TBase extends Constructor<TEntity>>(
+export const withMapAwareness = <TBase extends Constructor<Entity>>(
   Base: TBase
 ) => {
   return class MapAwareEntity extends Base {

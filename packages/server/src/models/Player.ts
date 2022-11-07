@@ -6,8 +6,8 @@ import {
   clampToGrid,
   PlayerMeta
 } from '@game/shared-domain';
-import { Constructor, Coordinates, uniqBy } from '@game/shared-utils';
-import { Entity, EntityOptions } from './Entity';
+import { Coordinates } from '@game/shared-utils';
+import { Entity } from './Entity';
 import { createProjectile } from '../factories/projectile';
 import { Projectile } from './Projectile';
 import { withMapAwareness, MapAwareEntity } from '../mixins/withMapAwareness';
@@ -53,7 +53,6 @@ function withPlayer<TBase extends MapAwareEntity>(Base: TBase) {
       super.updateVisibleCells();
 
       this.world.map.grid.update(this.gridItem);
-
       super.update();
     }
 

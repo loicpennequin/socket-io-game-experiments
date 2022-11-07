@@ -8,7 +8,7 @@ export const GRID_SIZE = 250;
 export const CELL_SIZE = 32;
 
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
-export const MAP_NOISE_DETAIL = 0.01;
+export const MAP_NOISE_DETAIL = 0.03;
 
 export const PLAYER_SIZE = 64;
 export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 15;

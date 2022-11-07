@@ -1,6 +1,4 @@
-import EventEmitter from 'events';
 import { v4 as uuid } from 'uuid';
-import TypedEmitter from 'typed-emitter';
 import { EntityDto, EntityType, FieldOfView } from '@game/shared-domain';
 import {
   AnyObject,
@@ -10,23 +8,7 @@ import {
 } from '@game/shared-utils';
 import { GameMapGridItem } from './GameMap';
 import { GameWorld } from './GameWorld';
-
-export type TEntity = {
-  id: string;
-  type: EntityType;
-  gridItem: GameMapGridItem;
-  fieldOfView: FieldOfView;
-  children: Set<TEntity>;
-  parent: Nullable<Readonly<TEntity>>;
-  world: GameWorld;
-  meta: AnyObject;
-  position: Coordinates;
-  dimensions: Dimensions;
-  on(...args: Parameters<EntityEmitter['on']>): void;
-  update(): void;
-  destroy(): void;
-  toDto(): EntityDto;
-};
+import { withLifeCycle } from '../mixins/withLifecycle';
 
 export type EntityOptions = {
   id?: string;
@@ -39,16 +21,7 @@ export type EntityOptions = {
   meta?: AnyObject;
 };
 
-export type EntityEvents = {
-  update: (entity: Entity) => void;
-  destroy: (entity: Entity) => void;
-};
-
-export type EntityEmitter = TypedEmitter<EntityEvents>;
-
-export class Entity implements TEntity {
-  private emitter = new EventEmitter() as EntityEmitter;
-
+export class EntityBase {
   gridItem: GameMapGridItem;
 
   id: string;
@@ -57,9 +30,9 @@ export class Entity implements TEntity {
 
   fieldOfView: FieldOfView;
 
-  children: Set<Entity> = new Set();
+  children: Set<EntityBase> = new Set();
 
-  parent: Nullable<Readonly<TEntity>>;
+  parent: Nullable<Readonly<Entity>>;
 
   world: GameWorld;
 
@@ -99,19 +72,6 @@ export class Entity implements TEntity {
     return this.gridItem.dimensions;
   }
 
-  on(...args: Parameters<EntityEmitter['on']>) {
-    return this.emitter.on(...args);
-  }
-
-  update() {
-    this.emitter.emit('update', this);
-  }
-
-  destroy() {
-    this.world.map.grid.remove(this.gridItem);
-    this.emitter.emit('destroy', this);
-  }
-
   toDto(): EntityDto {
     return {
       id: this.id,
@@ -123,3 +83,6 @@ export class Entity implements TEntity {
     };
   }
 }
+
+export const Entity = withLifeCycle(EntityBase);
+export type Entity = InstanceType<typeof Entity>;

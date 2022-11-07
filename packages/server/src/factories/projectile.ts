@@ -5,13 +5,12 @@ import {
   PROJECTILE_SOFT_FIELD_OF_VIEW
 } from '@game/shared-domain';
 import { Coordinates, Override } from '@game/shared-utils';
-import { EntityOptions } from '../models/Entity';
-import { Player } from '../models/Player';
+import { Entity, EntityOptions } from '../models/Entity';
 import { Projectile } from '../models/Projectile';
 
 export type CreateProjectileOptions = Override<
   Omit<EntityOptions, 'position' | 'dimensions' | 'type' | 'fieldOfView'>,
-  { meta: { target: Coordinates }; parent: Player }
+  { meta: { target: Coordinates }; parent: Entity }
 >;
 
 export const createProjectile = ({

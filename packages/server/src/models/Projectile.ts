@@ -3,10 +3,9 @@ import {
   PROJECTILE_SPEED,
   ProjectileMeta
 } from '@game/shared-domain';
-import { Constructor, getAngleFromVector } from '@game/shared-utils';
+import { getAngleFromVector } from '@game/shared-utils';
 import { MapAwareEntity, withMapAwareness } from '../mixins/withMapAwareness';
 import { Entity } from './Entity';
-import { Player } from './Player';
 
 function withProjectile<TBase extends MapAwareEntity>(Base: TBase) {
   return class Projectile extends Base {
@@ -15,8 +14,6 @@ function withProjectile<TBase extends MapAwareEntity>(Base: TBase) {
     lifeSpan = PROJECTILE_LIFESPAN;
 
     meta!: ProjectileMeta;
-
-    parent!: Player;
 
     constructor(...args: any[]) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
