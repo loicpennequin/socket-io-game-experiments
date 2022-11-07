@@ -19,23 +19,12 @@ const withPlayer = <TBase extends MapAware & KeyboardMovable>(Base: TBase) => {
   return class Player extends Base {
     meta!: PlayerMeta;
 
-    private updateOrientation() {
-      if (this.directions.left) this.meta.orientation = EntityOrientation.LEFT;
-      if (this.directions.right)
-        this.meta.orientation = EntityOrientation.RIGHT;
-    }
-
     update() {
       this.updatePosition();
-      this.updateOrientation();
       super.updateVisibleCells();
 
       this.world.map.grid.update(this.gridItem);
       super.update();
-    }
-
-    move(newDirection: Directions) {
-      Object.assign(this.directions, newDirection);
     }
 
     fireProjectile(target: Coordinates): Projectile {
@@ -69,4 +58,5 @@ const withPlayer = <TBase extends MapAware & KeyboardMovable>(Base: TBase) => {
 export const Player = withPlayer(
   withMapAwareness(withKeyboardMovement(withMovement(Entity)))
 );
+
 export type Player = InstanceType<typeof Player>;

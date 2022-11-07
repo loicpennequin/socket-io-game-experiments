@@ -3,7 +3,7 @@ import { Movable } from './withMovement';
 
 export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
   return class KeyboardMovable extends Base {
-    directions: Directions = {
+    keyboardInput: Directions = {
       up: false,
       down: false,
       left: false,
@@ -12,12 +12,16 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
 
     protected get directionalDiff() {
       const diff = { x: 0, y: 0 };
-      if (this.directions.up) diff.y -= this.speed;
-      if (this.directions.down) diff.y += this.speed;
-      if (this.directions.left) diff.x -= this.speed;
-      if (this.directions.right) diff.x += this.speed;
+      if (this.keyboardInput.up) diff.y -= this.speed;
+      if (this.keyboardInput.down) diff.y += this.speed;
+      if (this.keyboardInput.left) diff.x -= this.speed;
+      if (this.keyboardInput.right) diff.x += this.speed;
 
       return diff;
+    }
+
+    handleKeyboardMovement(newDirection: Directions) {
+      Object.assign(this.keyboardInput, newDirection);
     }
 
     updatePosition() {

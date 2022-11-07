@@ -59,6 +59,8 @@ export const sum = (...nums: number[]) =>
 
 export const getAngleFromVector = ({ x, y }: Coordinates) => Math.atan2(y, x);
 
+export const radToDegrees = (radians: number) => radians * (180 / Math.PI);
+
 export const perlinMatrix = (dimensions: Dimensions) =>
   createMatrix(dimensions, ({ x, y }) => {
     const offset = {
