@@ -1,61 +1,67 @@
 import { TICK_RATE } from '@game/shared-domain';
-import { AnyFunction, createTaskQueue, Nullable } from '@game/shared-utils';
-import { LifeCyclable, withLifeCycle } from '../mixins/withLifecycle';
+import {
+  AnyFunction,
+  createTaskQueue,
+  EmptyClass,
+  mixinBuilder,
+  Nullable
+} from '@game/shared-utils';
+import { withLifeCycle } from '../mixins/withLifecycle';
 import { Entity } from '../models/Entity';
-import { GameMap } from '../models/GameMap';
+import { GameMap } from './GameMap';
 
 export type EntityMap = Map<string, Entity>;
 
-const withGameWorld = <TBase extends LifeCyclable>(Base: TBase) => {
-  return class GameWorld extends Base {
-    private actionsQueue = createTaskQueue();
+const mixins = mixinBuilder(EmptyClass).add(withLifeCycle);
+export class GameWorld extends mixins.build() {
+  private actionsQueue = createTaskQueue();
 
-    private isRunning = false;
+  private isRunning = false;
 
-    private entities: EntityMap = new Map();
+  private entities: EntityMap = new Map();
 
-    tick() {
-      this.actionsQueue.process();
-      this.entities.forEach(entity => {
-        entity.update();
-      });
-      this.update();
-    }
+  map: GameMap;
 
-    start() {
-      if (this.isRunning) return;
+  constructor(map: GameMap) {
+    super();
+    this.map = map;
+  }
 
-      setInterval(this.tick.bind(this), 1000 / TICK_RATE);
+  tick() {
+    this.actionsQueue.process();
+    this.entities.forEach(entity => {
+      entity.update();
+    });
+    this.update();
+  }
 
-      this.isRunning = true;
-    }
+  start() {
+    if (this.isRunning) return;
 
-    addEntity<T extends Entity>(entity: T) {
-      entity.on('destroy', () => {
-        this.entities.delete(entity.id);
-      });
+    setInterval(this.tick.bind(this), 1000 / TICK_RATE);
 
-      this.entities.set(entity.id, entity);
+    this.isRunning = true;
+  }
 
-      return entity;
-    }
+  addEntity<T extends Entity>(entity: T) {
+    entity.on('destroy', () => {
+      this.entities.delete(entity.id);
+    });
 
-    getEntity<T extends Entity = Entity>(id: string): Nullable<T> {
-      const entity = this.entities.get(id);
+    this.entities.set(entity.id, entity);
 
-      if (!entity) return null;
+    return entity;
+  }
 
-      return entity as T;
-    }
+  getEntity<T extends Entity = Entity>(id: string): Nullable<T> {
+    const entity = this.entities.get(id);
 
-    scheduleAction(action: AnyFunction) {
-      this.actionsQueue.schedule(action);
-    }
-  };
-};
+    if (!entity) return null;
 
-class GameWorldBase {
-  constructor(public map: GameMap) {}
+    return entity as T;
+  }
+
+  scheduleAction(action: AnyFunction) {
+    this.actionsQueue.schedule(action);
+  }
 }
-export const GameWorld = withGameWorld(withLifeCycle(GameWorldBase));
-export type GameWorld = InstanceType<typeof GameWorld>;

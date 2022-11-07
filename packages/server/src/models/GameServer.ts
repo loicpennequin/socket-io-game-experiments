@@ -12,7 +12,6 @@ import {
   BOTS_COUNT
 } from '@game/shared-domain';
 import { GameWorld } from '../models/GameWorld';
-import { isPlayer } from '../utils';
 import { Player } from '../models/Player';
 import { createPlayer } from '../factories/player';
 import { PORT } from '../constants';
@@ -92,7 +91,7 @@ export class GameServer {
             );
           case PlayerAction.FIRE_PROJECTILE:
             return this.world.scheduleAction(() =>
-              player.fireProjectile(action.meta.target)
+              player.shootProjectile(action.meta.target)
             );
         }
       });

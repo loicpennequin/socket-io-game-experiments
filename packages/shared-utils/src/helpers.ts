@@ -1,4 +1,4 @@
-import type { Dimensions, Coordinates, Matrix } from './types';
+import type { Dimensions, Coordinates, Matrix, AnyConstructor } from './types';
 
 export const indexBy = <T extends Record<string, any>>(
   arr: T[],
@@ -70,17 +70,20 @@ export const throttle = (fn: Function, wait = 300) => {
   };
 };
 
+export const pipeBuilder = <A, B>(fn: (a: A) => B) => {
+  return {
+    add: <C>(g: (x: B) => C) => pipeBuilder((arg: A) => g(fn(arg))),
+    build: (a?: A) => fn(a as A)
+  };
+};
+
+export const mixinBuilder = <TBase extends AnyConstructor>(BaseClass: TBase) =>
+  pipeBuilder(() => BaseClass);
+
 export const pipe =
   <T>(...fns: Array<(arg: T) => T>) =>
   (value: T) =>
     fns.reduce((acc, fn) => fn(acc), value);
-
-export const pipeBuilder = <A, B>(fn: (a: A) => B) => {
-  return {
-    f: <C>(g: (x: B) => C) => pipeBuilder((arg: A) => g(fn(arg))),
-    build: (a: A) => fn(a)
-  };
-};
 
 export const noop = () => void 0;
 
@@ -101,3 +104,27 @@ export const memoize = <TArgs extends any[], TReturn>(
 };
 
 export class EmptyClass {}
+
+type Pipe<T> = {
+  <R>(next: (x: T) => R): Pipe<R>;
+  (): T;
+};
+
+export function mixin<T>(init: T): Pipe<T> {
+  return function step<R>(next?: (x: T) => R): T | Pipe<R> {
+    if (next === undefined) {
+      return init;
+    } else {
+      return mixin(next(init));
+    }
+  } as Pipe<T>;
+}
+export function mixin2<T>(init: T): Pipe<T> {
+  return function step<R>(next?: (x: T) => R): T | Pipe<R> {
+    if (next === undefined) {
+      return init;
+    } else {
+      return mixin(next(init));
+    }
+  } as Pipe<T>;
+}

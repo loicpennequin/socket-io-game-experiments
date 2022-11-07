@@ -1,15 +1,17 @@
-import { PlayerMeta, PROJECTILE_SPEED } from '@game/shared-domain';
-import { Coordinates } from '@game/shared-utils';
+import { PlayerMeta } from '@game/shared-domain';
+import { mixinBuilder } from '@game/shared-utils';
 import { Entity, EntityOptions } from './Entity';
-import { createProjectile } from '../factories/projectile';
-import { Projectile } from './Projectile';
 import { withMapAwareness } from '../mixins/withMapAwareness';
 import { withMovement } from '../mixins/withMovement';
 import { withKeyboardMovement } from '../mixins/withKeyboardMovement';
+import { withShooting } from '../mixins/withShooting';
 
-export class Player extends withMapAwareness(
-  withKeyboardMovement(withMovement(Entity))
-) {
+const mixins = mixinBuilder(Entity)
+  .add(withMovement)
+  .add(withKeyboardMovement)
+  .add(withMapAwareness)
+  .add(withShooting);
+export class Player extends mixins.build() {
   meta!: PlayerMeta;
 
   constructor(opts: EntityOptions) {
@@ -20,34 +22,8 @@ export class Player extends withMapAwareness(
 
   private onUpdate() {
     this.updatePosition();
-    super.updateVisibleCells();
+    this.updateVisibleCells();
 
     this.world.map.grid.update(this.gridItem);
-  }
-
-  fireProjectile(target: Coordinates): Projectile {
-    const projectile = createProjectile({
-      meta: { target },
-      world: this.world,
-      speed: PROJECTILE_SPEED,
-      parent: this
-    });
-
-    projectile.moveTo(target);
-
-    projectile.on('update', () => {
-      for (const cell of projectile.discoveredCells) {
-        const key = this.getCellKey(cell);
-        if (!this.allDiscoveredCells.has(key)) {
-          this.allDiscoveredCells.set(key, cell);
-          this.newDiscoveredCells.set(key, cell);
-        }
-      }
-    });
-
-    this.world.addEntity(projectile);
-    this.children.add(projectile);
-
-    return projectile;
   }
 }

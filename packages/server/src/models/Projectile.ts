@@ -1,9 +1,11 @@
 import { PROJECTILE_LIFESPAN } from '@game/shared-domain';
+import { mixinBuilder } from '@game/shared-utils';
 import { withMapAwareness } from '../mixins/withMapAwareness';
 import { withMovement } from '../mixins/withMovement';
 import { Entity, EntityOptions } from './Entity';
 
-export class Projectile extends withMovement(withMapAwareness(Entity)) {
+const mixins = mixinBuilder(Entity).add(withMovement).add(withMapAwareness);
+export class Projectile extends mixins.build() {
   lifeSpan = PROJECTILE_LIFESPAN;
 
   constructor(opts: EntityOptions) {
