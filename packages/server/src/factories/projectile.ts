@@ -4,20 +4,19 @@ import {
   PROJECTILE_HARD_FIELD_OF_VIEW,
   PROJECTILE_SOFT_FIELD_OF_VIEW
 } from '@game/shared-domain';
-import { Coordinates, Override } from '@game/shared-utils';
 import { Entity, EntityOptions } from '../models/Entity';
 import { Projectile } from '../models/Projectile';
 
-export type CreateProjectileOptions = Override<
-  Omit<EntityOptions, 'position' | 'dimensions' | 'type' | 'fieldOfView'>,
-  { meta: { target: Coordinates }; parent: Entity }
->;
+export type CreateProjectileOptions = Omit<
+  EntityOptions,
+  'position' | 'dimensions' | 'type' | 'fieldOfView'
+> & { speed: number; parent: Entity };
 
 export const createProjectile = ({
   id,
   world,
-  meta,
-  parent
+  parent,
+  speed
 }: CreateProjectileOptions) => {
   const projectile = new Projectile({
     id,
@@ -32,7 +31,8 @@ export const createProjectile = ({
     }
   });
 
-  projectile.destination = meta.target;
+  projectile.speed = speed;
+  projectile.on('destroy', () => parent.children.delete(projectile));
 
   return projectile;
 };

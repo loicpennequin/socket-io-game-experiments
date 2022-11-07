@@ -8,7 +8,7 @@ function withProjectile<TBase extends MapAware & Movable>(Base: TBase) {
     lifeSpan = PROJECTILE_LIFESPAN;
 
     update() {
-      this.move();
+      this.updatePosition();
       this.updateVisibleCells();
 
       this.lifeSpan--;

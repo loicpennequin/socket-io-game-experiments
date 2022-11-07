@@ -7,7 +7,8 @@ import {
   PLAYER_SIZE,
   WALKABLE_TERRAIN,
   PlayerMeta,
-  clampToGrid
+  clampToGrid,
+  PLAYER_SPEED
 } from '@game/shared-domain';
 import { Override, randomInt } from '@game/shared-utils';
 import { Player } from '../models/Player';
@@ -45,8 +46,8 @@ export const createPlayer = ({
   id,
   world,
   meta
-}: CreatePlayerOptions): Player =>
-  new Player({
+}: CreatePlayerOptions): Player => {
+  const player = new Player({
     id,
     type: EntityType.PLAYER,
     world,
@@ -59,3 +60,8 @@ export const createPlayer = ({
     },
     meta
   });
+
+  player.speed = PLAYER_SPEED;
+
+  return player;
+};

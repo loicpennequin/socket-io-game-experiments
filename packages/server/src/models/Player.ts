@@ -1,45 +1,23 @@
 import {
-  PLAYER_SPEED,
   EntityOrientation,
   Directions,
-  WALKABLE_TERRAIN,
-  clampToGrid,
-  PlayerMeta
+  PlayerMeta,
+  PROJECTILE_SPEED
 } from '@game/shared-domain';
 import { Coordinates } from '@game/shared-utils';
 import { Entity } from './Entity';
 import { createProjectile } from '../factories/projectile';
 import { Projectile } from './Projectile';
 import { withMapAwareness, MapAware } from '../mixins/withMapAwareness';
+import { withMovement } from '../mixins/withMovement';
+import {
+  KeyboardMovable,
+  withKeyboardMovement
+} from '../mixins/withKeyboardMovement';
 
-function withPlayer<TBase extends MapAware>(Base: TBase) {
+const withPlayer = <TBase extends MapAware & KeyboardMovable>(Base: TBase) => {
   return class Player extends Base {
     meta!: PlayerMeta;
-
-    directions = {
-      up: false,
-      down: false,
-      left: false,
-      right: false
-    };
-
-    private updatePosition() {
-      const diff = { x: 0, y: 0 };
-      if (this.directions.up) diff.y -= PLAYER_SPEED;
-      if (this.directions.down) diff.y += PLAYER_SPEED;
-      if (this.directions.left) diff.x -= PLAYER_SPEED;
-      if (this.directions.right) diff.x += PLAYER_SPEED;
-
-      const newPosition = {
-        x: clampToGrid(this.position.x + diff.x, this.dimensions.w),
-        y: clampToGrid(this.position.y + diff.y, this.dimensions.h)
-      };
-
-      const terrain = this.world.map.getTerrainAtPosition(newPosition);
-      if (WALKABLE_TERRAIN.includes(terrain)) {
-        Object.assign(this.gridItem.position, newPosition);
-      }
-    }
 
     private updateOrientation() {
       if (this.directions.left) this.meta.orientation = EntityOrientation.LEFT;
@@ -64,11 +42,12 @@ function withPlayer<TBase extends MapAware>(Base: TBase) {
       const projectile = createProjectile({
         meta: { target },
         world: this.world,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        parent: this as any
+        speed: PROJECTILE_SPEED,
+        parent: this
       });
 
-      projectile.on('destroy', () => this.children.delete(projectile));
+      projectile.moveTo(target);
+
       projectile.on('update', () => {
         for (const cell of projectile.discoveredCells) {
           const key = this.getCellKey(cell);
@@ -78,13 +57,16 @@ function withPlayer<TBase extends MapAware>(Base: TBase) {
           }
         }
       });
+
       this.world.addEntity(projectile);
       this.children.add(projectile);
 
       return projectile;
     }
   };
-}
+};
 
-export const Player = withPlayer(withMapAwareness(Entity));
+export const Player = withPlayer(
+  withMapAwareness(withKeyboardMovement(withMovement(Entity)))
+);
 export type Player = InstanceType<typeof Player>;
