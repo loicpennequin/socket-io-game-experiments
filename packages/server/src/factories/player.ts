@@ -21,7 +21,7 @@ export type CreatePlayerOptions = Override<
     EntityOptions,
     'position' | 'dimensions' | 'type' | 'fieldOfView' | 'parent'
   >,
-  { meta: PlayerMeta }
+  { meta: Omit<PlayerMeta, 'stats'> }
 >;
 
 const getRandomPosition = () => ({
@@ -54,14 +54,13 @@ export const createPlayer = ({
     parent: null,
     position: getInitialPosition(world.map),
     dimensions: { w: PLAYER_SIZE, h: PLAYER_SIZE },
+    speed: PLAYER_SPEED,
     fieldOfView: {
       hard: PLAYER_HARD_FIELD_OF_VIEW,
       soft: PLAYER_SOFT_FIELD_OF_VIEW
     },
     meta
   });
-
-  player.speed = PLAYER_SPEED;
 
   return player;
 };

@@ -7,6 +7,13 @@ import type {
 import type { GameMapCell } from '.';
 import type { EntityOrientation, EntityType, PlayerJob } from '../enums';
 
+export type CreatureStats = {
+  hp: number;
+  maxHp: number;
+  mp: number;
+  maxMp: number;
+};
+
 export type EntityDto = Coordinates & {
   id: string;
   type: EntityType;
@@ -20,9 +27,11 @@ export type PlayerMeta = {
   orientation: EntityOrientation;
   job: PlayerJob;
 };
-export type PlayerDto = Override<EntityDto, { meta: PlayerMeta }>;
+export type PlayerDto = Override<
+  EntityDto,
+  { meta: PlayerMeta; stats: CreatureStats }
+>;
 
-export type ProjectileMeta = { target: Coordinates };
 export type ProjectileDto = EntityDto;
 
 export type GameStateDto = {

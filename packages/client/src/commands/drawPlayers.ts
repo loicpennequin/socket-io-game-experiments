@@ -1,11 +1,12 @@
 import { pushPop, circle } from '@/utils/canvas';
-import { COLORS, SPRITE_LOCATIONS } from '@/utils/constants';
+import { COLORS, HEALTH_BAR_HEIGHT, SPRITE_LOCATIONS } from '@/utils/constants';
 import { getInterpolatedEntity, state } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import {
   EntityOrientation,
   isPlayerDto,
-  type PlayerDto
+  type PlayerDto,
+  type PlayerMeta
 } from '@game/shared-domain';
 import {
   pointCircleCollision,
@@ -49,32 +50,56 @@ export const drawPlayers = ({
           }
         );
 
+      if (isHovered) {
+        ctx.filter = 'brightness(110%)';
+      }
+
       pushPop(ctx, () => {
         renderPlayer(p as PlayerDto);
       });
-
-      if (isHovered) {
-        // pushPop(ctx, () => {
-        //   const { width } = ctx.measureText(player.meta.name);
-        //   const padding = 12;
-        //   ctx.fillStyle = 'black';
-        //   ctx.beginPath();
-        //   ctx.rect(
-        //     p.x - padding - width / 2,
-        //     p.y - 70,
-        //     width + padding * 2,
-        //     25
-        //   );
-        //   ctx.closePath();
-        //   ctx.fill();
-        //   ctx.font = '12px Helvetica';
-        //   ctx.textAlign = 'center';
-        //   ctx.textBaseline = 'middle';
-        //   ctx.fillStyle = 'white';
-        //   ctx.fillText(player.meta.name, p.x, p.y - 58);
-        // });
-      }
     });
+  });
+};
+
+const drawPlayerName = (
+  ctx: CanvasRenderingContext2D,
+  { x, y, meta, size }: Coordinates & { size: number; meta: PlayerMeta }
+) => {
+  ctx.font = '12px Helvetica';
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'white';
+  ctx.fillText(meta.name, x, y + size / 2 + 12);
+};
+
+const drawPlayerStatBars = (
+  ctx: CanvasRenderingContext2D,
+  { x, y, size, meta, stats }: PlayerDto & { size: number }
+) => {
+  pushPop(ctx, () => {
+    if (meta.orientation === EntityOrientation.LEFT) ctx.scale(-1, 1);
+
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.fillRect(
+      x - size / 2,
+      y - size / 2 - HEALTH_BAR_HEIGHT - 5,
+      size,
+      HEALTH_BAR_HEIGHT
+    );
+    ctx.closePath();
+    ctx.fill();
+
+    const remainingWidth = (stats.hp * size) / stats.maxHp;
+    ctx.fillStyle = 'rgb(0,255,0)';
+    ctx.beginPath();
+    ctx.fillRect(
+      x - size / 2,
+      y - size / 2 - HEALTH_BAR_HEIGHT - 5,
+      remainingWidth,
+      HEALTH_BAR_HEIGHT
+    );
+    ctx.closePath();
   });
 };
 
@@ -83,11 +108,13 @@ export const drawPlayersSprites = (
 ) =>
   drawPlayers({
     ...opts,
-    renderPlayer: ({ x, y, meta }) => {
+    renderPlayer: player => {
+      const { x, y, meta } = player;
+
       const { ctx, assetMap, size } = opts;
       const isFlipped = meta.orientation === EntityOrientation.LEFT;
       pushPop(ctx, () => {
-        ctx.filter = 'saturate(200%)';
+        // ctx.filter = 'saturate(200%)';
         if (isFlipped) ctx.scale(-1, 1);
 
         ctx.drawImage(
@@ -100,13 +127,12 @@ export const drawPlayersSprites = (
           size,
           size
         );
+        drawPlayerName(ctx, { x, y, size, meta });
+        drawPlayerStatBars(ctx, {
+          ...player,
+          size
+        });
       });
-
-      ctx.font = '12px Helvetica';
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = 'white';
-      ctx.fillText(meta.name, x, y + size / 2 + 12);
     }
   });
 

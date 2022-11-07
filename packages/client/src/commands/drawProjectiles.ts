@@ -10,6 +10,7 @@ export const drawProjectiles = ({ ctx, size }: DrawProjectilesOptions) => {
   pushPop(ctx, () => {
     state.entities.filter(isProjectileDto).forEach(projectile => {
       const { x, y } = getInterpolatedEntity(projectile.id);
+
       ctx.lineWidth = 0;
       circle(ctx, { x, y, radius: size / 2 });
       ctx.fillStyle = COLORS.projectile(projectile.parent === socket.id);

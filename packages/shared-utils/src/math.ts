@@ -61,42 +61,7 @@ export const getAngleFromVector = ({ x, y }: Coordinates) => Math.atan2(y, x);
 
 export const radToDegrees = (radians: number) => radians * (180 / Math.PI);
 
-export const perlinMatrix = (dimensions: Dimensions) =>
-  createMatrix(dimensions, ({ x, y }) => {
-    const offset = {
-      x: mapRange(x, { min: 0, max: dimensions.w }, { min: 0, max: 1 }),
-      y: mapRange(y, { min: 0, max: dimensions.h }, { min: 0, max: 1 })
-    };
-    const boundaries = {
-      x: {
-        min: Math.floor(offset.x),
-        max: Math.floor(offset.x) + 1
-      },
-      y: {
-        min: Math.floor(offset.y),
-        max: Math.floor(offset.y) + 1
-      }
-    };
-
-    const minRange = {
-      min: dotProduct(offset, { x: boundaries.x.min, y: boundaries.y.min }),
-      max: dotProduct(offset, { x: boundaries.x.max, y: boundaries.y.min })
-    };
-
-    const maxRange = {
-      min: dotProduct(offset, { x: boundaries.x.min, y: boundaries.y.max }),
-      max: dotProduct(offset, { x: boundaries.x.max, y: boundaries.y.max })
-    };
-
-    const min = lerp(offset.x - boundaries.x.min, {
-      min: minRange.min,
-      max: minRange.max
-    });
-
-    const max = lerp(offset.x - boundaries.x.min, {
-      min: maxRange.min,
-      max: maxRange.max
-    });
-
-    return lerp(offset.y - boundaries.y.min, { min, max });
-  });
+export const addVector = (vec1: Coordinates, vec2: Coordinates) => ({
+  x: vec1.x + vec2.x,
+  y: vec1.y + vec2.y
+});

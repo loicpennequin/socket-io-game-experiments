@@ -1,9 +1,7 @@
 import {
   clampToGrid,
   Directions,
-  isWalkableTerrain,
-  TerrainType,
-  WALKABLE_TERRAIN
+  isWalkableTerrain
 } from '@game/shared-domain';
 import { Movable } from './withMovement';
 

@@ -17,6 +17,7 @@ export const MAP_CELL_OPACITY_STEP = 0.1;
 export const MANUAL_CAMERA_BOUNDARIES = 85;
 export const MANUAL_CAMERA_SWITCH_TIMEOUT = 250;
 export const CAMERA_SPEED = 15;
+export const HEALTH_BAR_HEIGHT = 8;
 
 export const COLORS = Object.freeze({
   minimapBackground: () => 'black',

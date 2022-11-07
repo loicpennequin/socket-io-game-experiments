@@ -73,14 +73,8 @@ export class Entity extends withLifeCycle(EmptyClass) {
     return this.gridItem.dimensions;
   }
 
-  toDto(): EntityDto {
-    return {
-      id: this.id,
-      type: this.type,
-      meta: this.meta,
-      parent: this.parent?.id ?? null,
-      children: [...this.children.values()].map(child => child.id),
-      ...this.position
-    };
+  toDto() {
+    console.warn(`.toDto() method not implemented on entity type ${this.type}`);
+    return undefined as unknown as EntityDto;
   }
 }
