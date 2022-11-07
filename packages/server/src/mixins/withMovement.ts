@@ -1,5 +1,6 @@
 import { EntityOrientation } from '@game/shared-domain';
 import {
+  addVector,
   Constructor,
   Coordinates,
   getAngleFromVector,
@@ -38,14 +39,19 @@ export const withMovement = <TBase extends Constructor<Entity>>(
       this.meta.orientation = this.orientation;
     }
 
+    protected get nextPosition() {
+      if (!isDefined(this.angle)) return this.position;
+
+      return addVector(this.position, {
+        x: Math.cos(this.angle) * this.speed,
+        y: Math.sin(this.angle) * this.speed
+      });
+    }
+
     updatePosition() {
-      if (!isDefined(this.angle)) return;
       if (this.speed <= 0) return;
 
-      this.gridItem.position.x =
-        this.position.x + Math.cos(this.angle) * this.speed;
-      this.gridItem.position.y =
-        this.position.y + Math.sin(this.angle) * this.speed;
+      Object.assign(this.gridItem.position, this.nextPosition);
 
       this.world.map.grid.update(this.gridItem);
     }

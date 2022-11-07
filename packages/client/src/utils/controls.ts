@@ -102,4 +102,16 @@ export const initControls = (
       });
     }, PROJECTILE_THROTTLE_RATE)
   );
+
+  canvas.addEventListener('contextmenu', () => {
+    socket.emit(PLAYER_ACTION, {
+      type: PlayerAction.MOVE_TO,
+      meta: {
+        target: {
+          x: mousePosition.x + camera.x,
+          y: mousePosition.y + camera.y
+        }
+      }
+    });
+  });
 };

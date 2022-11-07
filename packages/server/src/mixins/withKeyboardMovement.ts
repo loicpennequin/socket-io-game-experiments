@@ -3,6 +3,7 @@ import {
   Directions,
   isWalkableTerrain
 } from '@game/shared-domain';
+import { Coordinates } from '@game/shared-utils';
 import { Movable } from './withMovement';
 
 export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
@@ -24,11 +25,13 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
       return diff;
     }
 
-    handleKeyboardMovement(newDirection: Directions) {
-      Object.assign(this.keyboardInput, newDirection);
+    private checkTerrainCollision(position: Coordinates) {
+      return !isWalkableTerrain(this.world.map.getTerrainAtPosition(position));
     }
 
-    updatePosition() {
+    handleKeyboardMovement(newDirection: Directions) {
+      Object.assign(this.keyboardInput, newDirection);
+
       const newPosition = {
         x: clampToGrid(
           this.position.x + this.directionalDiff.x,
@@ -39,14 +42,17 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
           this.dimensions.h
         )
       };
-      const terrain = this.world.map.getTerrainAtPosition(newPosition);
-      if (isWalkableTerrain(terrain)) {
-        this.moveTo(newPosition);
-      } else {
-        this.angle = null;
-      }
 
-      super.updatePosition();
+      if (this.checkTerrainCollision(newPosition)) {
+        this.angle = null;
+        return;
+      }
+      this.moveTo(newPosition);
+    }
+
+    updatePosition() {
+      if (this.checkTerrainCollision(this.nextPosition)) return;
+      return super.updatePosition();
     }
   };
 };

@@ -2,6 +2,7 @@ import type { Values } from '@game/shared-utils';
 
 export const PlayerAction = {
   MOVE: 'MOVE',
+  MOVE_TO: 'MOVE_TO',
   FIRE_PROJECTILE: 'FIRE_PROJECTILE'
 } as const;
 export type PlayerAction = Values<typeof PlayerAction>;

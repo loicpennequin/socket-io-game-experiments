@@ -17,7 +17,17 @@ export type MoveActionPayload = {
   meta: { directions: Directions };
 };
 
-export type ActionPayload = FireProjectileActionPayload | MoveActionPayload;
+export type MoveToAction = Extract<PlayerAction, 'MOVE_TO'>;
+export type MoveToActionPayload = {
+  type: MoveToAction;
+  meta: { target: Coordinates };
+};
+
+export type ActionPayload =
+  | FireProjectileActionPayload
+  | MoveActionPayload
+  | MoveToActionPayload;
+
 export type JoinGamePayload = { username: string; job: PlayerJob };
 
 export type ServerToClientEvents = {
@@ -28,10 +38,3 @@ export type ClientToServerEvents = {
   [JOIN_GAME]: (payload: JoinGamePayload, callback: () => void) => void;
   [PLAYER_ACTION]: (payload: ActionPayload) => void;
 };
-
-type Foo =
-  | {
-      a: 'foo';
-      b: boolean;
-    }
-  | { a: 'bar'; b: number };

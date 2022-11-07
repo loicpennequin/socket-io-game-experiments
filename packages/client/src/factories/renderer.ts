@@ -41,6 +41,9 @@ export const createRenderer = ({
   let rafId: null | number = null;
 
   const { canvas, ctx } = createCanvas(getDimensions());
+  canvas.addEventListener('contextmenu', e => {
+    e.preventDefault();
+  });
 
   const resizeCanvas = () => {
     const dimensions = getDimensions();

@@ -74,25 +74,19 @@ const drawPlayerName = (
 
 const drawPlayerStatBars = (
   ctx: CanvasRenderingContext2D,
-  { x, y, size, meta, stats }: PlayerDto & { size: number }
+  { x, y, size, stats }: PlayerDto & { size: number }
 ) => {
   pushPop(ctx, () => {
-    if (meta.orientation === EntityOrientation.LEFT) ctx.scale(-1, 1);
-
     ctx.fillStyle = 'red';
-    ctx.beginPath();
     ctx.fillRect(
       x - size / 2,
       y - size / 2 - HEALTH_BAR_HEIGHT - 5,
       size,
       HEALTH_BAR_HEIGHT
     );
-    ctx.closePath();
-    ctx.fill();
 
     const remainingWidth = (stats.hp * size) / stats.maxHp;
     ctx.fillStyle = 'rgb(0,255,0)';
-    ctx.beginPath();
     ctx.fillRect(
       x - size / 2,
       y - size / 2 - HEALTH_BAR_HEIGHT - 5,
@@ -100,6 +94,15 @@ const drawPlayerStatBars = (
       HEALTH_BAR_HEIGHT
     );
     ctx.closePath();
+
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(
+      x - size / 2,
+      y - size / 2 - HEALTH_BAR_HEIGHT - 5,
+      size,
+      HEALTH_BAR_HEIGHT
+    );
   });
 };
 
@@ -127,11 +130,11 @@ export const drawPlayersSprites = (
           size,
           size
         );
-        drawPlayerName(ctx, { x, y, size, meta });
-        drawPlayerStatBars(ctx, {
-          ...player,
-          size
-        });
+      });
+      drawPlayerName(ctx, { x, y, size, meta });
+      drawPlayerStatBars(ctx, {
+        ...player,
+        size
       });
     }
   });

@@ -89,6 +89,10 @@ export class GameServer {
             return this.world.scheduleAction(() =>
               player.handleKeyboardMovement(action.meta.directions)
             );
+          case PlayerAction.MOVE_TO:
+            return this.world.scheduleAction(() =>
+              player.moveTo(action.meta.target)
+            );
           case PlayerAction.FIRE_PROJECTILE:
             return this.world.scheduleAction(() =>
               player.shootProjectile(action.meta.target)
