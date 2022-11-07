@@ -4,6 +4,7 @@ import {
   AnyObject,
   Coordinates,
   Dimensions,
+  EmptyClass,
   Nullable
 } from '@game/shared-utils';
 import { GameMapGridItem } from './GameMap';
@@ -20,8 +21,7 @@ export type EntityOptions = {
   parent: Nullable<Entity>;
   meta?: AnyObject;
 };
-
-export class EntityBase {
+export class Entity extends withLifeCycle(EmptyClass) {
   gridItem: GameMapGridItem;
 
   id: string;
@@ -30,7 +30,7 @@ export class EntityBase {
 
   fieldOfView: FieldOfView;
 
-  children: Set<EntityBase> = new Set();
+  children: Set<Entity> = new Set();
 
   parent: Nullable<Readonly<Entity>>;
 
@@ -48,6 +48,7 @@ export class EntityBase {
     parent,
     meta = {}
   }: EntityOptions) {
+    super();
     this.id = id;
     this.type = type;
     this.fieldOfView = fieldOfView;
@@ -83,6 +84,3 @@ export class EntityBase {
     };
   }
 }
-
-export const Entity = withLifeCycle(EntityBase);
-export type Entity = InstanceType<typeof Entity>;

@@ -1,28 +1,25 @@
 import { PROJECTILE_LIFESPAN } from '@game/shared-domain';
-import { MapAware, withMapAwareness } from '../mixins/withMapAwareness';
-import { Movable, withMovement } from '../mixins/withMovement';
-import { Entity } from './Entity';
+import { withMapAwareness } from '../mixins/withMapAwareness';
+import { withMovement } from '../mixins/withMovement';
+import { Entity, EntityOptions } from './Entity';
 
-function withProjectile<TBase extends MapAware & Movable>(Base: TBase) {
-  return class Projectile extends Base {
-    lifeSpan = PROJECTILE_LIFESPAN;
+export class Projectile extends withMovement(withMapAwareness(Entity)) {
+  lifeSpan = PROJECTILE_LIFESPAN;
 
-    update() {
-      this.updatePosition();
-      this.updateVisibleCells();
+  constructor(opts: EntityOptions) {
+    super(opts);
 
-      this.lifeSpan--;
+    this.on('update', () => this.onUpdate());
+  }
 
-      if (this.lifeSpan <= 0) {
-        this.destroy();
-      }
+  private onUpdate() {
+    this.updatePosition();
+    this.updateVisibleCells();
 
-      super.update();
+    this.lifeSpan--;
+
+    if (this.lifeSpan <= 0) {
+      this.destroy();
     }
-  };
+  }
 }
-
-export const Projectile = withProjectile(
-  withMovement(withMapAwareness(Entity))
-);
-export type Projectile = InstanceType<typeof Projectile>;

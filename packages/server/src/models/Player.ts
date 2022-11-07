@@ -1,62 +1,53 @@
-import {
-  EntityOrientation,
-  Directions,
-  PlayerMeta,
-  PROJECTILE_SPEED
-} from '@game/shared-domain';
+import { PlayerMeta, PROJECTILE_SPEED } from '@game/shared-domain';
 import { Coordinates } from '@game/shared-utils';
-import { Entity } from './Entity';
+import { Entity, EntityOptions } from './Entity';
 import { createProjectile } from '../factories/projectile';
 import { Projectile } from './Projectile';
-import { withMapAwareness, MapAware } from '../mixins/withMapAwareness';
+import { withMapAwareness } from '../mixins/withMapAwareness';
 import { withMovement } from '../mixins/withMovement';
-import {
-  KeyboardMovable,
-  withKeyboardMovement
-} from '../mixins/withKeyboardMovement';
+import { withKeyboardMovement } from '../mixins/withKeyboardMovement';
 
-const withPlayer = <TBase extends MapAware & KeyboardMovable>(Base: TBase) => {
-  return class Player extends Base {
-    meta!: PlayerMeta;
+export class Player extends withMapAwareness(
+  withKeyboardMovement(withMovement(Entity))
+) {
+  meta!: PlayerMeta;
 
-    update() {
-      this.updatePosition();
-      super.updateVisibleCells();
+  constructor(opts: EntityOptions) {
+    super(opts);
 
-      this.world.map.grid.update(this.gridItem);
-      super.update();
-    }
+    this.on('update', () => this.onUpdate());
+  }
 
-    fireProjectile(target: Coordinates): Projectile {
-      const projectile = createProjectile({
-        meta: { target },
-        world: this.world,
-        speed: PROJECTILE_SPEED,
-        parent: this
-      });
+  private onUpdate() {
+    this.updatePosition();
+    super.updateVisibleCells();
 
-      projectile.moveTo(target);
+    this.world.map.grid.update(this.gridItem);
+  }
 
-      projectile.on('update', () => {
-        for (const cell of projectile.discoveredCells) {
-          const key = this.getCellKey(cell);
-          if (!this.allDiscoveredCells.has(key)) {
-            this.allDiscoveredCells.set(key, cell);
-            this.newDiscoveredCells.set(key, cell);
-          }
+  fireProjectile(target: Coordinates): Projectile {
+    const projectile = createProjectile({
+      meta: { target },
+      world: this.world,
+      speed: PROJECTILE_SPEED,
+      parent: this
+    });
+
+    projectile.moveTo(target);
+
+    projectile.on('update', () => {
+      for (const cell of projectile.discoveredCells) {
+        const key = this.getCellKey(cell);
+        if (!this.allDiscoveredCells.has(key)) {
+          this.allDiscoveredCells.set(key, cell);
+          this.newDiscoveredCells.set(key, cell);
         }
-      });
+      }
+    });
 
-      this.world.addEntity(projectile);
-      this.children.add(projectile);
+    this.world.addEntity(projectile);
+    this.children.add(projectile);
 
-      return projectile;
-    }
-  };
-};
-
-export const Player = withPlayer(
-  withMapAwareness(withKeyboardMovement(withMovement(Entity)))
-);
-
-export type Player = InstanceType<typeof Player>;
+    return projectile;
+  }
+}

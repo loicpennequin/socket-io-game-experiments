@@ -17,3 +17,4 @@ export type Constructor<T = {}> = new (...args: any[]) => T;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type AnyConstructor = new (...args: any[]) => {};
+export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>;

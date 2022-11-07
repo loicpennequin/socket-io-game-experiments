@@ -99,3 +99,5 @@ export const memoize = <TArgs extends any[], TReturn>(
     return val;
   };
 };
+
+export class EmptyClass {}
