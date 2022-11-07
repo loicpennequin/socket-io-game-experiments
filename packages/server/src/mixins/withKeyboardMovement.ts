@@ -3,7 +3,8 @@ import {
   Directions,
   isWalkableTerrain
 } from '@game/shared-domain';
-import { Coordinates } from '@game/shared-utils';
+import { Coordinates, dist, isDefined } from '@game/shared-utils';
+import { cp } from 'fs';
 import { Movable } from './withMovement';
 
 export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
@@ -23,6 +24,17 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
       if (this.keyboardInput.right) diff.x += this.speed;
 
       return diff;
+    }
+
+    protected get isCloseToTarget() {
+      return (
+        dist(this.position, this.nextPosition) >
+        dist(this.position, this.target)
+      );
+    }
+
+    protected get noKeyIsPressed() {
+      return Object.values(this.keyboardInput).every(v => v === false);
     }
 
     private checkTerrainCollision(position: Coordinates) {
@@ -52,6 +64,15 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
 
     updatePosition() {
       if (this.checkTerrainCollision(this.nextPosition)) return;
+      if (this.speed <= 0) return;
+      if (!isDefined(this.angle)) return;
+
+      console.log(this.noKeyIsPressed);
+      if (this.isCloseToTarget && this.noKeyIsPressed) {
+        Object.assign(this.gridItem.position, this.target);
+        this.angle = null;
+      }
+
       return super.updatePosition();
     }
   };

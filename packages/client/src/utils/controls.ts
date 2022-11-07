@@ -2,6 +2,7 @@ import { throttle, type Coordinates } from '@game/shared-utils';
 import {
   CameraMode,
   KeyboardControls,
+  MouseButton,
   PROJECTILE_THROTTLE_RATE
 } from './constants';
 import { socket } from './socket';
@@ -103,7 +104,7 @@ export const initControls = (
     }, PROJECTILE_THROTTLE_RATE)
   );
 
-  canvas.addEventListener('contextmenu', () => {
+  const broadcaseMousePosition = () => {
     socket.emit(PLAYER_ACTION, {
       type: PlayerAction.MOVE_TO,
       meta: {
@@ -113,5 +114,18 @@ export const initControls = (
         }
       }
     });
+  };
+  canvas.addEventListener('mousedown', e => {
+    if (e.button === MouseButton.RIGHT) {
+      canvas.addEventListener('mousemove', broadcaseMousePosition);
+    }
   });
+
+  canvas.addEventListener('mouseup', e => {
+    if (e.button === MouseButton.RIGHT) {
+      canvas.removeEventListener('mousemove', broadcaseMousePosition);
+    }
+  });
+
+  canvas.addEventListener('contextmenu', broadcaseMousePosition);
 };

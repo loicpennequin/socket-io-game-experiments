@@ -98,3 +98,10 @@ export const KeyboardControls = Object.freeze({
   Space: 'Space'
 });
 export type KeyboardControls = Values<typeof KeyboardControls>;
+
+export const MouseButton = {
+  LEFT: 0,
+  MIDDLE: 1,
+  RIGHT: 2
+};
+export type MouseButton = Values<typeof MouseButton>;

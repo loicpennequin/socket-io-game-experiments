@@ -5,8 +5,7 @@ import {
   Coordinates,
   getAngleFromVector,
   isDefined,
-  Nullable,
-  radToDegrees
+  Nullable
 } from '@game/shared-utils';
 import { Entity } from '../models/Entity';
 
@@ -15,6 +14,7 @@ export const withMovement = <TBase extends Constructor<Entity>>(
 ) => {
   return class Movable extends Base {
     protected angle: Nullable<number>;
+    protected target: Coordinates = { x: 0, y: 0 };
     speed = 0;
     orientation: EntityOrientation = EntityOrientation.RIGHT;
 
@@ -23,6 +23,8 @@ export const withMovement = <TBase extends Constructor<Entity>>(
         this.angle = null;
         return;
       }
+
+      this.target = { x, y };
 
       this.updateOrientation({ x, y });
       this.angle = getAngleFromVector({
