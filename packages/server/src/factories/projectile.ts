@@ -18,8 +18,8 @@ export const createProjectile = ({
   world,
   meta,
   parent
-}: CreateProjectileOptions) =>
-  new Projectile({
+}: CreateProjectileOptions) => {
+  const projectile = new Projectile({
     id,
     type: EntityType.PROJECTILE,
     world,
@@ -29,6 +29,10 @@ export const createProjectile = ({
     fieldOfView: {
       hard: PROJECTILE_HARD_FIELD_OF_VIEW,
       soft: PROJECTILE_SOFT_FIELD_OF_VIEW
-    },
-    meta
+    }
   });
+
+  projectile.destination = meta.target;
+
+  return projectile;
+};

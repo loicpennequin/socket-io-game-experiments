@@ -1,38 +1,15 @@
-import {
-  PROJECTILE_LIFESPAN,
-  PROJECTILE_SPEED,
-  ProjectileMeta
-} from '@game/shared-domain';
-import { getAngleFromVector } from '@game/shared-utils';
+import { PROJECTILE_LIFESPAN } from '@game/shared-domain';
 import { MapAware, withMapAwareness } from '../mixins/withMapAwareness';
+import { Movable, withMovement } from '../mixins/withMovement';
 import { Entity } from './Entity';
 
-function withProjectile<TBase extends MapAware>(Base: TBase) {
+function withProjectile<TBase extends MapAware & Movable>(Base: TBase) {
   return class Projectile extends Base {
-    private angle: number;
-
     lifeSpan = PROJECTILE_LIFESPAN;
 
-    meta!: ProjectileMeta;
-
-    constructor(...args: any[]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      super(...args);
-
-      this.angle = getAngleFromVector({
-        x: this.meta.target.x - this.position.x,
-        y: this.meta.target.y - this.position.y
-      });
-    }
-
     update() {
-      Object.assign(this.gridItem.position, {
-        x: this.position.x + Math.cos(this.angle) * PROJECTILE_SPEED,
-        y: this.position.y + Math.sin(this.angle) * PROJECTILE_SPEED
-      });
-
+      this.move();
       this.updateVisibleCells();
-      this.world.map.grid.update(this.gridItem);
 
       this.lifeSpan--;
 
@@ -45,5 +22,7 @@ function withProjectile<TBase extends MapAware>(Base: TBase) {
   };
 }
 
-export const Projectile = withProjectile(withMapAwareness(Entity));
+export const Projectile = withProjectile(
+  withMovement(withMapAwareness(Entity))
+);
 export type Projectile = InstanceType<typeof Projectile>;
