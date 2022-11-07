@@ -8,7 +8,8 @@ import {
   WALKABLE_TERRAIN,
   PlayerMeta,
   clampToGrid,
-  PLAYER_SPEED
+  PLAYER_SPEED,
+  isWalkableTerrain
 } from '@game/shared-domain';
 import { Override, randomInt } from '@game/shared-utils';
 import { Player } from '../models/Player';
@@ -33,9 +34,8 @@ const getInitialPosition = (map: GameMap) => {
 
   let terrain = map.getTerrainAtPosition(position);
 
-  while (!WALKABLE_TERRAIN.includes(terrain)) {
+  while (!isWalkableTerrain(terrain)) {
     position = getRandomPosition();
-
     terrain = map.getTerrainAtPosition(position);
   }
 

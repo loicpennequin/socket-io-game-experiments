@@ -15,7 +15,7 @@ export type EntityType = Values<typeof EntityType>;
 export const EntityOrientation = {
   LEFT: 'LEFT',
   RIGHT: 'RIGHT'
-};
+} as const;
 export type EntityOrientation = Values<typeof EntityOrientation>;
 
 export const PlayerJob = {
@@ -23,7 +23,7 @@ export const PlayerJob = {
   ROGUE: 'ROGUE',
   WIZARD: 'WIZARD',
   BARBARIAN: 'BARBARIAN'
-};
+} as const;
 export type PlayerJob = Values<typeof PlayerJob>;
 
 export const TerrainType = {
@@ -34,5 +34,5 @@ export const TerrainType = {
   LOW_MOUNTAIN: 'MOUNTAIN',
   HIGH_MOUNTAIN: 'HIGH_MOUNTAIN',
   SNOW: 'SNOW'
-};
+} as const;
 export type TerrainType = Values<typeof TerrainType>;

@@ -1,4 +1,10 @@
-import { clampToGrid, Directions, WALKABLE_TERRAIN } from '@game/shared-domain';
+import {
+  clampToGrid,
+  Directions,
+  isWalkableTerrain,
+  TerrainType,
+  WALKABLE_TERRAIN
+} from '@game/shared-domain';
 import { Movable } from './withMovement';
 
 export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
@@ -36,8 +42,10 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
         )
       };
       const terrain = this.world.map.getTerrainAtPosition(newPosition);
-      if (WALKABLE_TERRAIN.includes(terrain)) {
+      if (isWalkableTerrain(terrain)) {
         this.moveTo(newPosition);
+      } else {
+        this.angle = null;
       }
 
       super.updatePosition();
