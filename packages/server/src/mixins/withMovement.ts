@@ -22,19 +22,17 @@ export const withMovement = <TBase extends Constructor<Entity>>(
         this.angle = null;
         return;
       }
+
+      this.updateOrientation({ x, y });
       this.angle = getAngleFromVector({
         x: x - this.position.x,
         y: y - this.position.y
       });
     }
 
-    private updateOrientation() {
-      if (!this.angle) return;
-
+    private updateOrientation({ x }: Coordinates) {
       this.orientation =
-        radToDegrees(this.angle) - 90 > 180
-          ? EntityOrientation.LEFT
-          : EntityOrientation.RIGHT;
+        x < this.position.x ? EntityOrientation.LEFT : EntityOrientation.RIGHT;
 
       // @fixme  need to rethink all this meta stuff, it's pretty stupid
       this.meta.orientation = this.orientation;
