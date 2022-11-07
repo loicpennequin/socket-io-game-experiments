@@ -8,13 +8,13 @@ export const GRID_SIZE = 500;
 export const CELL_SIZE = 32;
 
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;
-export const MAP_NOISE_DETAIL = 0.05;
+export const MAP_NOISE_DETAIL = 0.01;
 
 export const PLAYER_SIZE = 64;
 export const PLAYER_SPEED_PER_SECOND = CELL_SIZE * 15;
 export const PLAYER_SPEED = PLAYER_SPEED_PER_SECOND / TICK_RATE;
 export const PLAYER_HARD_FIELD_OF_VIEW = CELL_SIZE * 12;
-export const PLAYER_SOFT_FIELD_OF_VIEW = CELL_SIZE * 24;
+export const PLAYER_SOFT_FIELD_OF_VIEW = CELL_SIZE * 20;
 
 export const PROJECTILE_LIFESPAN = 15;
 export const PROJECTILE_SIZE = 12;

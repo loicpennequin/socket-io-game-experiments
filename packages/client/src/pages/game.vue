@@ -116,7 +116,7 @@ onUnmounted(stopGame);
   top: 0;
   right: 0;
 }
-.wrapper > div:nth-child(2) canvas {
+.wrapper > div:nth-child(2):deep(canvas) {
   border: solid 1px white;
 }
 .wrapper > div:nth-child(2) a {
