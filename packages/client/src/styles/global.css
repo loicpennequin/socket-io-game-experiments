@@ -1,7 +1,9 @@
 :root {
-  --color-background: hsl(230, 20%, 8%);
-  --color-surface: hsl(230, 20%, 12%);
+  --color-background: hsl(230, 20%, 4%);
+  --color-surface: hsl(230, 20%, 8%);
+  --color-on-surface: hsl(0, 0%, 100%);
   --color-primary: hsl(230, 65%, 50%);
+  --color-on-primary: hsl(230, 0%, 100%);
   --color-primary-hover: hsl(230, 65%, 55%);
   --color-primary-focus: hsl(230, 65%, 58%);
 
@@ -11,28 +13,9 @@
 body {
   background: var(--color-background);
   font-family: Helvetica;
-  color: white;
+  color: var(--color-on-surface);
 }
 
 canvas {
   image-rendering: pixelated;
-}
-
-#debug-infos {
-  position: fixed;
-  z-index: 2;
-  top: 40px;
-  left: 0;
-  font-size: 0.8rem;
-  padding: 1rem;
-  line-height: 1.8;
-  pointer-events: none;
-}
-
-#minimap {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  outline: solid 1px white;
 }

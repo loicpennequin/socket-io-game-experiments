@@ -97,4 +97,22 @@ onUnmounted(stopGame);
   position: relative;
   overflow: hidden;
 }
+
+.wrapper > div:deep(#minimap) {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  border: solid 1px white;
+}
 </style>
+
+<route lang="json">
+{
+  "path": "/game",
+  "name": "Game",
+  "meta": {
+    "layout": "fullPage"
+  }
+}
+</route>

@@ -92,6 +92,7 @@ fieldset > input {
 button {
   padding: 0.75em 1.5em;
   background-color: var(--color-primary);
+  color: var(--color-on-primary);
   border-radius: 0.5rem;
   text-align: center;
   font-weight: bold;
@@ -147,3 +148,13 @@ input[type='radio']:checked {
   height: 100%;
 }
 </style>
+
+<route lang="json">
+{
+  "path": "/",
+  "name": "Home",
+  "meta": {
+    "layout": "default"
+  }
+}
+</route>

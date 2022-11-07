@@ -39,9 +39,8 @@ export class GameMap {
   }
 
   private initCells() {
-    return createMatrix<GameMapCell>(
-      { w: GRID_SIZE, h: GRID_SIZE },
-      this.createCell.bind(this)
+    return createMatrix<GameMapCell>({ w: GRID_SIZE, h: GRID_SIZE }, coords =>
+      this.createCell(coords)
     );
   }
 

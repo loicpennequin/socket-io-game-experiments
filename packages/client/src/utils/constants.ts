@@ -55,7 +55,7 @@ export const TERRAIN_LIGHTNESS_BOUNDARIES = {
   [TerrainType.DEEP_WATER]: { min: 15, max: 30 },
   [TerrainType.WATER]: { min: 35, max: 50 },
   [TerrainType.SAND]: { min: 60, max: 75 },
-  [TerrainType.GRASS]: { min: 30, max: 45 },
+  [TerrainType.GRASS]: { min: 25, max: 45 },
   [TerrainType.LOW_MOUNTAIN]: { min: 15, max: 30 },
   [TerrainType.HIGH_MOUNTAIN]: { min: 10, max: 30 },
   [TerrainType.SNOW]: { min: 85, max: 95 }
