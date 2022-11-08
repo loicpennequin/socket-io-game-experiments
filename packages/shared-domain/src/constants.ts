@@ -2,9 +2,9 @@ import { TerrainType } from './enums';
 
 export const TICK_RATE = 20;
 export const PING_INTERVAL = 1000;
-export const BOTS_COUNT = 50;
+export const BOTS_COUNT = 30;
 
-export const GRID_SIZE = 200;
+export const GRID_SIZE = 240;
 export const CELL_SIZE = 32;
 
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;

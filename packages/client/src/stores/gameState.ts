@@ -31,7 +31,7 @@ socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
 
   Object.assign(state, {
     entities,
-    discoveredCells: state.discoveredCells.concat(discoveredCells),
+    discoveredCells,
     entitiesById: indexBy(payload.entities, 'id'),
     timestamp: performance.now()
   });

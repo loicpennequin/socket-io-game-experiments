@@ -31,7 +31,6 @@ export class Player extends mixins.build() {
 
   private onUpdate() {
     this.updatePosition();
-    this.updateVisibleCells();
 
     this.world.map.grid.update(this.gridItem);
   }

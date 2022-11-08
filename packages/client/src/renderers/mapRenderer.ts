@@ -44,7 +44,9 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
     render: ({ ctx }) => {
       state.discoveredCells.forEach(cell => {
         const key = getKey(cell);
+        if (cachedCells.has(key)) return;
         if (cellsToDraw.has(key)) return;
+
         cellsToDraw.set(key, {
           ...cell,
           opacity: 0,
@@ -54,9 +56,6 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
           })
         });
       });
-      // terrible hack, we need accumulate cells in the state then remove the processed ones in the mapRenderer
-      // otherwise we run the risk of missing discovered cells
-      state.discoveredCells = [];
       cellsToDraw.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
         drawCell({ ctx, cell });

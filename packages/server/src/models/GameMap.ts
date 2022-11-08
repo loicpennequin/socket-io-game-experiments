@@ -80,7 +80,7 @@ export class GameMap {
       max: this.grid.getCellIndex(coords.max)
     };
 
-    const entries: [string, GameMapCell][] = [];
+    const cells: GameMapCell[] = [];
     for (let x = indices.min.x; x <= indices.max.x; x++) {
       for (let y = indices.min.y; y <= indices.max.y; y++) {
         const pointToCompare = {
@@ -91,12 +91,12 @@ export class GameMap {
         if (dist(point, pointToCompare) <= fieldOfView) {
           const cell = this.cells[x]?.[y];
           if (cell) {
-            entries.push([`${x}.${y}`, cell]);
+            cells.push(cell);
           }
         }
       }
     }
 
-    return new Map(entries);
+    return cells;
   }
 }

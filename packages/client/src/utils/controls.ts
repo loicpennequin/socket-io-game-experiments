@@ -20,7 +20,6 @@ export const initControls = (
   camera: Camera,
   mousePosition: Coordinates
 ) => {
-  console.log('INIT CONTROLS');
   const directions: Directions = {
     up: false,
     down: false,

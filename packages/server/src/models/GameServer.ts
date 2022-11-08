@@ -44,7 +44,7 @@ export class GameServer {
             if (!player) return;
             socket.emit(GAME_STATE_UPDATE, {
               entities: player.visibleEntities.map(entity => entity.toDto()),
-              discoveredCells: player.discoveredCells
+              discoveredCells: player.visibleCells
             });
           });
         })

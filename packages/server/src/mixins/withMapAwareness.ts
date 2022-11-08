@@ -6,25 +6,6 @@ export const withMapAwareness = <TBase extends Constructor<Entity>>(
   Base: TBase
 ) => {
   return class MapAware extends Base {
-    protected newDiscoveredCells: Map<string, GameMapCell>;
-
-    protected allDiscoveredCells: Map<string, GameMapCell>;
-
-    constructor(...args: any[]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      super(...args);
-
-      this.allDiscoveredCells = this.world.map.getVisibleCells(
-        this.position,
-        this.fieldOfView.hard
-      );
-
-      this.newDiscoveredCells = this.world.map.getVisibleCells(
-        this.position,
-        this.fieldOfView.hard
-      );
-    }
-
     get visibleEntities(): Entity[] {
       const entities = [this, ...this.children]
         .map(entity =>
@@ -38,29 +19,19 @@ export const withMapAwareness = <TBase extends Constructor<Entity>>(
       return uniqBy(entities, entity => entity.id);
     }
 
-    get discoveredCells() {
-      const cells = Array.from(this.newDiscoveredCells.values());
-      this.newDiscoveredCells.clear();
-
-      return uniqBy(cells, cell => this.getCellKey(cell));
+    get visibleCells(): GameMapCell[] {
+      return [this, ...this.children]
+        .map(entity =>
+          this.world.map.getVisibleCells(
+            entity.position,
+            entity.fieldOfView.hard
+          )
+        )
+        .flat();
     }
 
     getCellKey(cell: GameMapCell) {
       return `${cell.x}.${cell.y}`;
-    }
-
-    updateVisibleCells() {
-      const visibleCells = this.world.map.getVisibleCells(
-        this.position,
-        this.fieldOfView.soft
-      );
-
-      for (const [key, cell] of visibleCells) {
-        if (!this.allDiscoveredCells.has(key)) {
-          this.allDiscoveredCells.set(key, cell);
-          this.newDiscoveredCells.set(key, cell);
-        }
-      }
     }
   };
 };

@@ -16,16 +16,6 @@ export const withShooting = <TBase extends MapAware>(Base: TBase) => {
 
       projectile.moveTo(target);
 
-      projectile.on('update', () => {
-        for (const cell of projectile.discoveredCells) {
-          const key = this.getCellKey(cell);
-          if (!this.allDiscoveredCells.has(key)) {
-            this.allDiscoveredCells.set(key, cell);
-            this.newDiscoveredCells.set(key, cell);
-          }
-        }
-      });
-
       this.world.addEntity(projectile);
       this.children.add(projectile);
 

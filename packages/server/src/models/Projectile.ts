@@ -37,7 +37,6 @@ export class Projectile extends mixins.build() {
 
   private onUpdate() {
     this.updatePosition();
-    this.updateVisibleCells();
     this.handlePlayerCollision();
 
     this.lifeSpan--;
