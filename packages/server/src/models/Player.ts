@@ -24,7 +24,7 @@ export class Player extends mixins.build() {
   constructor(opts: PlayerOptions) {
     super(opts);
     this.speed = opts.speed;
-    this.stats = jobsData[this.meta.job];
+    this.stats = jobsData[this.meta.job]();
 
     this.on('update', () => this.onUpdate());
   }

@@ -1,31 +1,31 @@
 import { CreatureStats, PlayerJob } from '@game/shared-domain';
 
-export const jobsData: Record<PlayerJob, CreatureStats> = {
-  [PlayerJob.WIZARD]: {
+export const jobsData: Record<PlayerJob, () => CreatureStats> = {
+  [PlayerJob.WIZARD]: () => ({
     hp: 100,
     maxHp: 100,
     mp: 100,
     maxMp: 100
-  },
+  }),
 
-  [PlayerJob.RANGER]: {
+  [PlayerJob.RANGER]: () => ({
     hp: 100,
     maxHp: 100,
     mp: 100,
     maxMp: 100
-  },
+  }),
 
-  [PlayerJob.ROGUE]: {
+  [PlayerJob.ROGUE]: () => ({
     hp: 100,
     maxHp: 100,
     mp: 100,
     maxMp: 100
-  },
+  }),
 
-  [PlayerJob.BARBARIAN]: {
+  [PlayerJob.BARBARIAN]: () => ({
     hp: 50,
     maxHp: 100,
     mp: 100,
     maxMp: 100
-  }
+  })
 };

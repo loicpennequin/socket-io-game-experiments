@@ -21,7 +21,6 @@ export type Renderer = {
 export type CreateRendererOptions = {
   render: (renderContext: RenderContext) => void;
   getDimensions: () => Dimensions;
-  pauseOnDocumentHidden?: boolean;
   id: string;
   children?: Renderer[];
   onStart?: (opts: RenderContext) => void;
@@ -31,7 +30,6 @@ export type CreateRendererOptions = {
 export const createRenderer = ({
   render,
   getDimensions,
-  pauseOnDocumentHidden = true,
   onStart,
   onPause,
   id,
@@ -54,12 +52,6 @@ export const createRenderer = ({
   };
 
   window.addEventListener('resize', resizeCanvas, false);
-
-  if (pauseOnDocumentHidden) {
-    document.addEventListener('visibilitychange', function () {
-      document.hidden ? pause() : start();
-    });
-  }
 
   const loop = () => {
     if (!isRunning) return;

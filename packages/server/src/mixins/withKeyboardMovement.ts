@@ -67,7 +67,6 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
       if (this.speed <= 0) return;
       if (!isDefined(this.angle)) return;
 
-      console.log(this.noKeyIsPressed);
       if (this.isCloseToTarget && this.noKeyIsPressed) {
         Object.assign(this.gridItem.position, this.target);
         this.angle = null;

@@ -29,8 +29,8 @@ export const isInRange = (num: number, { min, max }: Boundaries) => {
 };
 
 export const dist = (p1: Coordinates, p2: Coordinates) => {
-  const diffX = p2.x - p1.x;
-  const diffY = p2.y - p1.y;
+  const diffX = Math.abs(p2.x - p1.x);
+  const diffY = Math.abs(p2.y - p1.y);
 
   return Math.sqrt(diffX ** 2 + diffY ** 2);
 };

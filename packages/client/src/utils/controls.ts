@@ -20,6 +20,7 @@ export const initControls = (
   camera: Camera,
   mousePosition: Coordinates
 ) => {
+  console.log('INIT CONTROLS');
   const directions: Directions = {
     up: false,
     down: false,
@@ -28,6 +29,17 @@ export const initControls = (
   };
 
   useKeydownOnce(e => {
+    if (
+      ![
+        KeyboardControls.W,
+        KeyboardControls.A,
+        KeyboardControls.S,
+        KeyboardControls.D
+      ].includes(e.code as any)
+    ) {
+      return;
+    }
+
     switch (e.code as KeyboardControls) {
       case KeyboardControls.W:
         directions.up = true;
@@ -53,6 +65,17 @@ export const initControls = (
   });
 
   document.addEventListener('keyup', e => {
+    if (
+      ![
+        KeyboardControls.W,
+        KeyboardControls.A,
+        KeyboardControls.S,
+        KeyboardControls.D
+      ].includes(e.code as any)
+    ) {
+      return;
+    }
+
     switch (e.code as KeyboardControls) {
       case KeyboardControls.W:
         directions.up = false;
@@ -104,7 +127,7 @@ export const initControls = (
     }, PROJECTILE_THROTTLE_RATE)
   );
 
-  const broadcaseMousePosition = () => {
+  const broadcastMousePosition = () => {
     socket.emit(PLAYER_ACTION, {
       type: PlayerAction.MOVE_TO,
       meta: {
@@ -117,15 +140,15 @@ export const initControls = (
   };
   canvas.addEventListener('mousedown', e => {
     if (e.button === MouseButton.RIGHT) {
-      canvas.addEventListener('mousemove', broadcaseMousePosition);
+      canvas.addEventListener('mousemove', broadcastMousePosition);
     }
   });
 
   canvas.addEventListener('mouseup', e => {
     if (e.button === MouseButton.RIGHT) {
-      canvas.removeEventListener('mousemove', broadcaseMousePosition);
+      canvas.removeEventListener('mousemove', broadcastMousePosition);
     }
   });
 
-  canvas.addEventListener('contextmenu', broadcaseMousePosition);
+  canvas.addEventListener('contextmenu', broadcastMousePosition);
 };

@@ -1,4 +1,3 @@
-import { Constructor } from '@game/shared-utils';
 import express from 'express';
 import http from 'http';
 import { createGameMap } from './factories/gameMap';

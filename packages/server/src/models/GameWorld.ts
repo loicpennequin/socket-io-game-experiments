@@ -61,6 +61,10 @@ export class GameWorld extends mixins.build() {
     return entity as T;
   }
 
+  getEntitiesList() {
+    return Array.from(this.entities.values());
+  }
+
   scheduleAction(action: AnyFunction) {
     this.actionsQueue.schedule(action);
   }
