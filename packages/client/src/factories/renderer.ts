@@ -1,3 +1,4 @@
+import { state, type GameState } from '@/stores/gameState';
 import { createCanvas } from '@/utils/canvas';
 import type { Dimensions } from '@game/shared-utils';
 
@@ -5,6 +6,7 @@ export type RenderContext = {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   children: Renderer[];
+  state: GameState;
 };
 
 export type Renderer = {
@@ -48,21 +50,21 @@ export const createRenderer = ({
     canvas.width = dimensions.w;
     canvas.height = dimensions.h;
 
-    render({ canvas, ctx, children });
+    render({ canvas, ctx, children, state });
   };
 
   window.addEventListener('resize', resizeCanvas, false);
 
   const loop = () => {
     if (!isRunning) return;
-    render({ canvas, ctx, children });
+    render({ canvas, ctx, children, state });
     rafId = window.requestAnimationFrame(loop);
   };
 
   const start = () => {
     if (isRunning) return;
     isRunning = true;
-    onStart?.({ ctx, canvas, children });
+    onStart?.({ ctx, canvas, children, state });
     loop();
     children.forEach(child => child.start());
   };
@@ -74,7 +76,7 @@ export const createRenderer = ({
     if (rafId != null) {
       window.cancelAnimationFrame(rafId);
       rafId = null;
-      onPause?.({ ctx, canvas, children });
+      onPause?.({ ctx, canvas, children, state });
       children.forEach(child => child.pause());
     }
   };

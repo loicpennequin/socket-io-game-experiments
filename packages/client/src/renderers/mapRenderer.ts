@@ -1,5 +1,4 @@
 import { MAP_SIZE } from '@game/shared-domain';
-import { state } from '../stores/gameState';
 import { createRenderer } from '../factories/renderer';
 import {
   MapRenderMode,
@@ -29,19 +28,9 @@ export const createMapRenderer = ({
     [MapRenderMode.DETAILED]: drawDetailedCell
   } as const;
 
-  const redrawMap = () => {
-    const ctx = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
-    ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
-
-    state.cells.cache.forEach(cell => {
-      drawMethods[mode]({ ctx, cell });
-    });
-  };
-  window.addEventListener('resize', debounce(redrawMap, ONE_FRAME), false);
-
   const renderer = createRenderer({
     id,
-    render: ({ ctx }) => {
+    render: ({ ctx, state }) => {
       state.cells.drawing.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
         drawMethods[mode]({ ctx, cell });
@@ -53,12 +42,24 @@ export const createMapRenderer = ({
         }
       });
     },
+    onStart({ state }) {
+      const redrawMap = () => {
+        const ctx = renderer.canvas.getContext(
+          '2d'
+        ) as CanvasRenderingContext2D;
+        ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
+
+        state.cells.cache.forEach(cell => {
+          drawMethods[mode]({ ctx, cell });
+        });
+      };
+      window.addEventListener('resize', debounce(redrawMap, ONE_FRAME), false);
+    },
     getDimensions: () => ({ w: MAP_SIZE, h: MAP_SIZE })
   });
 
   return {
     ...renderer,
-    redrawMap,
     draw(ctx: CanvasRenderingContext2D, camera: Coordinates & Dimensions) {
       ctx.drawImage(
         renderer.canvas,

@@ -5,7 +5,7 @@ import {
   ENTITY_STAT_BAR_OFFSET,
   SPRITE_LOCATIONS
 } from '@/utils/constants';
-import { getInterpolatedEntity, state } from '@/stores/gameState';
+import { getInterpolatedEntity, type GameState } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import {
   EntityOrientation,
@@ -27,6 +27,7 @@ type DrawPlayersOptions = {
   camera?: Dimensions & Coordinates;
   handleHover?: boolean;
   mousePosition: Coordinates;
+  state: GameState;
   renderPlayer: (player: PlayerDto) => void;
 };
 
@@ -36,6 +37,7 @@ export const drawPlayers = ({
   handleHover = true,
   mousePosition,
   camera,
+  state,
   size
 }: DrawPlayersOptions) => {
   state.entities.filter(isPlayerDto).forEach(player => {

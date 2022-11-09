@@ -22,8 +22,8 @@ import {
   MAP_SIZE
 } from '@game/shared-domain';
 import type { Camera } from '@/factories/camera';
-import { state } from '@/stores/gameState';
 import { useKeydownOnce } from './helpers';
+import type { GameState } from '@/stores/gameState';
 
 const directions: Directions = {
   up: false,
@@ -156,7 +156,8 @@ const initTouchMovement = (canvas: HTMLCanvasElement) => {
 const initCameraControls = (
   canvas: HTMLCanvasElement,
   camera: Camera,
-  mousePosition: Coordinates
+  mousePosition: Coordinates,
+  state: GameState
 ) => {
   document.addEventListener('keydown', e => {
     switch (e.code as KeyboardControls) {
@@ -220,14 +221,21 @@ const initCameraControls = (
     }
   });
 };
+type InitControlsOptions = {
+  state: GameState;
+  canvas: HTMLCanvasElement;
+  camera: Camera;
+  mousePosition: Coordinates;
+};
 
-export const initControls = (
-  canvas: HTMLCanvasElement,
-  camera: Camera,
-  mousePosition: Coordinates
-) => {
+export const initControls = ({
+  state,
+  canvas,
+  camera,
+  mousePosition
+}: InitControlsOptions) => {
   initKeyboardMovement();
   initMouseMovement(canvas, camera, mousePosition);
   initTouchMovement(canvas);
-  initCameraControls(canvas, camera, mousePosition);
+  initCameraControls(canvas, camera, mousePosition, state);
 };

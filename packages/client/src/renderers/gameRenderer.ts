@@ -68,12 +68,17 @@ export const createGameRenderer = ({
       createDebugRenderer()
     ],
 
-    render: ({ canvas, ctx, children: [mapRenderer, fogOfWarRenderer] }) => {
+    render: ({
+      canvas,
+      ctx,
+      state,
+      children: [mapRenderer, fogOfWarRenderer]
+    }) => {
       interpolateEntities();
       camera.update();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      applyCamera({ canvas, ctx, camera }, () => {
+      applyCamera({ canvas, ctx, camera, state }, () => {
         mapRenderer.draw?.(ctx, {
           x: camera.x,
           y: camera.y,
@@ -81,13 +86,14 @@ export const createGameRenderer = ({
           h: camera.h
         });
 
-        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        drawProjectiles({ ctx, size: PROJECTILE_SIZE, state });
         drawPlayersSprites({
           ctx,
           size: PLAYER_SIZE,
           assetMap,
           mousePosition,
-          camera
+          camera,
+          state
         });
 
         fogOfWarRenderer.draw?.(ctx, {
@@ -100,9 +106,9 @@ export const createGameRenderer = ({
     },
 
     async onStart(renderContext) {
-      const { canvas } = renderContext;
+      const { canvas, state } = renderContext;
       mousePosition = trackMousePosition(canvas);
-      initControls(canvas, camera, mousePosition);
+      initControls({ canvas, camera, mousePosition, state });
 
       camera.setTarget(socket.id);
       camera.setCanvas(canvas);

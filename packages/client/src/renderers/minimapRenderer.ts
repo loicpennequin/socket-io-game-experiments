@@ -14,7 +14,6 @@ import {
 } from '../utils/constants';
 import type { Camera } from '@/factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
-import { state } from '@/stores/gameState';
 import { createMapRenderer } from './mapRenderer';
 
 const getDimensions = () => ({
@@ -49,7 +48,7 @@ export const createMinimapRenderer = ({
         getDimensions
       })
     ],
-    render({ canvas, ctx, children: [mapRenderer, fogOfWarRenderer] }) {
+    render({ canvas, ctx, state, children: [mapRenderer, fogOfWarRenderer] }) {
       ctx.fillStyle = COLORS.minimapBackground();
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -63,12 +62,13 @@ export const createMinimapRenderer = ({
           h: mapRenderer.canvas.height
         });
 
-        drawProjectiles({ ctx, size: PROJECTILE_SIZE });
+        drawProjectiles({ ctx, size: PROJECTILE_SIZE, state });
         drawPlayersCircles({
           ctx,
           size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE,
           mousePosition: { x: 0, y: 0 },
-          handleHover: false
+          handleHover: false,
+          state
         });
 
         ctx.resetTransform();
@@ -85,7 +85,7 @@ export const createMinimapRenderer = ({
         ctx.strokeRect(camera.x, camera.y, camera.w, camera.h);
       });
     },
-    onStart({ canvas }) {
+    onStart({ canvas, state }) {
       const mousePosition = trackMousePosition(canvas);
       canvas.addEventListener('click', () => {
         state.isCameraLocked = false;

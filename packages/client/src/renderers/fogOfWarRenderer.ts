@@ -4,7 +4,7 @@ import {
   PROJECTILE_HARD_FIELD_OF_VIEW
 } from '@game/shared-domain';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
-import { state, getInterpolatedEntity } from '../stores/gameState';
+import { getInterpolatedEntity } from '../stores/gameState';
 import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { socket } from '../utils/socket';
@@ -26,9 +26,9 @@ export const createFogOfWarRenderer = ({
 }: CreateFogOfWarRendererOptions) => {
   const renderer = createRenderer({
     id,
-    render: ({ canvas, ctx }) => {
+    render: ({ canvas, ctx, state }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      applyCamera({ canvas, ctx, camera }, () => {
+      applyCamera({ canvas, ctx, camera, state }, () => {
         ctx.fillStyle = COLORS.fogOfWar();
         ctx.fillRect(camera.x, camera.y, camera.w, camera.h);
 

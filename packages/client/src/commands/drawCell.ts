@@ -70,7 +70,7 @@ export const drawDetailedCell = ({ ctx, cell }: DrawCellOptions) => {
     baseCords.h
   );
 
-  ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)';
   ctx.lineWidth = 2;
   ctx.strokeRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };

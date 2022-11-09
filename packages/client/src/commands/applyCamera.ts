@@ -1,16 +1,17 @@
-import { state } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import { pushPop } from '@/utils/canvas';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
+import type { GameState } from '@/stores/gameState';
 
 type ApplyCameraOptions = {
   canvas: HTMLCanvasElement;
   camera: Coordinates & Dimensions;
+  state: GameState;
   ctx: CanvasRenderingContext2D;
 };
 
 export const applyCamera = (
-  { camera, ctx }: ApplyCameraOptions,
+  { camera, ctx, state }: ApplyCameraOptions,
   cb: () => void
 ) => {
   const player = state.entitiesById[socket.id];

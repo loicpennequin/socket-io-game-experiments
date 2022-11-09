@@ -3,17 +3,22 @@ import {
   type GameStateDto,
   type EntityDto,
   GAME_STATE_UPDATE,
-  type GameMapCellDto
+  type GameMapCellDto,
+  TICK_RATE
 } from '@game/shared-domain';
-import { indexBy, randomInRange, type Coordinates } from '@game/shared-utils';
-import { interpolate } from '../utils/interpolate';
+import {
+  indexBy,
+  interpolateEntity,
+  randomInRange,
+  type Coordinates
+} from '@game/shared-utils';
 import { socket } from '../utils/socket';
 
 export type StateMapCell = GameMapCellDto & {
   opacity: number;
   lightness: number;
 };
-export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {
+export type GameState = Omit<GameStateDto, 'discoveredCells'> & {
   timestamp: number;
   cells: {
     cache: Map<string, StateMapCell>;
@@ -25,7 +30,7 @@ export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {
 
 export const getCellKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
 
-const createEmptyState = (): SavedState => ({
+const createEmptyState = (): GameState => ({
   cells: {
     cache: new Map(),
     drawing: new Map()
@@ -73,7 +78,17 @@ export const interpolateEntities = (now = performance.now()) => {
       entity.id,
       {
         ...entity,
-        ...interpolate(entity, prevState.entitiesById[entity.id], now)
+        ...interpolateEntity(
+          { value: entity, timestamp: state.timestamp },
+          {
+            value: prevState.entitiesById[entity.id],
+            timestamp: prevState.timestamp
+          },
+          {
+            tickRate: TICK_RATE,
+            now
+          }
+        )
       }
     ];
   });
