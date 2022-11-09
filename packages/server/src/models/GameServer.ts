@@ -1,5 +1,5 @@
 import http from 'http';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import {
   ClientToServerEvents,
   ServerToClientEvents,
@@ -9,7 +9,8 @@ import {
   PLAYER_ACTION,
   EntityOrientation,
   JOIN_GAME,
-  BOTS_COUNT
+  BOTS_COUNT,
+  IDLE_DISCONNECT_TIMEOUT
 } from '@game/shared-domain';
 import { GameWorld } from '../models/GameWorld';
 import { Player } from '../models/Player';
@@ -17,6 +18,7 @@ import { createPlayer } from '../factories/player';
 import { PORT } from '../constants';
 import { v4 as uuid } from 'uuid';
 import randomNames from 'random-name';
+import { Nullable } from '@game/shared-utils';
 
 export class GameServer {
   private io: Server<ClientToServerEvents, ServerToClientEvents>;
@@ -54,9 +56,18 @@ export class GameServer {
     });
   }
 
+  refreshIdleTimeout(socket: Socket) {
+    return setTimeout(() => {
+      socket.disconnect();
+    }, IDLE_DISCONNECT_TIMEOUT);
+  }
+
   private setupIoListener() {
     this.io.on('connection', socket => {
+      let idleTimeout: Nullable<ReturnType<typeof setTimeout>> = null;
+
       socket.on('disconnect', () => {
+        idleTimeout = null;
         this.world.getEntity(socket.id)?.destroy();
       });
 
@@ -65,6 +76,11 @@ export class GameServer {
       });
 
       socket.on(JOIN_GAME, (payload, callback) => {
+        if (idleTimeout) {
+          clearTimeout(idleTimeout);
+        }
+        idleTimeout = this.refreshIdleTimeout(socket);
+
         this.world.addEntity(
           createPlayer({
             id: socket.id,
@@ -81,6 +97,11 @@ export class GameServer {
       });
 
       socket.on(PLAYER_ACTION, action => {
+        if (idleTimeout) {
+          clearTimeout(idleTimeout);
+        }
+        idleTimeout = this.refreshIdleTimeout(socket);
+
         const player = this.world.getEntity<Player>(socket.id);
         if (!player) return;
 

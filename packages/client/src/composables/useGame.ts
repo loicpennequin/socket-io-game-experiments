@@ -20,6 +20,9 @@ export const useGame = () => {
     minimapContainer,
     loginInfo
   }: GameOptions) => {
+    gameContainer.innerHTML = '';
+    minimapContainer.innerHTML = '';
+
     const assetPromise = Promise.all(
       [humanoidsUrl, magicalUrl].map(
         url =>
@@ -37,7 +40,9 @@ export const useGame = () => {
       });
     });
 
-    Promise.all([assetPromise, socketPromise]).then(([assets]) => {
+    socket.connect();
+
+    return Promise.all([assetPromise, socketPromise]).then(([assets]) => {
       gameRenderer = createGameRenderer({
         id: 'game',
         assets,
@@ -62,8 +67,6 @@ export const useGame = () => {
       });
       gameRenderer.start();
     });
-
-    socket.connect();
   };
 
   const stop = () => {

@@ -266,12 +266,4 @@ export const initControls = ({
   initMouseControls(canvas, camera, mousePosition);
   initTouchControls(canvas, camera);
   initCameraControls(canvas, camera, mousePosition, state);
-
-  canvas.addEventListener('click', () => {
-    console.log('click');
-  });
-
-  canvas.addEventListener('tap', () => {
-    console.log('tap');
-  });
 };
