@@ -10,11 +10,11 @@ import { createCamera } from '@/factories/camera';
 import { socket } from '@/utils/socket';
 import { initControls } from '@/utils/controls';
 import { trackMousePosition } from '@/utils/mouseTracker';
-import { handleManualCamera } from '@/commands/handleManualCamera';
 import { createMapRenderer } from './mapRenderer';
 import { createDebugRenderer } from './debugRenderer';
 import { createMinimapRenderer } from './minimapRenderer';
 import { createAssetMap } from '@/factories/assetMap';
+import { MapRenderMode } from '@/utils/constants';
 
 export type CreateGameRendererOptions = {
   id: string;
@@ -47,16 +47,15 @@ export const createGameRenderer = ({
   let mousePosition: Coordinates;
   const assetMap = createAssetMap(assets, { baseSize: 32, gap: 4 });
 
-  const mapRenderer = createMapRenderer({
-    id: `map`
-  });
-
   return createRenderer({
     id,
     getDimensions,
 
     children: [
-      mapRenderer,
+      createMapRenderer({
+        id: `map`,
+        mode: MapRenderMode.DETAILED
+      }),
       createFogOfWarRenderer({
         id: `fog-of-war`,
         camera,
@@ -64,15 +63,13 @@ export const createGameRenderer = ({
       }),
       createMinimapRenderer({
         id: 'minimap',
-        camera,
-        mapRenderer
+        camera
       }),
       createDebugRenderer()
     ],
 
     render: ({ canvas, ctx, children: [mapRenderer, fogOfWarRenderer] }) => {
       interpolateEntities();
-      handleManualCamera({ canvas, camera, mousePosition });
       camera.update();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 

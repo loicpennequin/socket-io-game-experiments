@@ -1,40 +1,40 @@
-import { type GameMapCell, MAP_SIZE } from '@game/shared-domain';
+import { MAP_SIZE } from '@game/shared-domain';
 import { state } from '../stores/gameState';
 import { createRenderer } from '../factories/renderer';
 import {
+  MapRenderMode,
   MAP_CELL_OPACITY_STEP,
-  ONE_FRAME,
-  TERRAIN_LIGHTNESS_BOUNDARIES
+  ONE_FRAME
 } from '@/utils/constants';
 import {
   debounce,
-  randomInRange,
   type Coordinates,
   type Dimensions
 } from '@game/shared-utils';
-import { drawCell } from '@/commands/drawCell';
+import { drawSimpleCell, drawDetailedCell } from '@/commands/drawCell';
 
 const getKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
 
 export type CreateMapCacheRendererOptions = {
   id: string;
+  mode: MapRenderMode;
 };
 
-export type MapRendererCell = GameMapCell & {
-  opacity: number;
-  lightness: number;
-};
-
-export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
-  const cellsToDraw = new Map<string, MapRendererCell>();
-  const cachedCells = new Map<string, MapRendererCell>();
+export const createMapRenderer = ({
+  id,
+  mode
+}: CreateMapCacheRendererOptions) => {
+  const drawMethods = {
+    [MapRenderMode.SIMPLE]: drawSimpleCell,
+    [MapRenderMode.DETAILED]: drawDetailedCell
+  } as const;
 
   const redrawMap = () => {
     const ctx = renderer.canvas.getContext('2d') as CanvasRenderingContext2D;
     ctx.clearRect(0, 0, renderer.canvas.width, renderer.canvas.height);
 
-    cachedCells.forEach(cell => {
-      drawCell({ ctx, cell });
+    state.cells.cache.forEach(cell => {
+      drawMethods[mode]({ ctx, cell });
     });
   };
   window.addEventListener('resize', debounce(redrawMap, ONE_FRAME), false);
@@ -42,28 +42,14 @@ export const createMapRenderer = ({ id }: CreateMapCacheRendererOptions) => {
   const renderer = createRenderer({
     id,
     render: ({ ctx }) => {
-      state.discoveredCells.forEach(cell => {
-        const key = getKey(cell);
-        if (cachedCells.has(key)) return;
-        if (cellsToDraw.has(key)) return;
-
-        cellsToDraw.set(key, {
-          ...cell,
-          opacity: 0,
-          lightness: randomInRange({
-            min: TERRAIN_LIGHTNESS_BOUNDARIES[cell.type].min,
-            max: TERRAIN_LIGHTNESS_BOUNDARIES[cell.type].max
-          })
-        });
-      });
-      cellsToDraw.forEach(cell => {
+      state.cells.drawing.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;
-        drawCell({ ctx, cell });
+        drawMethods[mode]({ ctx, cell });
 
         if (cell.opacity >= 1) {
           cell.opacity = 1;
-          cellsToDraw.delete(getKey(cell));
-          cachedCells.set(getKey(cell), cell);
+          state.cells.drawing.delete(getKey(cell));
+          state.cells.cache.set(getKey(cell), cell);
         }
       });
     },

@@ -23,13 +23,3 @@ export const circle = (
   ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
   ctx.closePath();
 };
-
-export const fillRectCentered = (
-  context: CanvasRenderingContext2D,
-  { x, y, w, h }: Coordinates & Dimensions
-) => {
-  context.fillRect(x - w / 2, y - h / 2, w, h);
-};
-
-export const randomHex = () =>
-  '#' + Math.floor(Math.random() * 16777215).toString(16);

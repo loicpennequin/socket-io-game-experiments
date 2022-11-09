@@ -1,7 +1,7 @@
 import type { Coordinates } from '@game/shared-utils';
 import type { TerrainType } from '../enums';
 
-export type GameMapCell = Coordinates & {
+export type GameMapCellDto = Coordinates & {
   type: TerrainType;
 };
 

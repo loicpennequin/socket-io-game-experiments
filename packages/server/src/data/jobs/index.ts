@@ -23,7 +23,7 @@ export const jobsData: Record<PlayerJob, () => CreatureStats> = {
   }),
 
   [PlayerJob.BARBARIAN]: () => ({
-    hp: 50,
+    hp: 100,
     maxHp: 100,
     mp: 100,
     maxMp: 100

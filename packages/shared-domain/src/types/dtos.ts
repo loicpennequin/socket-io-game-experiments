@@ -4,7 +4,7 @@ import type {
   Nullable,
   Override
 } from '@game/shared-utils';
-import type { GameMapCell } from '.';
+import type { GameMapCellDto } from '.';
 import type { EntityOrientation, EntityType, PlayerJob } from '../enums';
 
 export type CreatureStats = {
@@ -36,5 +36,5 @@ export type ProjectileDto = EntityDto;
 
 export type GameStateDto = {
   entities: EntityDto[];
-  discoveredCells: GameMapCell[];
+  discoveredCells: GameMapCellDto[];
 };

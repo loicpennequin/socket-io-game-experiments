@@ -1,6 +1,7 @@
 import { Constructor, isDefined, uniqBy } from '@game/shared-utils';
 import { Entity } from '../models/Entity';
-import { GameMapCell } from '@game/shared-domain';
+import { GameMapCellDto } from '@game/shared-domain';
+import { GameMapCell } from '../models/GameMap';
 
 export const withMapAwareness = <TBase extends Constructor<Entity>>(
   Base: TBase
@@ -22,15 +23,12 @@ export const withMapAwareness = <TBase extends Constructor<Entity>>(
     get visibleCells(): GameMapCell[] {
       return [this, ...this.children]
         .map(entity =>
-          this.world.map.getVisibleCells(
-            entity.position,
-            entity.fieldOfView.hard
-          )
+          this.world.map.getVisibleCells(entity, entity.fieldOfView.hard)
         )
         .flat();
     }
 
-    getCellKey(cell: GameMapCell) {
+    getCellKey(cell: GameMapCellDto) {
       return `${cell.x}.${cell.y}`;
     }
   };

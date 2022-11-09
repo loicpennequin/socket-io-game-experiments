@@ -1,7 +1,7 @@
 import {
   GRID_SIZE,
   CELL_SIZE,
-  GameMapCell,
+  GameMapCellDto,
   MAP_NOISE_DETAIL,
   NOISE_TO_TERRAIN_MAP
 } from '@game/shared-domain';
@@ -14,9 +14,15 @@ import {
   createNoise,
   Matrix
 } from '@game/shared-utils';
+import { Entity } from './Entity';
 
 export type GameMapGridMeta = {
   id: string;
+};
+
+export type GameMapCell = GameMapCellDto & {
+  visitedBy: Set<string>;
+  toDto: () => GameMapCellDto;
 };
 
 export type GameMapGridItem = SpatialHashGridItem<GameMapGridMeta>;
@@ -43,7 +49,7 @@ export class GameMap {
     );
   }
 
-  private createCell({ x, y }: Coordinates) {
+  private createCell({ x, y }: Coordinates): GameMapCell {
     const noise = this.noiseSeed.get({
       x: x * MAP_NOISE_DETAIL,
       y: y * MAP_NOISE_DETAIL
@@ -52,7 +58,11 @@ export class GameMap {
     return {
       x,
       y,
-      type: NOISE_TO_TERRAIN_MAP[(Math.round(noise * 20) / 2) * 10]
+      type: NOISE_TO_TERRAIN_MAP[(Math.round(noise * 20) / 2) * 10],
+      visitedBy: new Set<string>(),
+      toDto() {
+        return { x, y, type: this.type };
+      }
     };
   }
 
@@ -62,37 +72,33 @@ export class GameMap {
     return this.cells[cellIndex.x][cellIndex.y].type;
   }
 
-  getVisibleCells(point: Coordinates, fieldOfView: number) {
-    const coords = {
-      min: {
-        x: point.x - fieldOfView,
-        y: point.y - fieldOfView
-      },
-      max: {
-        x: point.x + fieldOfView,
-        y: point.y + fieldOfView
-      }
-    };
-
+  getVisibleCells({ position, id }: Entity, fieldOfView: number) {
     const indices = {
-      point: this.grid.getCellIndex(point),
-      min: this.grid.getCellIndex(coords.min),
-      max: this.grid.getCellIndex(coords.max)
+      point: this.grid.getCellIndex(position),
+      min: this.grid.getCellIndex({
+        x: position.x - fieldOfView,
+        y: position.y - fieldOfView
+      }),
+      max: this.grid.getCellIndex({
+        x: position.x + fieldOfView,
+        y: position.y + fieldOfView
+      })
     };
 
     const cells: GameMapCell[] = [];
     for (let x = indices.min.x; x <= indices.max.x; x++) {
       for (let y = indices.min.y; y <= indices.max.y; y++) {
-        const pointToCompare = {
+        const positionToCompare = {
           x: x * CELL_SIZE + (x < indices.point.x ? CELL_SIZE : 0),
           y: y * CELL_SIZE + (y < indices.point.y ? CELL_SIZE : 0)
         };
 
-        if (dist(point, pointToCompare) <= fieldOfView) {
+        if (dist(position, positionToCompare) <= fieldOfView) {
           const cell = this.cells[x]?.[y];
-          if (cell) {
-            cells.push(cell);
-          }
+          if (!cell) continue;
+          if (cell.visitedBy.has(id)) continue;
+          cell.visitedBy.add(id);
+          cells.push(cell);
         }
       }
     }

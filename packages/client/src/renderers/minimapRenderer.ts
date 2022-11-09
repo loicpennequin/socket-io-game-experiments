@@ -7,6 +7,7 @@ import { pushPop } from '../utils/canvas';
 import {
   CameraMode,
   COLORS,
+  MapRenderMode,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
@@ -14,7 +15,7 @@ import {
 import type { Camera } from '@/factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { state } from '@/stores/gameState';
-import type { MapRenderer } from './mapRenderer';
+import { createMapRenderer } from './mapRenderer';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,
@@ -23,37 +24,39 @@ const getDimensions = () => ({
 
 export const createMinimapRenderer = ({
   id,
-  camera,
-  mapRenderer
+  camera
 }: {
   id: string;
   camera: Camera;
-  mapRenderer: MapRenderer;
 }) => {
-  const fogOfWarRenderer = createFogOfWarRenderer({
-    id: `${id}:fog-of-war`,
-    camera: {
-      x: 0,
-      y: 0,
-      w: MINIMAP_SIZE,
-      h: MINIMAP_SIZE
-    },
-    scale: MINIMAP_SCALE,
-    getDimensions
-  });
-
   return createRenderer({
     id,
     getDimensions,
-    children: [fogOfWarRenderer],
-    render({ canvas, ctx }) {
+    children: [
+      createMapRenderer({
+        id: `map`,
+        mode: MapRenderMode.SIMPLE
+      }),
+      createFogOfWarRenderer({
+        id: `${id}:fog-of-war`,
+        camera: {
+          x: 0,
+          y: 0,
+          w: MINIMAP_SIZE,
+          h: MINIMAP_SIZE
+        },
+        scale: MINIMAP_SCALE,
+        getDimensions
+      })
+    ],
+    render({ canvas, ctx, children: [mapRenderer, fogOfWarRenderer] }) {
       ctx.fillStyle = COLORS.minimapBackground();
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       pushPop(ctx, () => {
         ctx.scale(MINIMAP_SCALE, MINIMAP_SCALE);
 
-        mapRenderer.draw(ctx, {
+        mapRenderer.draw?.(ctx, {
           x: 0,
           y: 0,
           w: mapRenderer.canvas.width,
@@ -69,7 +72,7 @@ export const createMinimapRenderer = ({
         });
 
         ctx.resetTransform();
-        fogOfWarRenderer.draw(ctx, {
+        fogOfWarRenderer.draw?.(ctx, {
           x: 0,
           y: 0,
           w: MINIMAP_SIZE,
@@ -78,7 +81,7 @@ export const createMinimapRenderer = ({
 
         ctx.scale(MINIMAP_SCALE, MINIMAP_SCALE);
         ctx.strokeStyle = 'white';
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 20;
         ctx.strokeRect(camera.x, camera.y, camera.w, camera.h);
       });
     },

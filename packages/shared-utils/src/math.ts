@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
-import { createMatrix } from './helpers';
-import type { Boundaries, Coordinates, Dimensions, Range } from './types';
+import type { Boundaries, Coordinates, Range } from './types';
 
 export const smootherStep = (x: number) =>
   6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
@@ -64,4 +63,12 @@ export const radToDegrees = (radians: number) => radians * (180 / Math.PI);
 export const addVector = (vec1: Coordinates, vec2: Coordinates) => ({
   x: vec1.x + vec2.x,
   y: vec1.y + vec2.y
+});
+
+export const clampVector = (
+  { x, y }: Coordinates,
+  { min, max }: Boundaries<Coordinates>
+): Coordinates => ({
+  x: clamp(x, { min: min.x, max: max.x }),
+  y: clamp(y, { min: min.y, max: max.y })
 });

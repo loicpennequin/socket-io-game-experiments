@@ -29,7 +29,7 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
     protected get isCloseToTarget() {
       return (
         dist(this.position, this.nextPosition) >
-        dist(this.position, this.target)
+        dist(this.position, this.movementTarget)
       );
     }
 
@@ -68,7 +68,7 @@ export const withKeyboardMovement = <TBase extends Movable>(Base: TBase) => {
       if (!isDefined(this.angle)) return;
 
       if (this.isCloseToTarget && this.noKeyIsPressed) {
-        Object.assign(this.gridItem.position, this.target);
+        Object.assign(this.gridItem.position, this.movementTarget);
         this.angle = null;
       }
 

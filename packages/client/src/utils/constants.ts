@@ -5,7 +5,7 @@ import {
   PlayerJob,
   TerrainType
 } from '@game/shared-domain';
-import type { MapRendererCell } from '@/renderers/mapRenderer';
+import type { StateMapCell } from '@/stores/gameState';
 
 export const ONE_FRAME = 1000 / 60;
 export const PROJECTILE_THROTTLE_RATE = 10;
@@ -28,7 +28,7 @@ export const COLORS = Object.freeze({
   projectile: (isCurrentPlayer: boolean) =>
     isCurrentPlayer ? 'hsl(250, 100%, 60%)' : 'hsl(10, 100%, 60%)',
 
-  mapCell: ({ type, opacity, lightness }: MapRendererCell) => {
+  mapCell: ({ type, opacity, lightness }: StateMapCell) => {
     switch (type) {
       case TerrainType.DEEP_WATER:
         return `hsla(230, 55%, ${lightness}%, ${opacity})`;
@@ -51,6 +51,16 @@ export const COLORS = Object.freeze({
 
   fogOfWar: () => 'hsla(0, 0%, 0%, 0.7)'
 });
+
+export const DEFAULT_TERRAIN_LIGHTNESS = {
+  [TerrainType.DEEP_WATER]: 15,
+  [TerrainType.WATER]: 40,
+  [TerrainType.SAND]: 75,
+  [TerrainType.GRASS]: 40,
+  [TerrainType.LOW_MOUNTAIN]: 25,
+  [TerrainType.HIGH_MOUNTAIN]: 10,
+  [TerrainType.SNOW]: 95
+};
 
 export const TERRAIN_LIGHTNESS_BOUNDARIES = {
   [TerrainType.DEEP_WATER]: { min: 15, max: 30 },
@@ -84,6 +94,12 @@ export const CameraMode = {
   MANUAL: 'MANUAL'
 };
 export type CameraMode = Values<typeof CameraMode>;
+
+export const MapRenderMode = {
+  SIMPLE: 'SIMPLE',
+  DETAILED: 'DETAILED'
+};
+export type MapRenderMode = Values<typeof MapRenderMode>;
 
 export const KeyboardControls = Object.freeze({
   W: 'KeyW',

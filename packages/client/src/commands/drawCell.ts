@@ -1,15 +1,15 @@
-import type { MapRendererCell } from '@/renderers/mapRenderer';
-import { COLORS } from '@/utils/constants';
+import type { StateMapCell } from '@/stores/gameState';
+import { COLORS, DEFAULT_TERRAIN_LIGHTNESS } from '@/utils/constants';
 import { CELL_SIZE } from '@game/shared-domain';
 
 type DrawCellOptions = {
   ctx: CanvasRenderingContext2D;
-  cell: MapRendererCell;
+  cell: StateMapCell;
 };
 
-const cellsMap = new Map<MapRendererCell, [number, number, number, number]>();
+const cellsMap = new Map<StateMapCell, [number, number, number, number]>();
 
-export const drawCell = ({ ctx, cell }: DrawCellOptions) => {
+export const drawDetailedCell = ({ ctx, cell }: DrawCellOptions) => {
   ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
   let lightnesses = cellsMap.get(cell);
 
@@ -73,4 +73,14 @@ export const drawCell = ({ ctx, cell }: DrawCellOptions) => {
   ctx.strokeStyle = 'rgba(0,0,0,0.5)';
   ctx.lineWidth = 2;
   ctx.strokeRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+};
+
+export const drawSimpleCell = ({ ctx, cell }: DrawCellOptions) => {
+  ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+
+  ctx.fillStyle = COLORS.mapCell({
+    ...cell,
+    lightness: DEFAULT_TERRAIN_LIGHTNESS[cell.type]
+  });
+  ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 };

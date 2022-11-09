@@ -1,20 +1,35 @@
+import { TERRAIN_LIGHTNESS_BOUNDARIES } from '@/utils/constants';
 import {
   type GameStateDto,
   type EntityDto,
-  GAME_STATE_UPDATE
+  GAME_STATE_UPDATE,
+  type GameMapCellDto
 } from '@game/shared-domain';
-import { indexBy } from '@game/shared-utils';
+import { indexBy, randomInRange, type Coordinates } from '@game/shared-utils';
 import { interpolate } from '../utils/interpolate';
 import { socket } from '../utils/socket';
 
-export type SavedState = GameStateDto & {
+export type StateMapCell = GameMapCellDto & {
+  opacity: number;
+  lightness: number;
+};
+export type SavedState = Omit<GameStateDto, 'discoveredCells'> & {
   timestamp: number;
+  cells: {
+    cache: Map<string, StateMapCell>;
+    drawing: Map<string, StateMapCell>;
+  };
   entitiesById: Record<string, EntityDto>;
   isCameraLocked: boolean;
 };
 
+export const getCellKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
+
 const createEmptyState = (): SavedState => ({
-  discoveredCells: [],
+  cells: {
+    cache: new Map(),
+    drawing: new Map()
+  },
   entities: [],
   entitiesById: {},
   timestamp: performance.now(),
@@ -24,15 +39,25 @@ const createEmptyState = (): SavedState => ({
 export const state = createEmptyState();
 export const prevState = createEmptyState();
 
-socket.on(GAME_STATE_UPDATE, (payload: GameStateDto) => {
+socket.on(GAME_STATE_UPDATE, ({ discoveredCells, entities }: GameStateDto) => {
   Object.assign(prevState, state);
 
-  const { entities, discoveredCells } = payload;
+  discoveredCells.forEach(cell => {
+    const key = getCellKey(cell);
+    if (state.cells.cache.has(key) || state.cells.drawing.has(key)) return;
+    state.cells.drawing.set(key, {
+      ...cell,
+      opacity: 0,
+      lightness: randomInRange({
+        min: TERRAIN_LIGHTNESS_BOUNDARIES[cell.type].min,
+        max: TERRAIN_LIGHTNESS_BOUNDARIES[cell.type].max
+      })
+    });
+  });
 
   Object.assign(state, {
     entities,
-    discoveredCells,
-    entitiesById: indexBy(payload.entities, 'id'),
+    entitiesById: indexBy(entities, 'id'),
     timestamp: performance.now()
   });
 });

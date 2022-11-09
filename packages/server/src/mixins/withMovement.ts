@@ -14,7 +14,7 @@ export const withMovement = <TBase extends Constructor<Entity>>(
 ) => {
   return class Movable extends Base {
     protected angle: Nullable<number>;
-    protected target: Coordinates = { x: 0, y: 0 };
+    protected movementTarget: Coordinates = { x: 0, y: 0 };
     speed = 0;
     orientation: EntityOrientation = EntityOrientation.RIGHT;
 
@@ -24,7 +24,7 @@ export const withMovement = <TBase extends Constructor<Entity>>(
         return;
       }
 
-      this.target = { x, y };
+      this.movementTarget = { x, y };
 
       this.updateOrientation({ x, y });
       this.angle = getAngleFromVector({
