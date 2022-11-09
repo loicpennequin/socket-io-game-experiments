@@ -1,5 +1,5 @@
 import { dist } from './math';
-import type { Circle, Coordinates, Dimensions, Rectangle } from './types';
+import type { Circle, Coordinates, Rectangle } from './types';
 
 export const pointRectCollision = (point: Coordinates, rect: Rectangle) =>
   point.x >= rect.x &&

@@ -1,4 +1,12 @@
 {
   "name": "@game/shared-utils",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "dev": "tsup src/index.ts --dts --watch --format esm,cjs"
+  },
+  "devDependencies": {
+    "tsup": "^6.4.0"
+  }
 }

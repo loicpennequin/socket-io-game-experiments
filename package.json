@@ -4,8 +4,10 @@
   "scripts": {
     "client": "yarn workspace @game/client",
     "server": "yarn workspace @game/server",
-    "dev": "concurrently --kill-others \"yarn server dev\" \"yarn client dev\"",
-    "build": "yarn client build & yarn server build"
+    "utils": "yarn workspace @game/shared-utils",
+    "domain": "yarn workspace @game/shared-domain",
+    "dev": "concurrently --kill-others \"yarn server dev\" \"yarn client dev\" \"yarn utils dev\" \"yarn domain dev\"",
+    "build": "yarn utils build & yarn domain build & yarn client build & yarn server build"
   },
   "workspaces": {
     "packages": [

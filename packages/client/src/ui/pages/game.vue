@@ -60,9 +60,8 @@ onUnmounted(stop);
       <button @click="reconnect">Reconnect</button>
     </div>
 
-    <div ref="gameContainer" class="game">
-      <DebugInfos />
-    </div>
+    <DebugInfos />
+    <div ref="gameContainer" class="game" />
 
     <div class="minimap">
       <div ref="minimapContainer" />
