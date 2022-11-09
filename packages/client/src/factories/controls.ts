@@ -7,14 +7,11 @@ import {
   type Nullable
 } from '@game/shared-utils';
 import {
-  CameraMode,
   CAMERA_SPEED,
-  KeyboardControls,
   MANUAL_CAMERA_BOUNDARIES,
-  MouseButton,
   PROJECTILE_THROTTLE_RATE
-} from './constants';
-import { socket } from './socket';
+} from '../utils/constants';
+import { socket } from '../utils/socket';
 import {
   PLAYER_ACTION,
   PlayerAction,
@@ -22,9 +19,10 @@ import {
   MAP_SIZE
 } from '@game/shared-domain';
 import type { Camera } from '@/factories/camera';
-import { useKeydownOnce } from './helpers';
+import { useKeydownOnce } from '../utils/helpers';
 import type { GameState } from '@/stores/gameState';
 import Hammer from 'hammerjs';
+import { KeyboardControls, MouseButton, CameraMode } from '../utils/enums';
 
 const directions: Directions = {
   up: false,
@@ -33,7 +31,7 @@ const directions: Directions = {
   right: false
 };
 
-const initKeyboardMovement = () => {
+const createKeyboardMovement = () => {
   const keyMap: Record<string, keyof typeof directions> = {
     [KeyboardControls.W]: 'up',
     [KeyboardControls.S]: 'down',
@@ -68,7 +66,7 @@ const initKeyboardMovement = () => {
   });
 };
 
-const initMouseControls = (
+const createMouseControls = (
   canvas: HTMLCanvasElement,
   camera: Camera,
   mousePosition: Coordinates
@@ -117,7 +115,7 @@ const initMouseControls = (
   canvas.addEventListener('contextmenu', emitPosition);
 };
 
-const initTouchControls = (canvas: HTMLCanvasElement, camera: Camera) => {
+const createTouchControls = (canvas: HTMLCanvasElement, camera: Camera) => {
   const hammer = new Hammer(canvas, {});
   hammer.on(
     'tap',
@@ -181,7 +179,7 @@ const initTouchControls = (canvas: HTMLCanvasElement, camera: Camera) => {
   );
 };
 
-const initCameraControls = (
+const createCameraControls = (
   canvas: HTMLCanvasElement,
   camera: Camera,
   mousePosition: Coordinates,
@@ -256,14 +254,14 @@ type InitControlsOptions = {
   mousePosition: Coordinates;
 };
 
-export const initControls = ({
+export const createControls = ({
   state,
   canvas,
   camera,
   mousePosition
 }: InitControlsOptions) => {
-  initKeyboardMovement();
-  initMouseControls(canvas, camera, mousePosition);
-  initTouchControls(canvas, camera);
-  initCameraControls(canvas, camera, mousePosition, state);
+  createKeyboardMovement();
+  createMouseControls(canvas, camera, mousePosition);
+  createTouchControls(canvas, camera);
+  createCameraControls(canvas, camera, mousePosition, state);
 };

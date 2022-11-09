@@ -8,13 +8,13 @@ import { drawProjectiles } from '../commands/drawProjectiles';
 import { interpolateEntities, type GameState } from '@/stores/gameState';
 import { createCamera } from '@/factories/camera';
 import { socket } from '@/utils/socket';
-import { initControls } from '@/utils/controls';
+import { createControls } from '@/factories/controls';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { createMapRenderer } from './mapRenderer';
 import { createDebugRenderer } from './debugRenderer';
 import { createMinimapRenderer } from './minimapRenderer';
 import { createAssetMap } from '@/factories/assetMap';
-import { MapRenderMode } from '@/utils/constants';
+import { MapRenderMode } from '@/utils/enums';
 
 export type CreateGameRendererOptions = {
   id: string;
@@ -115,7 +115,7 @@ export const createGameRenderer = ({
     async onStart(renderContext) {
       const { canvas, state } = renderContext;
       mousePosition = trackMousePosition(canvas);
-      initControls({ canvas, camera, mousePosition, state });
+      createControls({ canvas, camera, mousePosition, state });
 
       camera.setTarget(socket.id);
       camera.setCanvas(canvas);

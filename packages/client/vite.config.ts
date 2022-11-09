@@ -9,7 +9,7 @@ export default defineConfig({
   plugins: [
     vue(),
     checker({
-      vueTsc: true,
+      vueTsc: { tsconfigPath: './tsconfig.app.json' },
       eslint: {
         lintCommand: 'eslint "./src/**/*.{ts,tsx,.vue}"' // for example, lint .ts & .tsx
       }

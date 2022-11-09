@@ -1,10 +1,6 @@
 import { MAP_SIZE } from '@game/shared-domain';
 import { createRenderer } from '../factories/renderer';
-import {
-  MapRenderMode,
-  MAP_CELL_OPACITY_STEP,
-  ONE_FRAME
-} from '@/utils/constants';
+import { MAP_CELL_OPACITY_STEP, ONE_FRAME } from '@/utils/constants';
 import {
   debounce,
   type Coordinates,
@@ -12,6 +8,7 @@ import {
 } from '@game/shared-utils';
 import { drawSimpleCell, drawDetailedCell } from '@/commands/drawCell';
 import type { GameState } from '@/stores/gameState';
+import { MapRenderMode } from '@/utils/enums';
 
 const getKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
 

@@ -1,5 +1,5 @@
 import type { GameState } from '@/stores/gameState';
-import { CameraMode } from '@/utils/constants';
+import { CameraMode } from '@/utils/enums';
 import { MAP_SIZE } from '@game/shared-domain';
 import { clamp, type Coordinates, type Dimensions } from '@game/shared-utils';
 

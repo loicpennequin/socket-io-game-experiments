@@ -63,6 +63,7 @@ onUnmounted(stop);
     <div ref="gameContainer" class="game">
       <DebugInfos />
     </div>
+
     <div class="minimap">
       <div ref="minimapContainer" />
       <router-link to="/" draggable="false">Quit</router-link>
@@ -123,7 +124,7 @@ onUnmounted(stop);
   position: relative;
 }
 
-.minmap {
+.minimap {
   position: absolute;
   z-index: 2;
   top: 0;

@@ -5,9 +5,7 @@ import { drawPlayersCircles } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
 import { pushPop } from '../utils/canvas';
 import {
-  CameraMode,
   COLORS,
-  MapRenderMode,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
@@ -16,6 +14,7 @@ import type { Camera } from '@/factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { createMapRenderer } from './mapRenderer';
 import type { GameState } from '@/stores/gameState';
+import { MapRenderMode, CameraMode } from '@/utils/enums';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,

@@ -75,24 +75,22 @@ socket.on(GAME_STATE_UPDATE, ({ discoveredCells, entities }: GameStateDto) => {
 // we interpolate once at the start of everyframe in the gameRenderer
 export const interpolateEntities = (now = performance.now()) => {
   state.interpolatedEntities = Object.fromEntries(
-    state.entities.map((entity): [string, EntityDto] => {
-      return [
-        entity.id,
-        {
-          ...entity,
-          ...interpolateEntity(
-            { value: entity, timestamp: state.timestamp },
-            {
-              value: prevState.entitiesById[entity.id],
-              timestamp: prevState.timestamp
-            },
-            {
-              tickRate: TICK_RATE,
-              now
-            }
-          )
-        }
-      ];
-    })
+    state.entities.map((entity): [string, EntityDto] => [
+      entity.id,
+      {
+        ...entity,
+        ...interpolateEntity(
+          { value: entity, timestamp: state.timestamp },
+          {
+            value: prevState.entitiesById[entity.id],
+            timestamp: prevState.timestamp
+          },
+          {
+            tickRate: TICK_RATE,
+            now
+          }
+        )
+      }
+    ])
   );
 };
