@@ -25,43 +25,28 @@ import type { Camera } from '@/factories/camera';
 import { state } from '@/stores/gameState';
 import { useKeydownOnce } from './helpers';
 
+const directions: Directions = {
+  up: false,
+  down: false,
+  left: false,
+  right: false
+};
+
 const initKeyboardMovement = () => {
-  const directions: Directions = {
-    up: false,
-    down: false,
-    left: false,
-    right: false
+  const keyMap: Record<string, keyof typeof directions> = {
+    [KeyboardControls.W]: 'up',
+    [KeyboardControls.A]: 'down',
+    [KeyboardControls.S]: 'left',
+    [KeyboardControls.D]: 'right'
   };
 
+  const isMovement = (code: string) => Object.keys(keyMap).includes(code);
+
   useKeydownOnce(e => {
-    if (
-      ![
-        KeyboardControls.W,
-        KeyboardControls.A,
-        KeyboardControls.S,
-        KeyboardControls.D
-      ].includes(e.code as any)
-    ) {
+    if (!isMovement(e.code)) {
       return;
     }
-
-    switch (e.code as KeyboardControls) {
-      case KeyboardControls.W:
-        directions.up = true;
-        break;
-
-      case KeyboardControls.A:
-        directions.left = true;
-        break;
-
-      case KeyboardControls.S:
-        directions.down = true;
-        break;
-
-      case KeyboardControls.D:
-        directions.right = true;
-        break;
-    }
+    directions[keyMap[e.code]] = true;
 
     return socket.emit(PLAYER_ACTION, {
       type: PlayerAction.MOVE,
@@ -70,34 +55,10 @@ const initKeyboardMovement = () => {
   });
 
   document.addEventListener('keyup', e => {
-    if (
-      ![
-        KeyboardControls.W,
-        KeyboardControls.A,
-        KeyboardControls.S,
-        KeyboardControls.D
-      ].includes(e.code as any)
-    ) {
+    if (!isMovement(e.code)) {
       return;
     }
-
-    switch (e.code as KeyboardControls) {
-      case KeyboardControls.W:
-        directions.up = false;
-        break;
-
-      case KeyboardControls.A:
-        directions.left = false;
-        break;
-
-      case KeyboardControls.S:
-        directions.down = false;
-        break;
-
-      case KeyboardControls.D:
-        directions.right = false;
-        break;
-    }
+    directions[keyMap[e.code]] = true;
 
     return socket.emit(PLAYER_ACTION, {
       type: PlayerAction.MOVE,
@@ -126,7 +87,7 @@ const initMouseMovement = (
     }, PROJECTILE_THROTTLE_RATE)
   );
 
-  const broadcastMousePosition = () => {
+  const emitPosition = () => {
     socket.emit(PLAYER_ACTION, {
       type: PlayerAction.MOVE_TO,
       meta: {
@@ -139,17 +100,53 @@ const initMouseMovement = (
   };
   canvas.addEventListener('mousedown', e => {
     if (e.button === MouseButton.RIGHT) {
-      canvas.addEventListener('mousemove', broadcastMousePosition);
+      canvas.addEventListener('mousemove', emitPosition);
     }
   });
 
   canvas.addEventListener('mouseup', e => {
     if (e.button === MouseButton.RIGHT) {
-      canvas.removeEventListener('mousemove', broadcastMousePosition);
+      canvas.removeEventListener('mousemove', emitPosition);
     }
   });
 
-  canvas.addEventListener('contextmenu', broadcastMousePosition);
+  canvas.addEventListener('contextmenu', emitPosition);
+};
+
+const initTouchMovement = (canvas: HTMLCanvasElement) => {
+  canvas.addEventListener(
+    'touchstart',
+    e => {
+      e.preventDefault();
+
+      if (e.touches.length > 1) return;
+      const start = {
+        x: e.targetTouches[0].clientX,
+        y: e.targetTouches[0].clientY
+      };
+
+      const emitMovement = throttle((e: TouchEvent) => {
+        const { clientX, clientY } = e.targetTouches[0];
+        directions.up = clientY < start.y;
+        directions.down = clientY > start.y;
+        directions.left = clientX < start.x;
+        directions.right = clientX > start.x;
+
+        return socket.emit(PLAYER_ACTION, {
+          type: PlayerAction.MOVE,
+          meta: { directions }
+        });
+      }, 100);
+
+      const stop = () => {
+        canvas.removeEventListener('touchmove', emitMovement);
+        canvas.removeEventListener('touchend', stop);
+      };
+      canvas.addEventListener('touchmove', emitMovement);
+      canvas.addEventListener('touchend', stop);
+    },
+    false
+  );
 };
 
 const initCameraControls = (
@@ -169,9 +166,9 @@ const initCameraControls = (
     }
   });
 
-  let manualCameraRafId: Nullable<ReturnType<typeof requestAnimationFrame>> =
-    null;
+  let manualCameraRafId: Nullable<number> = null;
   let manualCameraDiff = { x: 0, y: 0 };
+
   const setManualCameraPosition = () => {
     camera.setPosition(
       clampVector(addVector(camera, manualCameraDiff), {
@@ -181,6 +178,7 @@ const initCameraControls = (
     );
     requestAnimationFrame(setManualCameraPosition);
   };
+
   canvas.addEventListener('mousemove', () => {
     if (state.isCameraLocked) return;
 
@@ -206,8 +204,8 @@ const initCameraControls = (
       manualCameraDiff.x += CAMERA_SPEED;
     }
 
-    if (!manualCameraDiff.x && !manualCameraDiff.y) {
-      manualCameraRafId && cancelAnimationFrame(manualCameraRafId);
+    if (!manualCameraDiff.x && !manualCameraDiff.y && manualCameraRafId) {
+      cancelAnimationFrame(manualCameraRafId);
       manualCameraRafId = null;
       return;
     }
@@ -226,5 +224,6 @@ export const initControls = (
 ) => {
   initKeyboardMovement();
   initMouseMovement(canvas, camera, mousePosition);
+  initTouchMovement(canvas);
   initCameraControls(canvas, camera, mousePosition);
 };
