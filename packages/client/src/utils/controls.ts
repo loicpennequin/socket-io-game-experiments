@@ -24,6 +24,7 @@ import {
 import type { Camera } from '@/factories/camera';
 import { useKeydownOnce } from './helpers';
 import type { GameState } from '@/stores/gameState';
+import Hammer from 'hammerjs';
 
 const directions: Directions = {
   up: false,
@@ -67,7 +68,7 @@ const initKeyboardMovement = () => {
   });
 };
 
-const initMouseMovement = (
+const initMouseControls = (
   canvas: HTMLCanvasElement,
   camera: Camera,
   mousePosition: Coordinates
@@ -116,7 +117,23 @@ const initMouseMovement = (
   canvas.addEventListener('contextmenu', emitPosition);
 };
 
-const initTouchMovement = (canvas: HTMLCanvasElement) => {
+const initTouchControls = (canvas: HTMLCanvasElement, camera: Camera) => {
+  const hammer = new Hammer(canvas, {});
+  hammer.on(
+    'tap',
+    throttle((e: HammerInput) => {
+      socket.emit(PLAYER_ACTION, {
+        type: PlayerAction.FIRE_PROJECTILE,
+        meta: {
+          target: {
+            x: e.center.x + camera.x,
+            y: e.center.y + camera.y
+          }
+        }
+      });
+    }, PROJECTILE_THROTTLE_RATE)
+  );
+
   canvas.addEventListener(
     'touchstart',
     e => {
@@ -143,10 +160,22 @@ const initTouchMovement = (canvas: HTMLCanvasElement) => {
 
       const stop = () => {
         canvas.removeEventListener('touchmove', emitMovement);
+        Object.assign(directions, {
+          up: false,
+          down: false,
+          left: false,
+          right: false
+        });
+        socket.emit(PLAYER_ACTION, {
+          type: PlayerAction.MOVE,
+          meta: { directions }
+        });
         canvas.removeEventListener('touchend', stop);
       };
-      canvas.addEventListener('touchmove', emitMovement);
-      canvas.addEventListener('touchend', stop);
+      setTimeout(() => {
+        canvas.addEventListener('touchmove', emitMovement);
+      });
+      canvas.addEventListener('touchend', stop, { capture: true });
     },
     false
   );
@@ -234,7 +263,15 @@ export const initControls = ({
   mousePosition
 }: InitControlsOptions) => {
   initKeyboardMovement();
-  initMouseMovement(canvas, camera, mousePosition);
-  initTouchMovement(canvas);
+  initMouseControls(canvas, camera, mousePosition);
+  initTouchControls(canvas, camera);
   initCameraControls(canvas, camera, mousePosition, state);
+
+  canvas.addEventListener('click', () => {
+    console.log('click');
+  });
+
+  canvas.addEventListener('tap', () => {
+    console.log('tap');
+  });
 };

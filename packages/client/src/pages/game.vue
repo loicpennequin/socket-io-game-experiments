@@ -1,89 +1,35 @@
 <script setup lang="ts">
-import humanoidsUrl from '@/assets/humanoids.png';
-import magicalUrl from '@/assets/magical.png';
-import { createGameRenderer } from '@/renderers/gameRenderer';
-import { socket } from '@/utils/socket';
-import type { Renderer } from '@/factories/renderer';
 import DebugInfos from '@/components/DebugInfos.vue';
-import {
-  JOIN_GAME,
-  type JoinGamePayload,
-  type PlayerJob
-} from '@game/shared-domain';
+import type { JoinGamePayload, PlayerJob } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
-import { state } from '@/stores/gameState';
+import { useGame } from '@/composables/useGame';
 
 const router = useRouter();
 
 const gameContainer = ref<HTMLDivElement>();
 const minimapContainer = ref<HTMLDivElement>();
-let gameRenderer: Renderer;
 
-const form = useStorage<{
+const loginInfo = useStorage<{
   username: string;
   job: Nullable<PlayerJob>;
 }>('login-infos', { username: '', job: null });
 
-if (!form.value.username || !form.value.job) {
+if (!loginInfo.value.username || !loginInfo.value.job) {
   router.push('/');
 }
 
-const startGame = () => {
-  const el = gameContainer.value!;
+const { start, stop } = useGame();
 
-  const assetPromise = Promise.all(
-    [humanoidsUrl, magicalUrl].map(
-      url =>
-        new Promise<HTMLImageElement>(resolve => {
-          const image = new Image();
-          image.src = url;
-          image.addEventListener('load', () => resolve(image));
-        })
-    )
-  );
+onMounted(() => {
+  if (!gameContainer.value || !minimapContainer.value) return;
 
-  const socketPromise = new Promise<void>(resolve => {
-    socket.on('connect', () => {
-      socket.emit(JOIN_GAME, form.value as JoinGamePayload, () => resolve());
-    });
+  start({
+    gameContainer: gameContainer.value,
+    minimapContainer: minimapContainer.value,
+    loginInfo: loginInfo.value as JoinGamePayload
   });
-
-  Promise.all([assetPromise, socketPromise]).then(([assets]) => {
-    gameRenderer = createGameRenderer({
-      id: 'game',
-      assets,
-      state,
-      getDimensions: () => {
-        const { width, height } = el.getBoundingClientRect();
-
-        return {
-          w: width,
-          h: height
-        };
-      },
-      onStart({ canvas, children }) {
-        el.appendChild(canvas);
-        const minimapRenderer = children.find(
-          renderer => renderer.id === 'minimap'
-        );
-        if (minimapRenderer) {
-          minimapContainer.value?.appendChild(minimapRenderer.canvas);
-        }
-      }
-    });
-    gameRenderer.start();
-  });
-
-  socket.connect();
-};
-
-const stopGame = () => {
-  socket.disconnect();
-  gameRenderer?.pause();
-};
-
-onMounted(startGame);
-onUnmounted(stopGame);
+});
+onUnmounted(stop);
 </script>
 
 <template>

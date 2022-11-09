@@ -34,6 +34,8 @@ export const withMovement = <TBase extends Constructor<Entity>>(
     }
 
     private updateOrientation({ x }: Coordinates) {
+      if (this.position.x === x) return;
+
       this.orientation =
         x < this.position.x ? EntityOrientation.LEFT : EntityOrientation.RIGHT;
 
