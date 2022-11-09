@@ -74,6 +74,8 @@ const createMouseControls = (
   canvas.addEventListener(
     'click',
     throttle(() => {
+      console.log('click');
+
       socket.emit(PLAYER_ACTION, {
         type: PlayerAction.FIRE_PROJECTILE,
         meta: {
@@ -120,6 +122,7 @@ const createTouchControls = (canvas: HTMLCanvasElement, camera: Camera) => {
   hammer.on(
     'tap',
     throttle((e: HammerInput) => {
+      if (!('ontouchstart' in window)) return;
       socket.emit(PLAYER_ACTION, {
         type: PlayerAction.FIRE_PROJECTILE,
         meta: {

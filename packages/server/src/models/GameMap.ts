@@ -69,7 +69,7 @@ export class GameMap {
   getTerrainAtPosition(position: Coordinates) {
     const cellIndex = this.grid.getCellIndex(position);
 
-    return this.cells[cellIndex.x][cellIndex.y].type;
+    return this.cells[cellIndex.x][cellIndex.y]?.type;
   }
 
   getVisibleCells({ position, id }: Entity, fieldOfView: number) {
