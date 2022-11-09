@@ -4,14 +4,13 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "tsc & shx cp -r ../client/dist ./public/",
+    "start": "cross-env NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
     "@game/shared-domain": "*",
     "@game/shared-utils": "*",
     "@types/node": "^18.11.8",
-    "cross-env": "^7.0.3",
     "express": "^4.18.2",
     "random-name": "^0.1.2",
     "socket.io": "^4.5.3",
@@ -24,8 +23,10 @@
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.26.0",
     "nodemon": "^2.0.20",
+    "shx": "^0.3.4",
     "typescript": "^4.8.4"
   }
 }
