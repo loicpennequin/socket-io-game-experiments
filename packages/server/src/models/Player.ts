@@ -12,8 +12,8 @@ const mixins = mixinBuilder(Entity)
   .add(withMovement)
   .add(withKeyboardMovement)
   .add(withMapAwareness)
-  .add(withShooting)
-  .add(withCreature);
+  .add(withCreature)
+  .add(withShooting);
 
 export type PlayerOptions = EntityOptions & {
   speed: number;

@@ -3,10 +3,17 @@ import { PROJECTILE_SPEED } from '@game/shared-domain';
 import { createProjectile } from '../factories/projectile';
 import { Projectile } from '../models/Projectile';
 import { MapAware } from './withMapAwareness';
+import { Creature } from './withCreature';
 
-export const withShooting = <TBase extends MapAware>(Base: TBase) => {
+export const withShooting = <TBase extends MapAware & Creature>(
+  Base: TBase
+) => {
   return class Shooter extends Base {
-    shootProjectile(target: Coordinates): Projectile {
+    shootProjectile(target: Coordinates) {
+      if (this.stats.mp < 5) return;
+
+      this.stats.mp -= 5;
+
       const projectile = createProjectile({
         meta: { target },
         world: this.world,
@@ -18,8 +25,6 @@ export const withShooting = <TBase extends MapAware>(Base: TBase) => {
 
       this.world.addEntity(projectile);
       this.children.add(projectile);
-
-      return projectile;
     }
   };
 };

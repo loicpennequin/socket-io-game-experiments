@@ -12,6 +12,7 @@ export type CreatureStats = {
   maxHp: number;
   mp: number;
   maxMp: number;
+  mpRegenPerSecond: number;
 };
 
 export type EntityDto = Coordinates & {

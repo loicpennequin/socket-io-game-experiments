@@ -96,14 +96,16 @@ const drawPlayerStatBars = (
         y: defaults.y - ENTITY_STAT_BAR_OFFSET,
         value: stats.mp,
         maxValue: stats.maxMp,
-        color: COLORS.mpBar()
+        barColor: COLORS.mpBar(),
+        bgColor: COLORS.mpBarBg()
       });
       drawStatBar({
         ...defaults,
         y: defaults.y - ENTITY_STAT_BAR_OFFSET - ENTITY_STAT_BAR_HEIGHT,
         value: stats.hp,
         maxValue: stats.maxHp,
-        color: COLORS.hpBar()
+        barColor: COLORS.hpBar(),
+        bgColor: COLORS.hpBarBg()
       });
     } else {
       drawStatBar({
@@ -111,7 +113,8 @@ const drawPlayerStatBars = (
         y: defaults.y - ENTITY_STAT_BAR_OFFSET,
         value: stats.hp,
         maxValue: stats.maxHp,
-        color: COLORS.hpBar()
+        barColor: COLORS.hpBar(),
+        bgColor: COLORS.hpBarBg()
       });
     }
   });

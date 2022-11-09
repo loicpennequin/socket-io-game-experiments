@@ -18,7 +18,7 @@ export const MANUAL_CAMERA_BOUNDARIES = 85;
 export const MANUAL_CAMERA_SWITCH_TIMEOUT = 250;
 export const CAMERA_SPEED = 15;
 export const ENTITY_STAT_BAR_HEIGHT = 8;
-export const ENTITY_STAT_BAR_OFFSET = 5;
+export const ENTITY_STAT_BAR_OFFSET = 10;
 
 export const COLORS = Object.freeze({
   minimapBackground: () => 'black',
@@ -52,11 +52,11 @@ export const COLORS = Object.freeze({
 
   fogOfWar: () => 'hsla(0, 0%, 0%, 0.7)',
 
-  statBarEmpty: () => 'red',
-
   hpBar: () => 'rgb(0,255,0)',
+  hpBarBg: () => 'red',
 
-  mpBar: () => 'rgb(0,0,255)'
+  mpBar: () => 'rgb(0,0,255)',
+  mpBarBg: () => 'rgba(0,0,0,0)'
 });
 
 export const DEFAULT_TERRAIN_LIGHTNESS = {

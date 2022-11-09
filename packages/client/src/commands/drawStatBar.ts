@@ -1,5 +1,4 @@
 import { pushPop } from '@/utils/canvas';
-import { COLORS } from '@/utils/constants';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
 
 export type DrawStatBarOptions = Coordinates &
@@ -7,7 +6,8 @@ export type DrawStatBarOptions = Coordinates &
     ctx: CanvasRenderingContext2D;
     value: number;
     maxValue: number;
-    color: string;
+    barColor: string;
+    bgColor: string;
   };
 export const drawStatBar = ({
   ctx,
@@ -17,14 +17,15 @@ export const drawStatBar = ({
   h,
   value,
   maxValue,
-  color
+  barColor,
+  bgColor
 }: DrawStatBarOptions) => {
   pushPop(ctx, () => {
-    ctx.fillStyle = COLORS.statBarEmpty();
+    ctx.fillStyle = bgColor;
     ctx.fillRect(x, y, w, h);
 
     const remainingWidth = (value * w) / maxValue;
-    ctx.fillStyle = color;
+    ctx.fillStyle = barColor;
     ctx.fillRect(x, y, remainingWidth, h);
     ctx.closePath();
 
