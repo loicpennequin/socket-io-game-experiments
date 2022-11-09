@@ -11,6 +11,7 @@ import {
   type PlayerJob
 } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
+import { state } from '@/stores/gameState';
 
 const router = useRouter();
 
@@ -18,12 +19,12 @@ const gameContainer = ref<HTMLDivElement>();
 const minimapContainer = ref<HTMLDivElement>();
 let gameRenderer: Renderer;
 
-const state = useStorage<{
+const form = useStorage<{
   username: string;
   job: Nullable<PlayerJob>;
 }>('login-infos', { username: '', job: null });
 
-if (!state.value.username || !state.value.job) {
+if (!form.value.username || !form.value.job) {
   router.push('/');
 }
 
@@ -43,7 +44,7 @@ const startGame = () => {
 
   const socketPromise = new Promise<void>(resolve => {
     socket.on('connect', () => {
-      socket.emit(JOIN_GAME, state.value as JoinGamePayload, () => resolve());
+      socket.emit(JOIN_GAME, form.value as JoinGamePayload, () => resolve());
     });
   });
 
@@ -51,6 +52,7 @@ const startGame = () => {
     gameRenderer = createGameRenderer({
       id: 'game',
       assets,
+      state,
       getDimensions: () => {
         const { width, height } = el.getBoundingClientRect();
 
@@ -91,7 +93,7 @@ onUnmounted(stopGame);
     </div>
     <div class="minimap">
       <div ref="minimapContainer" />
-      <router-link to="/">Quit</router-link>
+      <router-link to="/" draggable="false">Quit</router-link>
     </div>
   </div>
 </template>
@@ -101,13 +103,17 @@ onUnmounted(stopGame);
   position: relative;
   width: 100%;
   height: 100%;
+  user-select: none;
+}
+
+.wrapper a {
+  -webkit-user-drag: none;
 }
 
 .wrapper > div:nth-child(1) {
   width: 100vw;
   height: 100%;
   position: relative;
-  overflow: hidden;
 }
 
 .wrapper > div:nth-child(2) {

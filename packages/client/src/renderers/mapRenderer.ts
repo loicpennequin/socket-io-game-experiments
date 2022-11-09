@@ -11,17 +11,20 @@ import {
   type Dimensions
 } from '@game/shared-utils';
 import { drawSimpleCell, drawDetailedCell } from '@/commands/drawCell';
+import type { GameState } from '@/stores/gameState';
 
 const getKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
 
 export type CreateMapCacheRendererOptions = {
   id: string;
   mode: MapRenderMode;
+  state: GameState;
 };
 
 export const createMapRenderer = ({
   id,
-  mode
+  mode,
+  state
 }: CreateMapCacheRendererOptions) => {
   const drawMethods = {
     [MapRenderMode.SIMPLE]: drawSimpleCell,
@@ -30,6 +33,7 @@ export const createMapRenderer = ({
 
   const renderer = createRenderer({
     id,
+    state,
     render: ({ ctx, state }) => {
       state.cells.drawing.forEach(cell => {
         cell.opacity += MAP_CELL_OPACITY_STEP;

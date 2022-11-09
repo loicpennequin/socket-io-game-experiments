@@ -1,11 +1,12 @@
-import { getInterpolatedEntity } from '@/stores/gameState';
+import type { GameState } from '@/stores/gameState';
 import { CameraMode } from '@/utils/constants';
 import { MAP_SIZE } from '@game/shared-domain';
 import { clamp, type Coordinates, type Dimensions } from '@game/shared-utils';
 
-export type CreateCameraOptions = Coordinates & Dimensions;
+export type CreateCameraOptions = Coordinates &
+  Dimensions & { state: GameState };
 
-export const createCamera = ({ x, y, w, h }: CreateCameraOptions) => {
+export const createCamera = ({ x, y, w, h, state }: CreateCameraOptions) => {
   const position = { x, y, w, h };
   let canvas: HTMLCanvasElement;
   let target: string;
@@ -44,7 +45,7 @@ export const createCamera = ({ x, y, w, h }: CreateCameraOptions) => {
     },
 
     update() {
-      const entity = getInterpolatedEntity(target);
+      const entity = state.interpolatedEntities[target];
       if (!entity) return;
 
       if (mode === CameraMode.MANUAL) return;

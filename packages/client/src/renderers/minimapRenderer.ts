@@ -15,6 +15,7 @@ import {
 import type { Camera } from '@/factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { createMapRenderer } from './mapRenderer';
+import type { GameState } from '@/stores/gameState';
 
 const getDimensions = () => ({
   w: MINIMAP_SIZE,
@@ -23,17 +24,21 @@ const getDimensions = () => ({
 
 export const createMinimapRenderer = ({
   id,
-  camera
+  camera,
+  state
 }: {
   id: string;
   camera: Camera;
+  state: GameState;
 }) => {
   return createRenderer({
     id,
     getDimensions,
+    state,
     children: [
       createMapRenderer({
         id: `map`,
+        state,
         mode: MapRenderMode.SIMPLE
       }),
       createFogOfWarRenderer({
@@ -44,6 +49,7 @@ export const createMinimapRenderer = ({
           w: MINIMAP_SIZE,
           h: MINIMAP_SIZE
         },
+        state,
         scale: MINIMAP_SCALE,
         getDimensions
       })

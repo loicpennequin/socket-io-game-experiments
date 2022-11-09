@@ -4,7 +4,7 @@ import {
   PROJECTILE_HARD_FIELD_OF_VIEW
 } from '@game/shared-domain';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
-import { getInterpolatedEntity } from '../stores/gameState';
+import type { GameState } from '../stores/gameState';
 import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
 import { socket } from '../utils/socket';
@@ -16,16 +16,19 @@ type CreateFogOfWarRendererOptions = {
   getDimensions: () => Dimensions;
   id: string;
   scale?: number;
+  state: GameState;
 };
 
 export const createFogOfWarRenderer = ({
   camera,
   getDimensions,
   id,
+  state,
   scale = 1
 }: CreateFogOfWarRendererOptions) => {
   const renderer = createRenderer({
     id,
+    state,
     render: ({ canvas, ctx, state }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       applyCamera({ canvas, ctx, camera, state }, () => {
@@ -38,13 +41,12 @@ export const createFogOfWarRenderer = ({
         if (!player) return;
 
         const entitiesToRender = [player.id, ...player.children]
-          .map(getInterpolatedEntity)
+          .map(id => state.interpolatedEntities[id])
           .filter(Boolean); // @fixme figure out why some entities are undefined sometimes
 
         pushPop(ctx, () => {
           ctx.scale(scale, scale);
           entitiesToRender.forEach(({ x, y, type }) => {
-            // @fixme  server should probably send field of view in the EntityDto ?
             const fov =
               type === EntityType.PLAYER
                 ? PLAYER_HARD_FIELD_OF_VIEW

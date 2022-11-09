@@ -25,6 +25,7 @@ export type GameState = Omit<GameStateDto, 'discoveredCells'> & {
     drawing: Map<string, StateMapCell>;
   };
   entitiesById: Record<string, EntityDto>;
+  interpolatedEntities: Record<string, EntityDto>;
   isCameraLocked: boolean;
 };
 
@@ -38,7 +39,8 @@ const createEmptyState = (): GameState => ({
   entities: [],
   entitiesById: {},
   timestamp: performance.now(),
-  isCameraLocked: true
+  isCameraLocked: true,
+  interpolatedEntities: {}
 });
 
 export const state = createEmptyState();
@@ -71,37 +73,26 @@ socket.on(GAME_STATE_UPDATE, ({ discoveredCells, entities }: GameStateDto) => {
 // if we do lazy interpolations, different renderers will interpolate at different timestamps for the same frame
 // this will cause offset and staggering of entities (fog of war for exemple)
 // we interpolate once at the start of everyframe in the gameRenderer
-let interpolatedEntities = new Map<string, EntityDto>();
 export const interpolateEntities = (now = performance.now()) => {
-  const entries = state.entities.map((entity): [string, EntityDto] => {
-    return [
-      entity.id,
-      {
-        ...entity,
-        ...interpolateEntity(
-          { value: entity, timestamp: state.timestamp },
-          {
-            value: prevState.entitiesById[entity.id],
-            timestamp: prevState.timestamp
-          },
-          {
-            tickRate: TICK_RATE,
-            now
-          }
-        )
-      }
-    ];
-  });
-  interpolatedEntities = new Map<string, EntityDto>(entries);
-};
-
-export const getInterpolatedEntity = (id: string) => {
-  const entity = interpolatedEntities.get(id) as EntityDto;
-  if (!entity) {
-    console.warn(`Interpolated entity not found: ${id}`);
-    interpolateEntities();
-    return interpolatedEntities.get(id) as EntityDto;
-  }
-
-  return entity;
+  state.interpolatedEntities = Object.fromEntries(
+    state.entities.map((entity): [string, EntityDto] => {
+      return [
+        entity.id,
+        {
+          ...entity,
+          ...interpolateEntity(
+            { value: entity, timestamp: state.timestamp },
+            {
+              value: prevState.entitiesById[entity.id],
+              timestamp: prevState.timestamp
+            },
+            {
+              tickRate: TICK_RATE,
+              now
+            }
+          )
+        }
+      ];
+    })
+  );
 };

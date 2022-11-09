@@ -1,4 +1,4 @@
-import { state, type GameState } from '@/stores/gameState';
+import type { GameState } from '@/stores/gameState';
 import { createCanvas } from '@/utils/canvas';
 import type { Dimensions } from '@game/shared-utils';
 
@@ -25,6 +25,7 @@ export type CreateRendererOptions = {
   getDimensions: () => Dimensions;
   id: string;
   children?: Renderer[];
+  state: GameState;
   onStart?: (opts: RenderContext) => void;
   onPause?: (opts: RenderContext) => void;
 };
@@ -35,6 +36,7 @@ export const createRenderer = ({
   onStart,
   onPause,
   id,
+  state,
   children = []
 }: CreateRendererOptions): Renderer => {
   let isRunning = false;

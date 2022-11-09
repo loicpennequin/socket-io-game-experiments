@@ -2,10 +2,11 @@ import { createRenderer } from '@/factories/renderer';
 import { PING } from '@game/shared-domain';
 import { socket } from '../utils/socket';
 import { useDebugStore } from '@/stores/debug';
+import type { GameState } from '@/stores/gameState';
 
 const FPS_BUFFER_MAX_LENGTH = 50;
 
-export const createDebugRenderer = () => {
+export const createDebugRenderer = (state: GameState) => {
   const debugStore = useDebugStore();
 
   let lastTick = 0;
@@ -21,6 +22,7 @@ export const createDebugRenderer = () => {
 
   return createRenderer({
     id: 'debug',
+    state,
     render() {
       if (lastTick) {
         const delta = (performance.now() - lastTick) / 1000;

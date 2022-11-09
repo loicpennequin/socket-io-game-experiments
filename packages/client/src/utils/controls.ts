@@ -75,7 +75,6 @@ const initMouseMovement = (
   canvas.addEventListener(
     'click',
     throttle(() => {
-      console.log('click');
       socket.emit(PLAYER_ACTION, {
         type: PlayerAction.FIRE_PROJECTILE,
         meta: {

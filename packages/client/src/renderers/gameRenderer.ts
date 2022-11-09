@@ -5,7 +5,7 @@ import { applyCamera } from '../commands/applyCamera';
 import { createRenderer, type RenderContext } from '../factories/renderer';
 import { drawPlayersSprites } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
-import { interpolateEntities } from '@/stores/gameState';
+import { interpolateEntities, type GameState } from '@/stores/gameState';
 import { createCamera } from '@/factories/camera';
 import { socket } from '@/utils/socket';
 import { initControls } from '@/utils/controls';
@@ -20,6 +20,7 @@ export type CreateGameRendererOptions = {
   id: string;
   assets: HTMLImageElement[];
   getDimensions: () => Dimensions;
+  state: GameState;
   onStart?: (ctx: RenderContext) => void;
 };
 
@@ -35,9 +36,11 @@ export const createGameRenderer = ({
   id,
   assets,
   getDimensions,
-  onStart
+  onStart,
+  state
 }: CreateGameRendererOptions) => {
   const camera = createCamera({
+    state,
     x: 0,
     y: 0,
     w: 0,
@@ -50,22 +53,26 @@ export const createGameRenderer = ({
   return createRenderer({
     id,
     getDimensions,
+    state,
 
     children: [
       createMapRenderer({
         id: `map`,
-        mode: MapRenderMode.DETAILED
+        mode: MapRenderMode.DETAILED,
+        state
       }),
       createFogOfWarRenderer({
         id: `fog-of-war`,
         camera,
-        getDimensions
+        getDimensions,
+        state
       }),
       createMinimapRenderer({
         id: 'minimap',
-        camera
+        camera,
+        state
       }),
-      createDebugRenderer()
+      createDebugRenderer(state)
     ],
 
     render: ({

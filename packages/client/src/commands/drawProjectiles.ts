@@ -1,6 +1,6 @@
 import { circle, pushPop } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
-import { getInterpolatedEntity, type GameState } from '@/stores/gameState';
+import type { GameState } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import { isProjectileDto } from '@game/shared-domain';
 
@@ -17,7 +17,7 @@ export const drawProjectiles = ({
 }: DrawProjectilesOptions) => {
   pushPop(ctx, () => {
     state.entities.filter(isProjectileDto).forEach(projectile => {
-      const { x, y } = getInterpolatedEntity(projectile.id);
+      const { x, y } = state.interpolatedEntities[projectile.id];
 
       ctx.lineWidth = 0;
       circle(ctx, { x, y, radius: size / 2 });
