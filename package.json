@@ -7,7 +7,8 @@
     "utils": "yarn workspace @game/shared-utils",
     "domain": "yarn workspace @game/shared-domain",
     "dev": "concurrently --kill-others \"yarn server dev\" \"yarn client dev\" \"yarn utils dev\" \"yarn domain dev\"",
-    "build": "yarn utils build & yarn domain build & yarn client build & yarn server build"
+    "build": "yarn utils build & yarn domain build & yarn client build & yarn server build",
+    "start": "yarn server start"
   },
   "workspaces": {
     "packages": [
