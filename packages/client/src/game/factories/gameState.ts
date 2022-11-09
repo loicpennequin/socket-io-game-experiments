@@ -12,7 +12,7 @@ import {
   randomInRange,
   type Coordinates
 } from '@game/shared-utils';
-import { socket } from '../utils/socket';
+import { socket } from '../../utils/socket';
 
 export type StateMapCell = GameMapCellDto & {
   opacity: number;

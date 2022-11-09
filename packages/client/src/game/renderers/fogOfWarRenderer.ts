@@ -4,12 +4,12 @@ import {
   PROJECTILE_HARD_FIELD_OF_VIEW
 } from '@game/shared-domain';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
-import type { GameState } from '../stores/gameState';
+import type { GameState } from '../factories/gameState';
 import { applyCamera } from '../commands/applyCamera';
 import { createRenderer } from '../factories/renderer';
-import { socket } from '../utils/socket';
-import { pushPop } from '../utils/canvas';
-import { COLORS, FOG_OF_WAR_BLUR } from '../utils/constants';
+import { socket } from '../../utils/socket';
+import { pushPop } from '../../utils/canvas';
+import { COLORS, FOG_OF_WAR_BLUR } from '../../utils/constants';
 
 type CreateFogOfWarRendererOptions = {
   camera: Coordinates & Dimensions;

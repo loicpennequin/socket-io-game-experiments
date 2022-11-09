@@ -3,10 +3,10 @@ const route = useRoute();
 
 const layoutMap = {
   default: defineAsyncComponent(
-    () => import('@/components/layouts/DefaultLayout.vue')
+    () => import('@/ui/components/layouts/DefaultLayout.vue')
   ),
   fullPage: defineAsyncComponent(
-    () => import('@/components/layouts/FullPageLayout.vue')
+    () => import('@/ui/components/layouts/FullPageLayout.vue')
   )
 } as const;
 const layoutComponent = computed(

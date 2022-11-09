@@ -1,7 +1,7 @@
 import { socket } from '@/utils/socket';
 import { pushPop } from '@/utils/canvas';
 import type { Coordinates, Dimensions } from '@game/shared-utils';
-import type { GameState } from '@/stores/gameState';
+import type { GameState } from '../factories/gameState';
 
 type ApplyCameraOptions = {
   canvas: HTMLCanvasElement;

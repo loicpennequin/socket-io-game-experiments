@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import DebugInfos from '@/components/DebugInfos.vue';
 import type { JoinGamePayload, PlayerJob } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
-import { useGame } from '@/composables/useGame';
+import DebugInfos from '@/ui/components/DebugInfos.vue';
+import { useGame } from '@/ui/composables/useGame';
 import { socket } from '@/utils/socket';
 
 const router = useRouter();

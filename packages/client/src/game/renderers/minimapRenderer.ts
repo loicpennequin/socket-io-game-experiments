@@ -3,17 +3,17 @@ import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayersCircles } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
-import { pushPop } from '../utils/canvas';
+import { pushPop } from '../../utils/canvas';
 import {
   COLORS,
   MINIMAP_ENTITY_SCALE,
   MINIMAP_SCALE,
   MINIMAP_SIZE
-} from '../utils/constants';
-import type { Camera } from '@/factories/camera';
+} from '../../utils/constants';
+import type { Camera } from '../factories/camera';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { createMapRenderer } from './mapRenderer';
-import type { GameState } from '@/stores/gameState';
+import type { GameState } from '../factories/gameState';
 import { MapRenderMode, CameraMode } from '@/utils/enums';
 
 const getDimensions = () => ({

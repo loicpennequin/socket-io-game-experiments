@@ -22,6 +22,12 @@ export const MapRenderMode = {
 };
 export type MapRenderMode = Values<typeof MapRenderMode>;
 
+export const EntityRenderMode = {
+  SIMPLE: 'SIMPLE',
+  DETAILED: 'DETAILED'
+};
+export type EntityRenderMode = Values<typeof EntityRenderMode>;
+
 export const KeyboardControls = Object.freeze({
   W: 'KeyW',
   S: 'KeyS',

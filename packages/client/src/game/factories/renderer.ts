@@ -1,4 +1,4 @@
-import type { GameState } from '@/stores/gameState';
+import type { GameState } from '@/game/factories/gameState';
 import { createCanvas } from '@/utils/canvas';
 import type { Dimensions } from '@game/shared-utils';
 

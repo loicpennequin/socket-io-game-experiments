@@ -1,10 +1,10 @@
 import humanoidsUrl from '@/assets/humanoids.png';
 import magicalUrl from '@/assets/magical.png';
-import { createGameRenderer } from '@/renderers/gameRenderer';
+import { createGameRenderer } from '../../game/renderers/gameRenderer';
 import { socket } from '@/utils/socket';
-import type { Renderer } from '@/factories/renderer';
+import type { Renderer } from '../../game/factories/renderer';
 import { JOIN_GAME, type JoinGamePayload } from '@game/shared-domain';
-import { state } from '@/stores/gameState';
+import { state } from '../../game/factories/gameState';
 
 export type GameOptions = {
   gameContainer: HTMLElement;

@@ -6,8 +6,8 @@ import {
   type Coordinates,
   type Dimensions
 } from '@game/shared-utils';
-import { drawSimpleCell, drawDetailedCell } from '@/commands/drawCell';
-import type { GameState } from '@/stores/gameState';
+import { drawSimpleCell, drawDetailedCell } from '../commands/drawCell';
+import type { GameState } from '../factories/gameState';
 import { MapRenderMode } from '@/utils/enums';
 
 const getKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;

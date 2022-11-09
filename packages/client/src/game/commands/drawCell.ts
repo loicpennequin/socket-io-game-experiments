@@ -1,4 +1,4 @@
-import type { StateMapCell } from '@/stores/gameState';
+import type { StateMapCell } from '../factories/gameState';
 import { COLORS, DEFAULT_TERRAIN_LIGHTNESS } from '@/utils/constants';
 import { CELL_SIZE } from '@game/shared-domain';
 

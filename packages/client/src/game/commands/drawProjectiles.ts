@@ -1,6 +1,6 @@
 import { circle, pushPop } from '@/utils/canvas';
 import { COLORS } from '@/utils/constants';
-import type { GameState } from '@/stores/gameState';
+import type { GameState } from '../factories/gameState';
 import { socket } from '@/utils/socket';
 import { isProjectileDto } from '@game/shared-domain';
 

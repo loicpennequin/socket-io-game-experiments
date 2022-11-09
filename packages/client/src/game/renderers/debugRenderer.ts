@@ -1,8 +1,8 @@
-import { createRenderer } from '@/factories/renderer';
+import { createRenderer } from '../factories/renderer';
 import { PING } from '@game/shared-domain';
-import { socket } from '../utils/socket';
-import { useDebugStore } from '@/stores/debug';
-import type { GameState } from '@/stores/gameState';
+import { socket } from '../../utils/socket';
+import { useDebugStore } from '../../ui/stores/debug';
+import type { GameState } from '../factories/gameState';
 
 const FPS_BUFFER_MAX_LENGTH = 50;
 

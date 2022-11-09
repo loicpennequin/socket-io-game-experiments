@@ -10,19 +10,19 @@ import {
   CAMERA_SPEED,
   MANUAL_CAMERA_BOUNDARIES,
   PROJECTILE_THROTTLE_RATE
-} from '../utils/constants';
-import { socket } from '../utils/socket';
+} from '../../utils/constants';
+import { socket } from '../../utils/socket';
 import {
   PLAYER_ACTION,
   PlayerAction,
   type Directions,
   MAP_SIZE
 } from '@game/shared-domain';
-import type { Camera } from '@/factories/camera';
-import { useKeydownOnce } from '../utils/helpers';
-import type { GameState } from '@/stores/gameState';
+import type { Camera } from '@/game/factories/camera';
+import { useKeydownOnce } from '../../utils/helpers';
+import type { GameState } from '@/game/factories/gameState';
 import Hammer from 'hammerjs';
-import { KeyboardControls, MouseButton, CameraMode } from '../utils/enums';
+import { KeyboardControls, MouseButton, CameraMode } from '../../utils/enums';
 
 const directions: Directions = {
   up: false,

@@ -5,15 +5,15 @@ import { applyCamera } from '../commands/applyCamera';
 import { createRenderer, type RenderContext } from '../factories/renderer';
 import { drawPlayersSprites } from '../commands/drawPlayers';
 import { drawProjectiles } from '../commands/drawProjectiles';
-import { interpolateEntities, type GameState } from '@/stores/gameState';
-import { createCamera } from '@/factories/camera';
+import { interpolateEntities, type GameState } from '../factories/gameState';
+import { createCamera } from '../factories/camera';
 import { socket } from '@/utils/socket';
-import { createControls } from '@/factories/controls';
+import { createControls } from '../factories/controls';
 import { trackMousePosition } from '@/utils/mouseTracker';
 import { createMapRenderer } from './mapRenderer';
 import { createDebugRenderer } from './debugRenderer';
 import { createMinimapRenderer } from './minimapRenderer';
-import { createAssetMap } from '@/factories/assetMap';
+import { createAssetMap } from '../factories/assetMap';
 import { MapRenderMode } from '@/utils/enums';
 
 export type CreateGameRendererOptions = {

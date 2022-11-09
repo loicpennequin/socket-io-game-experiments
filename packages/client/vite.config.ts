@@ -14,7 +14,10 @@ export default defineConfig({
         lintCommand: 'eslint "./src/**/*.{ts,tsx,.vue}"' // for example, lint .ts & .tsx
       }
     }),
-    Pages({ extensions: ['vue'] }),
+    Pages({
+      extensions: ['vue'],
+      pagesDir: [fileURLToPath(new URL('./src/ui/pages', import.meta.url))]
+    }),
     AutoImport({
       include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],
       imports: ['vue', '@vueuse/core', 'vue-router']

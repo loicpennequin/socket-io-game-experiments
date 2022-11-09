@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDebugStore } from '@/stores/debug';
+import { useDebugStore } from '@/ui/stores/debug';
 import { storeToRefs } from 'pinia';
 
 const { fpsAverage, ping } = storeToRefs(useDebugStore());

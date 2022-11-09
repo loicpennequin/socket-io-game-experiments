@@ -4,7 +4,7 @@ import {
   PlayerJob,
   TerrainType
 } from '@game/shared-domain';
-import type { StateMapCell } from '@/stores/gameState';
+import type { StateMapCell } from '../game/factories/gameState';
 
 export const ONE_FRAME = 1000 / 60;
 export const PROJECTILE_THROTTLE_RATE = 10;

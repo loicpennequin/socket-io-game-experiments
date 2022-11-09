@@ -1,14 +1,12 @@
-import { pushPop, circle } from '@/utils/canvas';
+import { pushPop, circle, createCanvas } from '@/utils/canvas';
 import {
   COLORS,
   ENTITY_STAT_BAR_HEIGHT,
-  ENTITY_STAT_BAR_OFFSET,
-  SPRITE_LOCATIONS
+  ENTITY_STAT_BAR_OFFSET
 } from '@/utils/constants';
-import type { GameState } from '@/stores/gameState';
+import type { GameState } from '../factories/gameState';
 import { socket } from '@/utils/socket';
 import {
-  EntityOrientation,
   isPlayerDto,
   type PlayerDto,
   type PlayerMeta
@@ -18,8 +16,9 @@ import {
   type Coordinates,
   type Dimensions
 } from '@game/shared-utils';
-import type { AssetMap } from '@/factories/assetMap';
+import type { AssetMap } from '../factories/assetMap';
 import { drawStatBar } from './drawStatBar';
+import { drawSprite } from './drawSprite';
 
 type DrawPlayersOptions = {
   ctx: CanvasRenderingContext2D;
@@ -131,22 +130,29 @@ export const drawPlayersSprites = (
       const { x, y, meta } = player;
 
       const { ctx, assetMap, size } = opts;
-      const isFlipped = meta.orientation === EntityOrientation.LEFT;
-      pushPop(ctx, () => {
-        // ctx.filter = 'saturate(200%)';
-        if (isFlipped) ctx.scale(-1, 1);
+      // pushPop(ctx, () => {
+      // ctx.filter = 'saturate(200%)';
 
-        ctx.drawImage(
-          assetMap.canvas,
-          ...assetMap.get(...SPRITE_LOCATIONS[meta.job]),
-          meta.orientation === EntityOrientation.LEFT
-            ? -1 * (x + size / 2)
-            : x - size / 2,
-          y - size / 2,
-          size,
-          size
-        );
+      drawSprite({
+        ctx,
+        assetMap,
+        size,
+        key: meta.job,
+        orientation: meta.orientation,
+        entity: player,
+        beforeDraw(sprite) {
+          if (player.stats.hp > 0) return;
+
+          const fx = createCanvas({ w: size, h: size });
+          fx.ctx.drawImage(sprite.canvas, 0, 0);
+          fx.ctx.globalCompositeOperation = 'multiply';
+          fx.ctx.fillStyle = 'rgba(255,0,0)';
+          fx.ctx.fillRect(0, 0, size, size);
+          sprite.ctx.globalCompositeOperation = 'source-in';
+          sprite.ctx.drawImage(fx.canvas, 0, 0);
+        }
       });
+
       drawPlayerName(ctx, { x, y, size, meta });
       drawPlayerStatBars(ctx, {
         ...player,
