@@ -1,5 +1,10 @@
 import { pushPop, circle } from '@/utils/canvas';
-import { COLORS, HEALTH_BAR_HEIGHT, SPRITE_LOCATIONS } from '@/utils/constants';
+import {
+  COLORS,
+  ENTITY_STAT_BAR_HEIGHT,
+  ENTITY_STAT_BAR_OFFSET,
+  SPRITE_LOCATIONS
+} from '@/utils/constants';
 import { getInterpolatedEntity, state } from '@/stores/gameState';
 import { socket } from '@/utils/socket';
 import {
@@ -14,6 +19,7 @@ import {
   type Dimensions
 } from '@game/shared-utils';
 import type { AssetMap } from '@/factories/assetMap';
+import { drawStatBar } from './drawStatBar';
 
 type DrawPlayersOptions = {
   ctx: CanvasRenderingContext2D;
@@ -74,35 +80,40 @@ const drawPlayerName = (
 
 const drawPlayerStatBars = (
   ctx: CanvasRenderingContext2D,
-  { x, y, size, stats }: PlayerDto & { size: number }
+  { x, y, size, stats, id }: PlayerDto & { size: number }
 ) => {
+  const defaults = {
+    ctx,
+    x: x - size / 2,
+    y: y - size / 2,
+    w: size,
+    h: ENTITY_STAT_BAR_HEIGHT
+  };
   pushPop(ctx, () => {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(
-      x - size / 2,
-      y - size / 2 - HEALTH_BAR_HEIGHT - 5,
-      size,
-      HEALTH_BAR_HEIGHT
-    );
-
-    const remainingWidth = (stats.hp * size) / stats.maxHp;
-    ctx.fillStyle = 'rgb(0,255,0)';
-    ctx.fillRect(
-      x - size / 2,
-      y - size / 2 - HEALTH_BAR_HEIGHT - 5,
-      remainingWidth,
-      HEALTH_BAR_HEIGHT
-    );
-    ctx.closePath();
-
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(
-      x - size / 2,
-      y - size / 2 - HEALTH_BAR_HEIGHT - 5,
-      size,
-      HEALTH_BAR_HEIGHT
-    );
+    if (id === socket.id) {
+      drawStatBar({
+        ...defaults,
+        y: defaults.y - ENTITY_STAT_BAR_OFFSET,
+        value: stats.mp,
+        maxValue: stats.maxMp,
+        color: COLORS.mpBar()
+      });
+      drawStatBar({
+        ...defaults,
+        y: defaults.y - ENTITY_STAT_BAR_OFFSET - ENTITY_STAT_BAR_HEIGHT,
+        value: stats.hp,
+        maxValue: stats.maxHp,
+        color: COLORS.hpBar()
+      });
+    } else {
+      drawStatBar({
+        ...defaults,
+        y: defaults.y - ENTITY_STAT_BAR_OFFSET,
+        value: stats.hp,
+        maxValue: stats.maxHp,
+        color: COLORS.hpBar()
+      });
+    }
   });
 };
 

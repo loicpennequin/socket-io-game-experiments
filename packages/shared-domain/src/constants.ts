@@ -4,7 +4,7 @@ export const TICK_RATE = 20;
 export const PING_INTERVAL = 1000;
 export const BOTS_COUNT = 10;
 
-export const GRID_SIZE = 500;
+export const GRID_SIZE = 250;
 export const CELL_SIZE = 32;
 
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;

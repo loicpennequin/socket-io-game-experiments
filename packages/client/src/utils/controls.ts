@@ -35,8 +35,8 @@ const directions: Directions = {
 const initKeyboardMovement = () => {
   const keyMap: Record<string, keyof typeof directions> = {
     [KeyboardControls.W]: 'up',
-    [KeyboardControls.A]: 'down',
-    [KeyboardControls.S]: 'left',
+    [KeyboardControls.S]: 'down',
+    [KeyboardControls.A]: 'left',
     [KeyboardControls.D]: 'right'
   };
 
@@ -58,7 +58,7 @@ const initKeyboardMovement = () => {
     if (!isMovement(e.code)) {
       return;
     }
-    directions[keyMap[e.code]] = true;
+    directions[keyMap[e.code]] = false;
 
     return socket.emit(PLAYER_ACTION, {
       type: PlayerAction.MOVE,
@@ -75,6 +75,7 @@ const initMouseMovement = (
   canvas.addEventListener(
     'click',
     throttle(() => {
+      console.log('click');
       socket.emit(PLAYER_ACTION, {
         type: PlayerAction.FIRE_PROJECTILE,
         meta: {
@@ -98,15 +99,18 @@ const initMouseMovement = (
       }
     });
   };
+
+  const stop = (e: MouseEvent) => {
+    if (e.button === MouseButton.RIGHT) {
+      canvas.removeEventListener('mousemove', emitPosition);
+      canvas.removeEventListener('mouseup', stop);
+    }
+  };
+
   canvas.addEventListener('mousedown', e => {
     if (e.button === MouseButton.RIGHT) {
       canvas.addEventListener('mousemove', emitPosition);
-    }
-  });
-
-  canvas.addEventListener('mouseup', e => {
-    if (e.button === MouseButton.RIGHT) {
-      canvas.removeEventListener('mousemove', emitPosition);
+      canvas.addEventListener('mouseup', stop);
     }
   });
 
