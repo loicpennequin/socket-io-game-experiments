@@ -9,12 +9,6 @@ const server = http.createServer(app);
 const world = createGameWorld({ map: createGameMap() });
 const gameServer = createGameServer(server, world);
 
-app.get('*', (req, res, next) => {
-  console.log(req.url);
-
-  next();
-});
-
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('public'));
 }
