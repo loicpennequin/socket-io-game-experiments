@@ -4,6 +4,7 @@ import type { Nullable } from '@game/shared-utils';
 import DebugInfos from '@/ui/components/DebugInfos.vue';
 import { useGame } from '@/ui/composables/useGame';
 import { socket } from '@/utils/socket';
+import Minimap from '../components/Minimap.vue';
 
 const router = useRouter();
 
@@ -63,10 +64,9 @@ onUnmounted(stop);
     <DebugInfos />
     <div ref="gameContainer" class="game" />
 
-    <div class="minimap">
+    <Minimap class="minimap">
       <div ref="minimapContainer" />
-      <router-link to="/" draggable="false">Quit</router-link>
-    </div>
+    </Minimap>
   </div>
 </template>
 
@@ -128,16 +128,6 @@ onUnmounted(stop);
   z-index: 2;
   top: 0;
   right: 0;
-}
-.minimap:deep(canvas) {
-  border: solid 1px white;
-}
-.minimap a {
-  float: right;
-  margin: 0.5rem;
-}
-.minimap a:hover {
-  text-decoration: underline;
 }
 </style>
 

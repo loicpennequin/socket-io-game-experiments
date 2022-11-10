@@ -75,7 +75,7 @@ export const drawDetailedCell = ({ ctx, cell }: DrawCellOptions) => {
   );
 
   if (!isIOSSafari()) {
-    ctx.strokeStyle = 'rgba(0,0,0,5)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
     ctx.lineWidth = 2;
     ctx.strokeRect(
       cell.x * MAP_SCALE,

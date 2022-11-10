@@ -242,7 +242,6 @@ const createCameraControls = (
         stopManualCamera();
         camera.toggleMode();
         if (camera.mode === CameraMode.MANUAL) {
-          console.log('add listener');
           canvas.addEventListener('mousemove', updateDirections);
         } else {
           canvas.removeEventListener('mousemove', updateDirections);
