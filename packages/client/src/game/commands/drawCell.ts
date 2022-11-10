@@ -93,5 +93,5 @@ export const drawSimpleCell = ({ ctx, cell }: DrawCellOptions) => {
     ...cell,
     lightness: DEFAULT_TERRAIN_LIGHTNESS[cell.type]
   });
-  ctx.fillRect(cell.x, cell.y, 1, 1);
+  ctx.fillRect(cell.x * MAP_SCALE, cell.y * MAP_SCALE, MAP_SCALE, MAP_SCALE);
 };

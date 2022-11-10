@@ -26,7 +26,7 @@ export class GameServer {
   constructor(private server: http.Server, private world: GameWorld) {
     this.io = new Server(server, {
       cors: {
-        origin: '*',
+        origin: process.env.SERVER_URL || '*',
         methods: ['GET', 'POST']
       }
     });
