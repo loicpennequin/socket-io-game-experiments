@@ -8,7 +8,7 @@ import {
 } from '@game/shared-utils';
 import {
   CAMERA_SPEED,
-  MANUAL_CAMERA_BOUNDARIES,
+  MANUAL_CAMERA_EDGE_SIZE,
   PROJECTILE_THROTTLE_RATE
 } from '../../utils/constants';
 import { socket } from '../../utils/socket';
@@ -20,7 +20,6 @@ import {
 } from '@game/shared-domain';
 import type { Camera } from '@/game/factories/camera';
 import { useKeydownOnce } from '../../utils/helpers';
-import type { GameState } from '@/game/factories/gameState';
 import Hammer from 'hammerjs';
 import { KeyboardControls, MouseButton, CameraMode } from '../../utils/enums';
 
@@ -183,80 +182,99 @@ const createTouchControls = (canvas: HTMLCanvasElement, camera: Camera) => {
 const createCameraControls = (
   canvas: HTMLCanvasElement,
   camera: Camera,
-  mousePosition: Coordinates,
-  state: GameState
+  mousePosition: Coordinates
 ) => {
+  let manualCameraRafId: Nullable<number> = null;
+  const manualCameraDirection = {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+  };
+
+  const updateDirections = () => {
+    manualCameraDirection.up = pointRectCollision(mousePosition, {
+      x: 0,
+      y: 0,
+      w: canvas.width,
+      h: MANUAL_CAMERA_EDGE_SIZE
+    });
+    manualCameraDirection.down = pointRectCollision(mousePosition, {
+      x: 0,
+      y: canvas.height - MANUAL_CAMERA_EDGE_SIZE,
+      w: canvas.width,
+      h: canvas.height
+    });
+    manualCameraDirection.left = pointRectCollision(mousePosition, {
+      x: 0,
+      y: 0,
+      w: MANUAL_CAMERA_EDGE_SIZE,
+      h: canvas.height
+    });
+    manualCameraDirection.right = pointRectCollision(mousePosition, {
+      x: canvas.width - MANUAL_CAMERA_EDGE_SIZE,
+      y: 0,
+      w: canvas.width,
+      h: canvas.height
+    });
+    if (Object.values(manualCameraDirection).some(Boolean)) {
+      if (!manualCameraRafId) {
+        manualCameraRafId = requestAnimationFrame(setManualCameraPosition);
+      }
+    } else {
+      stopManualCamera();
+    }
+  };
+
+  const stopManualCamera = () => {
+    if (manualCameraRafId) {
+      cancelAnimationFrame(manualCameraRafId);
+      manualCameraRafId = null;
+    }
+  };
+
   document.addEventListener('keydown', e => {
     switch (e.code as KeyboardControls) {
       case KeyboardControls.Space:
+        stopManualCamera();
         return camera.setMode(CameraMode.AUTO);
       case KeyboardControls.Y:
-        state.isCameraLocked = !state.isCameraLocked;
-        if (state.isCameraLocked) {
-          camera.setMode(CameraMode.AUTO);
+        stopManualCamera();
+        camera.toggleMode();
+        if (camera.mode === CameraMode.MANUAL) {
+          console.log('add listener');
+          canvas.addEventListener('mousemove', updateDirections);
+        } else {
+          canvas.removeEventListener('mousemove', updateDirections);
         }
     }
   });
 
-  let manualCameraRafId: Nullable<number> = null;
-  let manualCameraDiff = { x: 0, y: 0 };
-
   const setManualCameraPosition = () => {
+    if (!manualCameraRafId) return;
+    const diff = { x: 0, y: 0 };
+    if (manualCameraDirection.up) diff.y -= CAMERA_SPEED;
+    if (manualCameraDirection.down) diff.y += CAMERA_SPEED;
+    if (manualCameraDirection.left) diff.x -= CAMERA_SPEED;
+    if (manualCameraDirection.right) diff.x += CAMERA_SPEED;
+
     camera.setPosition(
-      clampVector(addVector(camera, manualCameraDiff), {
+      clampVector(addVector({ x: camera.x, y: camera.y }, diff), {
         min: { x: 0, y: 0 },
         max: { x: MAP_SIZE - camera.w, y: MAP_SIZE - camera.h }
       })
     );
-    requestAnimationFrame(setManualCameraPosition);
+    manualCameraRafId = requestAnimationFrame(setManualCameraPosition);
   };
-
-  canvas.addEventListener('mousemove', () => {
-    if (state.isCameraLocked) return;
-
-    const edges = {
-      top: { x: 0, y: 0, w: canvas.width, h: MANUAL_CAMERA_BOUNDARIES },
-      // prettier-ignore
-      bottom: { x: 0, y: canvas.height - MANUAL_CAMERA_BOUNDARIES, w: canvas.width, h: canvas.height},
-      left: { x: 0, y: 0, w: MANUAL_CAMERA_BOUNDARIES, h: canvas.height },
-      // prettier-ignore
-      right: { x: canvas.width - MANUAL_CAMERA_BOUNDARIES, y: 0, w: canvas.width, h: canvas.height}
-    };
-    manualCameraDiff = { x: 0, y: 0 };
-    if (pointRectCollision(mousePosition, edges.top)) {
-      manualCameraDiff.y -= CAMERA_SPEED;
-    }
-    if (pointRectCollision(mousePosition, edges.bottom)) {
-      manualCameraDiff.y += CAMERA_SPEED;
-    }
-    if (pointRectCollision(mousePosition, edges.left)) {
-      manualCameraDiff.x -= CAMERA_SPEED;
-    }
-    if (pointRectCollision(mousePosition, edges.right)) {
-      manualCameraDiff.x += CAMERA_SPEED;
-    }
-
-    if (!manualCameraDiff.x && !manualCameraDiff.y && manualCameraRafId) {
-      cancelAnimationFrame(manualCameraRafId);
-      manualCameraRafId = null;
-      return;
-    }
-
-    if (!manualCameraRafId) {
-      camera.setMode(CameraMode.MANUAL);
-      manualCameraRafId = requestAnimationFrame(setManualCameraPosition);
-    }
-  });
 };
+
 type InitControlsOptions = {
-  state: GameState;
   canvas: HTMLCanvasElement;
   camera: Camera;
   mousePosition: Coordinates;
 };
 
 export const createControls = ({
-  state,
   canvas,
   camera,
   mousePosition
@@ -264,5 +282,5 @@ export const createControls = ({
   createKeyboardMovement();
   createMouseControls(canvas, camera, mousePosition);
   createTouchControls(canvas, camera);
-  createCameraControls(canvas, camera, mousePosition, state);
+  createCameraControls(canvas, camera, mousePosition);
 };

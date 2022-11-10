@@ -113,9 +113,9 @@ export const createGameRenderer = ({
     },
 
     async onStart(renderContext) {
-      const { canvas, state } = renderContext;
+      const { canvas } = renderContext;
       mousePosition = trackMousePosition(canvas);
-      createControls({ canvas, camera, mousePosition, state });
+      createControls({ canvas, camera, mousePosition });
 
       camera.setTarget(socket.id);
       camera.setCanvas(canvas);

@@ -26,7 +26,6 @@ export type GameState = Omit<GameStateDto, 'discoveredCells'> & {
   };
   entitiesById: Record<string, EntityDto>;
   interpolatedEntities: Record<string, EntityDto>;
-  isCameraLocked: boolean;
 };
 
 export const getCellKey = (cell: Coordinates) => `${cell.x}.${cell.y}`;
@@ -39,7 +38,6 @@ const createEmptyState = (): GameState => ({
   entities: [],
   entitiesById: {},
   timestamp: performance.now(),
-  isCameraLocked: true,
   interpolatedEntities: {}
 });
 

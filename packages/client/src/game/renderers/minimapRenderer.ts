@@ -90,10 +90,9 @@ export const createMinimapRenderer = ({
         ctx.strokeRect(camera.x, camera.y, camera.w, camera.h);
       });
     },
-    onStart({ canvas, state }) {
+    onStart({ canvas }) {
       const mousePosition = trackMousePosition(canvas);
       canvas.addEventListener('click', () => {
-        state.isCameraLocked = false;
         camera.setMode(CameraMode.MANUAL);
         camera.setPosition({
           x: (mousePosition.x * MAP_SIZE) / MINIMAP_SIZE,

@@ -28,8 +28,13 @@ export const createCamera = ({ x, y, w, h, state }: CreateCameraOptions) => {
     get mode() {
       return mode;
     },
+
     setMode(newMode: CameraMode) {
       mode = newMode;
+    },
+
+    toggleMode() {
+      mode = mode === CameraMode.MANUAL ? CameraMode.AUTO : CameraMode.MANUAL;
     },
 
     setCanvas(can: HTMLCanvasElement) {
