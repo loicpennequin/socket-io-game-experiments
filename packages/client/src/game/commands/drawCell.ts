@@ -1,6 +1,10 @@
 import type { StateMapCell } from '../factories/gameState';
-import { COLORS, DEFAULT_TERRAIN_LIGHTNESS } from '@/utils/constants';
-import { CELL_SIZE } from '@game/shared-domain';
+import {
+  COLORS,
+  DEFAULT_TERRAIN_LIGHTNESS,
+  MAP_SCALE
+} from '@/utils/constants';
+import { isIOSSafari } from '@/utils/helpers';
 
 type DrawCellOptions = {
   ctx: CanvasRenderingContext2D;
@@ -10,7 +14,7 @@ type DrawCellOptions = {
 const cellsMap = new Map<StateMapCell, [number, number, number, number]>();
 
 export const drawDetailedCell = ({ ctx, cell }: DrawCellOptions) => {
-  ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  ctx.clearRect(cell.x * MAP_SCALE, cell.y * MAP_SCALE, MAP_SCALE, MAP_SCALE);
   let lightnesses = cellsMap.get(cell);
 
   if (!lightnesses) {
@@ -25,10 +29,10 @@ export const drawDetailedCell = ({ ctx, cell }: DrawCellOptions) => {
   }
   ctx.fillStyle = COLORS.mapCell(cell);
   const baseCords = {
-    x: cell.x * CELL_SIZE,
-    y: cell.y * CELL_SIZE,
-    w: CELL_SIZE / 2,
-    h: CELL_SIZE / 2
+    x: cell.x * MAP_SCALE,
+    y: cell.y * MAP_SCALE,
+    w: MAP_SCALE / 2,
+    h: MAP_SCALE / 2
   };
 
   ctx.fillStyle = COLORS.mapCell({
@@ -70,17 +74,24 @@ export const drawDetailedCell = ({ ctx, cell }: DrawCellOptions) => {
     baseCords.h
   );
 
-  ctx.strokeStyle = 'rgba(0,0,0,5)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  if (!isIOSSafari()) {
+    ctx.strokeStyle = 'rgba(0,0,0,5)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(
+      cell.x * MAP_SCALE,
+      cell.y * MAP_SCALE,
+      MAP_SCALE,
+      MAP_SCALE
+    );
+  }
 };
 
 export const drawSimpleCell = ({ ctx, cell }: DrawCellOptions) => {
-  ctx.clearRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  ctx.clearRect(cell.x, cell.y, 1, 1);
 
   ctx.fillStyle = COLORS.mapCell({
     ...cell,
     lightness: DEFAULT_TERRAIN_LIGHTNESS[cell.type]
   });
-  ctx.fillRect(cell.x * CELL_SIZE, cell.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  ctx.fillRect(cell.x, cell.y, 1, 1);
 };

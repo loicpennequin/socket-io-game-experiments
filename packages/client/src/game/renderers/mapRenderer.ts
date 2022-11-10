@@ -1,6 +1,6 @@
-import { MAP_SIZE } from '@game/shared-domain';
+import { CELL_SIZE, MAP_SIZE } from '@game/shared-domain';
 import { createRenderer } from '../factories/renderer';
-import { MAP_CELL_OPACITY_STEP, ONE_FRAME } from '@/utils/constants';
+import { MAP_CELL_OPACITY_STEP, MAP_SCALE, ONE_FRAME } from '@/utils/constants';
 import {
   debounce,
   type Coordinates,
@@ -23,6 +23,8 @@ export const createMapRenderer = ({
   mode,
   state
 }: CreateMapCacheRendererOptions) => {
+  const scale = CELL_SIZE / MAP_SCALE;
+
   const drawMethods = {
     [MapRenderMode.SIMPLE]: drawSimpleCell,
     [MapRenderMode.DETAILED]: drawDetailedCell
@@ -56,7 +58,7 @@ export const createMapRenderer = ({
       };
       window.addEventListener('resize', debounce(redrawMap, ONE_FRAME), false);
     },
-    getDimensions: () => ({ w: MAP_SIZE, h: MAP_SIZE })
+    getDimensions: () => ({ w: MAP_SIZE / scale, h: MAP_SIZE / scale })
   });
 
   return {
@@ -64,10 +66,10 @@ export const createMapRenderer = ({
     draw(ctx: CanvasRenderingContext2D, camera: Coordinates & Dimensions) {
       ctx.drawImage(
         renderer.canvas,
-        camera.x,
-        camera.y,
-        camera.w,
-        camera.h,
+        camera.x / scale,
+        camera.y / scale,
+        camera.w / scale,
+        camera.h / scale,
         camera.x,
         camera.y,
         camera.w,
