@@ -14,6 +14,7 @@ tsc-dist
 dist-ssr
 coverage
 *.local
+src/generated
 
 /cypress/videos/
 /cypress/screenshots/

@@ -1,8 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import IconHelp from '~icons/mdi/help';
+import IconLogout from '~icons/mdi/logout';
+import IconMouseLeft from '~icons/game/mouse-left';
+import IconMouseRight from '~icons/game/mouse-right';
+
+const areControlsDisplayed = ref(false);
+</script>
 
 <template>
   <div class="minimap">
-    <ul class="controls">
+    <ul class="controls" v-show="areControlsDisplayed">
       <li>
         <span class="movement-controls-grid">
           <div class="key">W</div>
@@ -11,42 +18,13 @@
           <div class="key">D</div>
         </span>
         or
-        <svg
-          class="mouse"
-          aria-hidden="true"
-          role="img"
-          preserveAspectRatio="xMidYMid meet"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke="currentColor"
-            d="M13 2v8h6V8c0-3.309-2.691-6-6-6zM5 16c0 3.309 2.691 6 6 6h2c3.309 0 6-2.691 6-6v-4H5v4zm0-8v2h6V2C7.691 2 5 4.691 5 8z"
-          />
-          <path
-            fill="currentColor"
-            d="M 13 2 v 8 h 6 V 8 c 0 -3.309 -2.691 -6 -6 -6 z M 5 16 H 5 z z"
-          />
-        </svg>
+        <IconMouseRight class="mouse" aria-hidden="true" role="img" />
+
         Move
       </li>
 
       <li>
-        <svg
-          class="mouse"
-          aria-hidden="true"
-          role="img"
-          preserveAspectRatio="xMidYMid meet"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke="currentColor"
-            d="M13 2v8h6V8c0-3.309-2.691-6-6-6zM5 16c0 3.309 2.691 6 6 6h2c3.309 0 6-2.691 6-6v-4H5v4zm0-8v2h6V2C7.691 2 5 4.691 5 8z"
-          />
-          <path
-            fill="currentColor"
-            d="M 13 2 z M 5 16 z m 0 -8 v 2 h 6 V 2 C 7.691 2 5 4.691 5 8 z"
-          />
-        </svg>
+        <IconMouseLeft class="mouse" aria-hidden="true" role="img" />
         Shoot
       </li>
 
@@ -60,8 +38,25 @@
         Center camera
       </li>
     </ul>
-    <slot />
-    <router-link to="/" draggable="false">Quit</router-link>
+    <div class="canvas">
+      <slot />
+    </div>
+    <ul class="options">
+      <li>
+        <button
+          title="show controls"
+          @click="areControlsDisplayed = !areControlsDisplayed"
+        >
+          <IconHelp />
+        </button>
+      </li>
+      <li>
+        <router-link to="/" draggable="false">
+          <IconLogout />
+          <span class="sr-only">Quit</span>
+        </router-link>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -69,20 +64,19 @@
 .minimap {
   display: grid;
   grid-auto-columns: auto;
-  gap: 0.5rem;
-  pointer-events: none;
+  column-gap: 0.5rem;
 }
 
 .minimap:deep(canvas) {
   border: solid 1px white;
 }
-.minimap a {
-  grid-column: span 2;
-  text-align: right;
-  margin: 0.5rem;
-}
+
 .minimap a:hover {
   text-decoration: underline;
+}
+
+.canvas {
+  grid-column: 2;
 }
 
 .controls {
@@ -119,7 +113,7 @@
 .key {
   display: grid;
   place-content: center;
-  width: 2rem;
+  width: 1.8rem;
   aspect-ratio: 1;
   color: #333;
   border: solid 1px #f2f2f2;
@@ -135,17 +129,30 @@
 }
 
 .mouse {
-  width: 2rem;
+  font-size: 2rem;
   aspect-ratio: 1;
   fill: transparent;
 }
 
-@media screen and (max-width: 48rem) {
-  .minimap {
-    gap: 0;
-  }
-  .controls {
-    display: none;
-  }
+.options {
+  grid-column: span 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1.2em;
+}
+
+.options > li > * {
+  background: black;
+  border-radius: 50%;
+  overflow: hidden;
+  aspect-ratio: 1;
+  padding: 0.25rem;
+  display: block;
+  cursor: pointer;
+}
+.options > li > *:hover {
+  background-color: var(--color-primary);
 }
 </style>

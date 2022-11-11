@@ -8,6 +8,7 @@
     "lib": ["ES2019", "DOM", "DOM.Iterable"],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["unplugin-icons/types/vue"]
   }
 }
