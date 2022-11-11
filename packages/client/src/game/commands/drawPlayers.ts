@@ -179,16 +179,18 @@ export const drawPlayersSprites = (
             },
             duration: 400,
             postRender(sprite, elapsed) {
-              const fx = createCanvas({ w: size, h: size });
-              fx.ctx.globalAlpha = elapsed % 100;
-              fx.ctx.drawImage(sprite.canvas, 0, 0);
-              sprite.ctx.clearRect(
+              const blood = assetMap.get('BLOOD');
+              sprite.ctx.drawImage(
+                blood!,
+                Math.floor((elapsed * 7) / 400) * 24,
                 0,
-                0,
-                sprite.canvas.width,
-                sprite.canvas.height
+                24,
+                24,
+                size / 4,
+                size / 4,
+                48,
+                48
               );
-              sprite.ctx.drawImage(fx.canvas, 0, 0);
             },
             postDraw(_, elapsed, fx) {
               pushPop(ctx, () => {

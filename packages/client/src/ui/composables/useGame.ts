@@ -1,5 +1,4 @@
-import humanoidsUrl from '@/assets/humanoids.png';
-import magicalUrl from '@/assets/magical.png';
+import sprites from '@/assets/sprites/sprites';
 import { createGameRenderer } from '../../game/renderers/gameRenderer';
 import { socket } from '@/utils/socket';
 import type { Renderer } from '../../game/factories/renderer';
@@ -35,12 +34,12 @@ export const useGame = (
     minimapContainer.innerHTML = '';
 
     const assetPromise = Promise.all(
-      [humanoidsUrl, magicalUrl].map(
-        url =>
-          new Promise<HTMLImageElement>(resolve => {
+      Object.entries(sprites).map(
+        ([key, { src }]) =>
+          new Promise<[string, HTMLImageElement]>(resolve => {
             const image = new Image();
-            image.src = url;
-            image.addEventListener('load', () => resolve(image));
+            image.src = src;
+            image.addEventListener('load', () => resolve([key, image]));
           })
       )
     );
@@ -56,7 +55,7 @@ export const useGame = (
     return Promise.all([assetPromise, socketPromise]).then(([assets]) => {
       gameRenderer = createGameRenderer({
         id: 'game',
-        assets,
+        assetMap: new Map(assets),
         state,
         getDimensions: () => {
           const { width, height } = gameContainer.getBoundingClientRect();

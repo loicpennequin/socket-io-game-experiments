@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { JoinGamePayload, PlayerJob } from '@game/shared-domain';
 import type { Nullable } from '@game/shared-utils';
-import DebugInfos from '@/ui/components/DebugInfos.vue';
+// import DebugInfos from '@/ui/components/DebugInfos.vue';
 import { useGame } from '@/ui/composables/useGame';
 import { socket } from '@/utils/socket';
 import Minimap from '../components/Minimap.vue';
@@ -51,7 +51,6 @@ onMounted(async () => {
   isLoading.value = false;
 
   socket.on('disconnect', reason => {
-    console.log(reason);
     isDisconnectedModalDisplayed.value = true;
     stop();
   });
@@ -76,7 +75,7 @@ onUnmounted(stop);
       </div>
     </transition>
 
-    <DebugInfos />
+    <!-- <DebugInfos /> -->
     <div ref="gameContainer" class="game" />
 
     <Minimap class="minimap">
@@ -168,6 +167,14 @@ onUnmounted(stop);
   text-align: center;
   font-weight: bold;
   cursor: pointer;
+}
+
+.game-over a:hover {
+  background: var(--color-primary-hover);
+}
+
+.game-over a:focus {
+  background: var(--color-primary-focus);
 }
 
 .game-over.v-enter-active,

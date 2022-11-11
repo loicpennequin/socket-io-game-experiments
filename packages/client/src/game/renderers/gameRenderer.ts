@@ -13,12 +13,13 @@ import { trackMousePosition } from '@/utils/mouseTracker';
 import { createMapRenderer } from './mapRenderer';
 import { createDebugRenderer } from './debugRenderer';
 import { createMinimapRenderer } from './minimapRenderer';
-import { createAssetMap } from '../factories/assetMap';
+// import { createAssetMap } from '../factories/assetMap';
 import { MapRenderMode } from '@/utils/enums';
+import type { AssetMap } from '../factories/assetMap';
 
 export type CreateGameRendererOptions = {
   id: string;
-  assets: HTMLImageElement[];
+  assetMap: AssetMap;
   getDimensions: () => Dimensions;
   state: GameState;
   onStart?: (ctx: RenderContext) => void;
@@ -34,7 +35,7 @@ export type DataUrl = string;
 
 export const createGameRenderer = ({
   id,
-  assets,
+  assetMap,
   getDimensions,
   onStart,
   state
@@ -48,7 +49,7 @@ export const createGameRenderer = ({
   });
 
   let mousePosition: Coordinates;
-  const assetMap = createAssetMap(assets, { baseSize: 32, gap: 4 });
+  // const assetMap = createAssetMap(assets, { baseSize: 32, gap: 4 });
 
   return createRenderer({
     id,
@@ -94,7 +95,7 @@ export const createGameRenderer = ({
           h: camera.h
         });
 
-        drawProjectiles({ ctx, size: PROJECTILE_SIZE, state });
+        drawProjectiles({ ctx, size: PROJECTILE_SIZE, state, assetMap });
         drawPlayersSprites({
           ctx,
           size: PLAYER_SIZE,

@@ -34,7 +34,7 @@ export type PlayerDto = Override<
   { meta: PlayerMeta; stats: CreatureStats }
 >;
 
-export type ProjectileDto = EntityDto;
+export type ProjectileDto = Override<EntityDto, { angle: number }>;
 
 export type GameStateDto = {
   entities: EntityDto[];

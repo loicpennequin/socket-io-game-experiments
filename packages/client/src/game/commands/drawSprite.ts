@@ -1,7 +1,6 @@
 import { EntityOrientation, type EntityDto } from '@game/shared-domain';
 import { isDefined, uniqBy, type Override } from '@game/shared-utils';
 import { createCanvas, pushPop } from '@/utils/canvas';
-import { SPRITE_LOCATIONS } from '@/utils/constants';
 import type { AssetMap } from '../factories/assetMap';
 
 export type SpriteDrawFunction = (
@@ -101,14 +100,7 @@ export const drawSprite = ({
     fx.preRender?.(sprite, now - fx.insertedAt, fx);
   });
 
-  sprite.ctx.drawImage(
-    assetMap.canvas,
-    ...assetMap.get(...SPRITE_LOCATIONS[key]),
-    0,
-    0,
-    size,
-    size
-  );
+  sprite.ctx.drawImage(assetMap.get(key)!, 0, 0, size, size);
 
   sprite.effects.forEach(fx => {
     pushPop(sprite.ctx, () => fx.postRender?.(sprite, now - fx.insertedAt, fx));
@@ -135,6 +127,6 @@ export const drawSprite = ({
   });
 
   sprite.effects.forEach(fx => {
-    pushPop(sprite.ctx, () => fx.postDraw?.(sprite, now - fx.insertedAt, fx));
+    fx.postDraw?.(sprite, now - fx.insertedAt, fx);
   });
 };

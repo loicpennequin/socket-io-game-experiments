@@ -38,4 +38,5 @@ export const createAssetMap = (
   };
 };
 
-export type AssetMap = ReturnType<typeof createAssetMap>;
+export type AssetMap = Map<string, HTMLImageElement>;
+// export type AssetMap = ReturnType<typeof createAssetMap>;

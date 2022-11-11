@@ -1,4 +1,4 @@
-import { PROJECTILE_LIFESPAN } from '@game/shared-domain';
+import { ProjectileDto, PROJECTILE_LIFESPAN } from '@game/shared-domain';
 import { mixinBuilder, rectRectCollision } from '@game/shared-utils';
 import {
   AttackableEvents,
@@ -53,5 +53,14 @@ export class Projectile extends mixins.build() {
     if (this.lifeSpan <= 0) {
       this.destroy();
     }
+  }
+
+  toDto(): ProjectileDto {
+    const dto = super.toDto();
+
+    return {
+      ...dto,
+      angle: this.angle || 0
+    };
   }
 }

@@ -1,8 +1,7 @@
-import { MAP_SIZE, PLAYER_SIZE, PROJECTILE_SIZE } from '@game/shared-domain';
+import { MAP_SIZE, PLAYER_SIZE } from '@game/shared-domain';
 import { createFogOfWarRenderer } from './fogOfWarRenderer';
 import { createRenderer } from '../factories/renderer';
 import { drawPlayersCircles } from '../commands/drawPlayers';
-import { drawProjectiles } from '../commands/drawProjectiles';
 import { pushPop } from '../../utils/canvas';
 import {
   COLORS,
@@ -67,7 +66,6 @@ export const createMinimapRenderer = ({
           h: mapRenderer.canvas.height
         });
 
-        drawProjectiles({ ctx, size: PROJECTILE_SIZE, state });
         drawPlayersCircles({
           ctx,
           size: PLAYER_SIZE * MINIMAP_ENTITY_SCALE,
