@@ -50,15 +50,4 @@ export class Projectile extends mixins.build() {
       this.destroy();
     }
   }
-
-  toDto(): ProjectileDto {
-    return {
-      ...this.position,
-      id: this.id,
-      type: this.type,
-      parent: this.parent?.id ?? null,
-      children: [...this.children.values()].map(child => child.id),
-      meta: this.meta
-    };
-  }
 }

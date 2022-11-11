@@ -33,6 +33,7 @@ export class GameWorld extends mixins.build() {
 
   tick() {
     this.actionsQueue.process();
+    this.entities.forEach(entity => entity.clearTrggeredBehaviors());
     this.entities.forEach(entity => {
       entity.update();
     });

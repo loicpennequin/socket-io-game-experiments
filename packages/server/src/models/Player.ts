@@ -38,14 +38,12 @@ export class Player extends mixins.build() {
   }
 
   toDto(): PlayerDto {
+    const { meta, ...dto } = super.toDto();
+
     return {
-      ...this.position,
-      id: this.id,
-      type: this.type,
-      parent: this.parent?.id ?? null,
-      children: [...this.children.values()].map(child => child.id),
-      stats: this.stats,
-      meta: this.meta
+      ...dto,
+      meta: meta as PlayerMeta,
+      stats: this.stats
     };
   }
 }

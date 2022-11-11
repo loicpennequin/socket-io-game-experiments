@@ -1,7 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { EntityDto, EntityType, FieldOfView } from '@game/shared-domain';
 import {
-  AnyConstructor,
   AnyObject,
   Constructor,
   Coordinates,
@@ -83,8 +82,15 @@ export class Entity extends mixins.build() {
     return this.gridItem.dimensions;
   }
 
-  toDto() {
-    console.warn(`.toDto() method not implemented on entity type ${this.type}`);
-    return undefined as unknown as EntityDto;
+  toDto(): EntityDto {
+    return {
+      ...this.position,
+      id: this.id,
+      type: this.type,
+      parent: this.parent?.id ?? null,
+      children: [...this.children.values()].map(child => child.id),
+      meta: this.meta,
+      triggeredBehaviors: this.triggeredBehaviors
+    };
   }
 }

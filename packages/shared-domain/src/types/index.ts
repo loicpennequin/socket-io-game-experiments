@@ -1,5 +1,7 @@
-import type { Coordinates } from '@game/shared-utils';
+import type { AnyObject, Coordinates } from '@game/shared-utils';
 import type { TerrainType } from '../enums';
+
+export type TriggeredBehaviors = { key: string; meta: AnyObject }[];
 
 export type GameMapCellDto = Coordinates & {
   type: TerrainType;

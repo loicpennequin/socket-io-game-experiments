@@ -1,24 +1,40 @@
-import { Emittable } from './withEmitter';
+import { TriggeredBehaviors } from '@game/shared-domain';
+import { AnyConstructor, AnyObject } from '@game/shared-utils';
+import { EventMap } from 'typed-emitter';
 
-export const withBehaviors = <TBase extends Emittable>(Base: TBase) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
+export interface BehaviorKey<T extends EventMap = Record<string, () => void>>
+  extends Symbol {}
+
+export const withBehaviors = <TBase extends AnyConstructor>(Base: TBase) => {
   return class Behaviorable extends Base {
-    private behaviors = new Map<string, string[]>();
+    private behaviors = new Map<BehaviorKey, EventMap>();
+    triggeredBehaviors: TriggeredBehaviors = [];
 
-    hasBehavior(name: string) {
-      return this.behaviors.has(name);
+    clearTrggeredBehaviors() {
+      this.triggeredBehaviors = [];
     }
 
-    addBehavior(name: string, events: string[]) {
-      return this.behaviors.set(name, events);
+    hasBehavior(key: BehaviorKey) {
+      return this.behaviors.has(key);
     }
 
-    removeBehavior(name: string) {
-      return this.behaviors.delete(name);
+    addBehavior<T extends EventMap>(key: BehaviorKey<T>, events: T) {
+      return this.behaviors.set(key, events);
     }
 
-    triggerBehavior(name: string, event: string, payload: any) {
-      if (!this.hasBehavior(name)) return;
-      this.emitter.emit(event, payload);
+    removeBehavior(key: BehaviorKey) {
+      return this.behaviors.delete(key);
+    }
+
+    triggerBehavior<T extends EventMap, E extends keyof T>(
+      key: BehaviorKey<T>,
+      event: E,
+      ...payload: Parameters<T[E]>
+    ) {
+      if (!this.hasBehavior(key)) return;
+
+      this.behaviors.get(key)?.[event as string](...payload);
     }
   };
 };

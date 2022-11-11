@@ -21,6 +21,7 @@ export type EntityDto = Coordinates & {
   parent: Nullable<string>;
   children: string[];
   meta: AnyObject;
+  triggeredBehaviors: { key: string; meta: AnyObject }[];
 };
 
 export type PlayerMeta = {

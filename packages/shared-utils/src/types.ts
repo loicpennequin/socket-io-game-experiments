@@ -14,6 +14,10 @@ export type AnyObject = { [key: string]: any };
 export type AnyFunction = (...args: any[]) => any;
 export type Values<T> = T[keyof T];
 export type Override<A, B> = Omit<A, keyof B> & B;
+export type Mutable<Type> = {
+  -readonly [Key in keyof Type]: Type[Key];
+};
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Constructor<T = {}> = new (...args: any[]) => T;
 

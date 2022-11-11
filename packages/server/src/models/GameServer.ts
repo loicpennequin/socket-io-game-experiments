@@ -19,6 +19,7 @@ import { PORT } from '../constants';
 import { v4 as uuid } from 'uuid';
 import randomNames from 'random-name';
 import { Nullable } from '@game/shared-utils';
+import { SHOOTER_BEHAVIOR } from '../mixins/withShooting';
 
 export class GameServer {
   private io: Server<ClientToServerEvents, ServerToClientEvents>;
@@ -116,7 +117,11 @@ export class GameServer {
             );
           case PlayerAction.FIRE_PROJECTILE:
             return this.world.scheduleAction(() =>
-              player.shootProjectile(action.meta.target)
+              player.triggerBehavior(
+                SHOOTER_BEHAVIOR,
+                'shoot',
+                action.meta.target
+              )
             );
         }
       });
