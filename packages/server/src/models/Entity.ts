@@ -72,6 +72,11 @@ export class Entity extends mixins.build() {
       },
       { id }
     );
+
+    this.on('destroy', () => {
+      console.log('entity is destroyed');
+      world.map.grid.remove(this.gridItem);
+    });
   }
 
   get position() {

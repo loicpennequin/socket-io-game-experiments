@@ -5,7 +5,7 @@ export const PING_INTERVAL = 1000;
 export const BOTS_COUNT = 0;
 export const IDLE_DISCONNECT_TIMEOUT = 1000 * 60 * 10;
 
-export const GRID_SIZE = 150;
+export const GRID_SIZE = 30;
 export const CELL_SIZE = 32;
 
 export const MAP_SIZE = GRID_SIZE * CELL_SIZE;

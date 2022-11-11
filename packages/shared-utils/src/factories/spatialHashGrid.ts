@@ -1,5 +1,9 @@
 import { sat } from '../math';
-import { pointCircleCollision, pointRectCollision } from '../collision';
+import {
+  pointCircleCollision,
+  pointRectCollision,
+  rectRectCollision
+} from '../collision';
 import { createMatrix } from '../helpers';
 import type {
   SpatialObject,
@@ -126,14 +130,22 @@ export const createSpatialHashGrid = <TMeta = unknown>({
 
     for (let x = min.x; x <= max.x; ++x) {
       for (let y = min.y; y <= max.y; ++y) {
-        const cell = cells[x][y];
-        cell?.items.forEach(item => {
-          const isWithinBounds = pointRectCollision(item.position, {
-            x: position.x - bounds.w / 2,
-            y: position.y - bounds.h / 2,
-            ...bounds
-          });
+        const cell = cells[x]?.[y];
+        if (!cell) continue;
 
+        cell.items.forEach(item => {
+          const isWithinBounds = rectRectCollision(
+            {
+              x: item.position.x - item.dimensions.w / 2,
+              y: item.position.y - item.dimensions.h / 2,
+              ...item.dimensions
+            },
+            {
+              x: position.x - bounds.w / 2,
+              y: position.y - bounds.h / 2,
+              ...bounds
+            }
+          );
           if (!isWithinBounds) return;
           if (item.queryId === currentQueryId) return;
 

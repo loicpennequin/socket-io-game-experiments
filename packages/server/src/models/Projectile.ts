@@ -1,4 +1,4 @@
-import { ProjectileDto, PROJECTILE_LIFESPAN } from '@game/shared-domain';
+import { PROJECTILE_LIFESPAN } from '@game/shared-domain';
 import { mixinBuilder, rectRectCollision } from '@game/shared-utils';
 import {
   AttackableEvents,
@@ -21,24 +21,28 @@ export class Projectile extends mixins.build() {
   }
 
   private handlePlayerCollision() {
-    this.world.getEntitiesList().forEach(entity => {
-      if (entity.id === this.parent?.id) return;
-      if (entity.id === this.id) return;
-      if (this.collidedEntities.has(entity.id)) return;
+    this.world.map.grid
+      .findNearby(this.position, this.dimensions)
+      .forEach(gridItem => {
+        const entity = this.world.getEntity(gridItem.meta.id);
+        if (!entity) return;
+        if (entity.id === this.parent?.id) return;
+        if (entity.id === this.id) return;
+        if (this.collidedEntities.has(entity.id)) return;
 
-      const isColliding = rectRectCollision(
-        { ...this.position, ...this.dimensions },
-        { ...entity.position, ...entity.dimensions }
-      );
-      if (isColliding) {
-        this.collidedEntities.add(entity.id);
-        entity.triggerBehavior(
-          ATTACKABLE_BEHAVIOR,
-          AttackableEvents.ATTACKED,
-          this
+        const isColliding = rectRectCollision(
+          { ...this.position, ...this.dimensions },
+          { ...entity.position, ...entity.dimensions }
         );
-      }
-    });
+        if (isColliding) {
+          this.collidedEntities.add(entity.id);
+          entity.triggerBehavior(
+            ATTACKABLE_BEHAVIOR,
+            AttackableEvents.ATTACKED,
+            this
+          );
+        }
+      });
   }
 
   private onUpdate() {
