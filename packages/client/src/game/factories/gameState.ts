@@ -18,6 +18,7 @@ export type StateMapCell = GameMapCellDto & {
   opacity: number;
   lightness: number;
 };
+
 export type GameState = Omit<GameStateDto, 'discoveredCells'> & {
   timestamp: number;
   cells: {

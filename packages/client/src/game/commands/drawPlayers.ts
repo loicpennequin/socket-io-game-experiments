@@ -140,17 +140,46 @@ export const drawPlayersSprites = (
         key: meta.job,
         orientation: meta.orientation,
         entity: player,
-        beforeDraw(sprite) {
-          if (player.stats.hp > 0) return;
+        effects: [
+          {
+            id: 'ATTACKED',
+            when: () => {
+              return (
+                player.stats.hp > 0 &&
+                player.triggeredBehaviors.some(b => b.key === 'ATTACKED')
+              );
+            },
+            duration: 300,
+            draw(sprite, elapsed) {
+              if (elapsed % 100 < 50) {
+                sprite.ctx.clearRect(
+                  0,
+                  0,
+                  sprite.canvas.width,
+                  sprite.canvas.height
+                );
+              }
+            }
+          },
+          {
+            id: 'DEAD',
+            when: () => {
+              return player.stats.hp <= 0;
+            },
+            duration: Infinity,
+            draw(sprite) {
+              // if (player.stats.hp > 0) return;
 
-          const fx = createCanvas({ w: size, h: size });
-          fx.ctx.drawImage(sprite.canvas, 0, 0);
-          fx.ctx.globalCompositeOperation = 'multiply';
-          fx.ctx.fillStyle = 'rgba(255,0,0)';
-          fx.ctx.fillRect(0, 0, size, size);
-          sprite.ctx.globalCompositeOperation = 'source-in';
-          sprite.ctx.drawImage(fx.canvas, 0, 0);
-        }
+              const fx = createCanvas({ w: size, h: size });
+              fx.ctx.drawImage(sprite.canvas, 0, 0);
+              fx.ctx.globalCompositeOperation = 'multiply';
+              fx.ctx.fillStyle = 'rgba(255,0,0)';
+              fx.ctx.fillRect(0, 0, size, size);
+              sprite.ctx.globalCompositeOperation = 'source-in';
+              sprite.ctx.drawImage(fx.canvas, 0, 0);
+            }
+          }
+        ]
       });
 
       drawPlayerName(ctx, { x, y, size, meta });

@@ -31,6 +31,8 @@ export const withAttackable = <TBase extends Behaviorable & Creature>(
         min: 0,
         max: this.stats.maxHp
       });
+
+      return { power: projectile.power };
     }
   };
 };

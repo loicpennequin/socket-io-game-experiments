@@ -83,6 +83,7 @@ export const createGameRenderer = ({
     }) => {
       interpolateEntities();
       camera.update();
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       applyCamera({ canvas, ctx, camera, state }, () => {

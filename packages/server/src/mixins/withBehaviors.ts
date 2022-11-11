@@ -1,5 +1,5 @@
 import { TriggeredBehaviors } from '@game/shared-domain';
-import { AnyConstructor, AnyObject } from '@game/shared-utils';
+import { AnyConstructor } from '@game/shared-utils';
 import { EventMap } from 'typed-emitter';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-interface
@@ -34,7 +34,11 @@ export const withBehaviors = <TBase extends AnyConstructor>(Base: TBase) => {
     ) {
       if (!this.hasBehavior(key)) return;
 
-      this.behaviors.get(key)?.[event as string](...payload);
+      const result = this.behaviors.get(key)?.[event as string](...payload);
+      this.triggeredBehaviors.push({
+        key: (event as string).toUpperCase(),
+        meta: { ...(result || {}) }
+      });
     }
   };
 };
