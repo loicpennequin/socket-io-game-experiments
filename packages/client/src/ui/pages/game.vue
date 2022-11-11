@@ -11,7 +11,9 @@ const router = useRouter();
 const gameContainer = ref<HTMLDivElement>();
 const minimapContainer = ref<HTMLDivElement>();
 
-const isDisconnectedMessageDisplayed = ref(false);
+const isDisconnectedModalDisplayed = ref(false);
+const isGameOverModalDisplayed = ref(false);
+
 const isLoading = ref(true);
 
 const loginInfo = useStorage<{
@@ -23,10 +25,14 @@ if (!loginInfo.value.username || !loginInfo.value.job) {
   router.push('/');
 }
 
-const { start, stop } = useGame();
+const { start, stop } = useGame({
+  onGameOver: () => {
+    isGameOverModalDisplayed.value = true;
+  }
+});
 
 const reconnect = () => {
-  isDisconnectedMessageDisplayed.value = false;
+  isDisconnectedModalDisplayed.value = false;
   start({
     gameContainer: gameContainer.value!,
     minimapContainer: minimapContainer.value!,
@@ -46,7 +52,7 @@ onMounted(async () => {
 
   socket.on('disconnect', reason => {
     console.log(reason);
-    isDisconnectedMessageDisplayed.value = true;
+    isDisconnectedModalDisplayed.value = true;
     stop();
   });
 });
@@ -57,10 +63,18 @@ onUnmounted(stop);
 <template>
   <div class="wrapper">
     <div class="loader" v-if="isLoading">Loading...</div>
-    <div class="error" v-if="isDisconnectedMessageDisplayed">
+    <div class="error" v-if="isDisconnectedModalDisplayed">
       <p>You have been disconnected from the server.</p>
       <button @click="reconnect">Reconnect</button>
     </div>
+    <transition>
+      <div class="game-over" v-if="isGameOverModalDisplayed">
+        <div>
+          <p>💀You dead boi.💀</p>
+          <router-link to="/">Back to home</router-link>
+        </div>
+      </div>
+    </transition>
 
     <DebugInfos />
     <div ref="gameContainer" class="game" />
@@ -117,6 +131,53 @@ onUnmounted(stop);
 
 .error button:focus {
   background: var(--color-primary-focus);
+}
+
+.game-over {
+  position: fixed;
+  inset: 0;
+  background: hsla(0, 45%, 30%, 0.7);
+  height: 100%;
+  display: grid;
+  grid-row-gap: 1em;
+  place-content: center;
+  z-index: 999;
+}
+
+.game-over > div {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  width: 40rem;
+  max-width: 100%;
+}
+.game-over p {
+  font-size: 3rem;
+}
+.game-over a {
+  display: block;
+  margin-inline: auto;
+  padding: 0.75em 1.5em;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.game-over.v-enter-active,
+.game-over.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.game-over.v-enter-from,
+.game-over.v-leave-to {
+  opacity: 0;
 }
 .game {
   width: 100vw;

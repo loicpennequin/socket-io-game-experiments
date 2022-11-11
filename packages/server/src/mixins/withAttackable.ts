@@ -27,6 +27,8 @@ export const withAttackable = <TBase extends Behaviorable & Creature>(
     }
 
     onAttacked(projectile: Projectile) {
+      if (!this.isAlive) return;
+
       this.stats.hp = clamp(this.stats.hp - projectile.power, {
         min: 0,
         max: this.stats.maxHp

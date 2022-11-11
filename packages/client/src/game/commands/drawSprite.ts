@@ -46,26 +46,12 @@ export type DrawSpriteOptions = {
   effects?: SpriteFxInput[];
 };
 
-export const drawSprite = ({
-  ctx,
-  assetMap,
-  entity,
-  size,
-  key,
-  orientation,
-  effects = []
-}: DrawSpriteOptions) => {
-  if (!spriteMap.has(entity.id)) {
-    spriteMap.set(entity.id, {
-      ...createCanvas({ w: size, h: size }),
-      effects: []
-    });
-  }
-
-  const sprite = spriteMap.get(entity.id)!;
-  const { x, y } = entity;
-
-  const now = performance.now();
+const computeNewEffects = (
+  sprite: SpriteInfos,
+  effects: SpriteFxInput[],
+  entity: EntityDto,
+  now: number
+) => {
   const newEffects = effects
     .map(fx => {
       const computedMeta = fx.meta?.(entity);
@@ -85,11 +71,34 @@ export const drawSprite = ({
       .filter(fx => now - fx.duration < fx.insertedAt),
     fx => fx.id
   );
+};
+
+export const drawSprite = ({
+  ctx,
+  assetMap,
+  entity,
+  size,
+  key,
+  orientation,
+  effects = []
+}: DrawSpriteOptions) => {
+  if (!spriteMap.has(entity.id)) {
+    spriteMap.set(entity.id, {
+      ...createCanvas({ w: size, h: size }),
+      effects: []
+    });
+  }
+
+  const sprite = spriteMap.get(entity.id)!;
+  const { x, y } = entity;
+  const now = performance.now();
+  computeNewEffects(sprite, effects, entity, now);
 
   sprite.ctx.clearRect(0, 0, size, size);
+  sprite.ctx.resetTransform();
 
   sprite.effects.forEach(fx => {
-    pushPop(sprite.ctx, () => fx.preRender?.(sprite, now - fx.insertedAt, fx));
+    fx.preRender?.(sprite, now - fx.insertedAt, fx);
   });
 
   sprite.ctx.drawImage(
@@ -124,6 +133,7 @@ export const drawSprite = ({
       size
     );
   });
+
   sprite.effects.forEach(fx => {
     pushPop(sprite.ctx, () => fx.postDraw?.(sprite, now - fx.insertedAt, fx));
   });

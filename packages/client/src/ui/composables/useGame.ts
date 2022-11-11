@@ -3,8 +3,13 @@ import magicalUrl from '@/assets/magical.png';
 import { createGameRenderer } from '../../game/renderers/gameRenderer';
 import { socket } from '@/utils/socket';
 import type { Renderer } from '../../game/factories/renderer';
-import { JOIN_GAME, type JoinGamePayload } from '@game/shared-domain';
+import {
+  GAME_OVER,
+  JOIN_GAME,
+  type JoinGamePayload
+} from '@game/shared-domain';
 import { state } from '../../game/factories/gameState';
+import { noop } from '@game/shared-utils';
 
 export type GameOptions = {
   gameContainer: HTMLElement;
@@ -12,7 +17,13 @@ export type GameOptions = {
   loginInfo: JoinGamePayload;
 };
 
-export const useGame = () => {
+export type UseGameOptions = {
+  onGameOver?: () => void;
+};
+
+export const useGame = (
+  { onGameOver = noop }: UseGameOptions = { onGameOver: noop }
+) => {
   let gameRenderer: Renderer;
 
   const start = ({
@@ -74,5 +85,6 @@ export const useGame = () => {
     socket.disconnect();
   };
 
+  socket.on(GAME_OVER, onGameOver);
   return { start, stop };
 };

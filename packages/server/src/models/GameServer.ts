@@ -67,9 +67,19 @@ export class GameServer {
     this.io.on('connection', socket => {
       let idleTimeout: Nullable<ReturnType<typeof setTimeout>> = null;
 
+      const worldListener = () => {
+        const player = this.world.getEntity<Player>(socket.id);
+        if (player?.triggeredBehaviors.find(t => t.key === 'DIED')) {
+          socket.emit('GAME_OVER');
+        }
+      };
+
+      this.world.on('update', worldListener);
+
       socket.on('disconnect', () => {
         idleTimeout = null;
         this.world.getEntity(socket.id)?.destroy();
+        this.world.off('update', worldListener);
       });
 
       socket.on(PING, (timestamp, callback) => {

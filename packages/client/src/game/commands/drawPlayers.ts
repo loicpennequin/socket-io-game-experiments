@@ -132,8 +132,6 @@ export const drawPlayersSprites = (
       const { x, y, meta } = player;
 
       const { ctx, assetMap, size } = opts;
-      // pushPop(ctx, () => {
-      // ctx.filter = 'saturate(200%)';
 
       drawSprite({
         ctx,
@@ -208,29 +206,58 @@ export const drawPlayersSprites = (
             }
           },
           {
-            id: 'DEAD',
-            when: () => {
-              return player.stats.hp <= 0;
-            },
+            id: 'DIED',
+            meta: () => ({
+              trigger: player.triggeredBehaviors.find(
+                behavior => behavior.key === 'DIED'
+              ),
+              curve: new Bezier(
+                {
+                  x: player.x - size / 2,
+                  y: player.y - size / 2
+                },
+                {
+                  x: player.x - size / 2,
+                  y: player.y - size / 2 - 30
+                },
+                {
+                  x: player.x - size / 2,
+                  y: player.y - size / 2 + 250
+                }
+              )
+            }),
+            when: (_, meta) => meta.trigger,
             duration: Infinity,
+            preRender(sprite, elapsed, fx) {
+              sprite.ctx.globalAlpha = 1 - elapsed / 500;
+              sprite.ctx.translate(
+                0,
+                fx.meta.curve.get(elapsed / 500).y - player.y
+              );
+            },
             postRender(sprite) {
-              const fx = createCanvas({ w: size, h: size });
-              fx.ctx.drawImage(sprite.canvas, 0, 0);
-              fx.ctx.globalCompositeOperation = 'multiply';
-              fx.ctx.fillStyle = 'rgba(255,0,0)';
-              fx.ctx.fillRect(0, 0, size, size);
+              const { canvas: fxCanvas, ctx: fxCtx } = createCanvas({
+                w: size,
+                h: size
+              });
+              fxCtx.drawImage(sprite.canvas, 0, 0);
+              fxCtx.globalCompositeOperation = 'multiply';
+              fxCtx.fillStyle = 'rgba(255,0,0)';
+              fxCtx.fillRect(0, 0, size, size);
               sprite.ctx.globalCompositeOperation = 'source-in';
-              sprite.ctx.drawImage(fx.canvas, 0, 0);
+              sprite.ctx.drawImage(fxCanvas, 0, 0);
             }
           }
         ]
       });
 
-      drawPlayerName(ctx, { x, y, size, meta });
-      drawPlayerStatBars(ctx, {
-        ...player,
-        size
-      });
+      if (player.stats.hp > 0) {
+        drawPlayerName(ctx, { x, y, size, meta });
+        drawPlayerStatBars(ctx, {
+          ...player,
+          size
+        });
+      }
     }
   });
 
