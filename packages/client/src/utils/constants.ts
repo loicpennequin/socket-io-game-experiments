@@ -57,7 +57,9 @@ export const COLORS = Object.freeze({
   hpBarBg: () => 'red',
 
   mpBar: () => 'rgb(0,0,255)',
-  mpBarBg: () => 'rgba(0,0,0,0)'
+  mpBarBg: () => 'rgba(0,0,0,0)',
+
+  entityHitText: () => 'hsl(0,100%, 65%)'
 });
 
 export const DEFAULT_TERRAIN_LIGHTNESS = {

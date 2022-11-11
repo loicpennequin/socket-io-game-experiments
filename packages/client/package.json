@@ -13,9 +13,8 @@
   "dependencies": {
     "@game/shared-domain": "*",
     "@game/shared-utils": "*",
-    "@types/chroma-js": "^2.1.4",
-    "@types/hammerjs": "^2.0.41",
     "@vueuse/core": "^9.4.0",
+    "bezier-js": "^6.1.0",
     "hammerjs": "^2.0.8",
     "pinia": "^2.0.23",
     "socket.io-client": "^4.5.3",
@@ -27,6 +26,9 @@
   "devDependencies": {
     "@iconify-json/mdi": "^1.1.34",
     "@rushstack/eslint-patch": "^1.1.4",
+    "@types/bezier-js": "^4.1.0",
+    "@types/chroma-js": "^2.1.4",
+    "@types/hammerjs": "^2.0.41",
     "@types/fs-extra": "^9.0.13",
     "@types/jsdom": "^20.0.0",
     "@types/node": "^16.11.68",

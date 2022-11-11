@@ -44,7 +44,8 @@ onMounted(async () => {
   });
   isLoading.value = false;
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', reason => {
+    console.log(reason);
     isDisconnectedMessageDisplayed.value = true;
     stop();
   });

@@ -316,6 +316,11 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
+"@types/bezier-js@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@types/bezier-js/-/bezier-js-4.1.0.tgz#e1b023cc0a6e53492d0249a0711a3e73d1dfc8fe"
+  integrity sha512-ElU16s8E6Pr6magp8ihwH1O8pbUJASbMND/qgUc9RsLmP3lMLHiDMRXdjtaObwW5GPtOVYOsXDUIhTIluT+yaw==
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -935,6 +940,11 @@ base64id@2.0.0, base64id@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/base64id/-/base64id-2.0.0.tgz#2770ac6bc47d312af97a8bf9a634342e0cd25cb6"
   integrity sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==
+
+bezier-js@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-6.1.0.tgz#162b7bdbabe866e3a796285a89d71085140755ec"
+  integrity sha512-oc8fkHqG0R+dQuNiXVbPMB0cc8iDqkLAjbA2gq26QmV8tZqW9GGI7iNEX1ioRWlZperQS7v5BX03+9FLVWZbSw==
 
 binary-extensions@^2.0.0:
   version "2.2.0"

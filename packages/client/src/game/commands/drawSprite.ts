@@ -1,18 +1,33 @@
 import { EntityOrientation, type EntityDto } from '@game/shared-domain';
-import { isDefined, uniqBy } from '@game/shared-utils';
+import { isDefined, uniqBy, type Override } from '@game/shared-utils';
 import { createCanvas, pushPop } from '@/utils/canvas';
 import { SPRITE_LOCATIONS } from '@/utils/constants';
 import type { AssetMap } from '../factories/assetMap';
+
+export type SpriteDrawFunction = (
+  sprite: SpriteInfos,
+  timeElapsed: number,
+  fx: SpriteFX
+) => void;
 
 export type SpriteFX = {
   id: string;
   duration: number;
   insertedAt: number;
-  when: (entity: EntityDto) => boolean;
-  draw: (sprite: SpriteInfos, timeElapsed: number) => void;
+  when: (entity: EntityDto, meta: any) => boolean;
+  preRender?: SpriteDrawFunction;
+  postRender?: SpriteDrawFunction;
+  postDraw?: SpriteDrawFunction;
+  meta: any;
 };
 
-export type SpriteFxInput = Omit<SpriteFX, 'insertedAt'>;
+export type SpriteFxInput = Override<
+  SpriteFX,
+  {
+    insertedAt?: never;
+    meta?: (entity: EntityDto) => any;
+  }
+>;
 
 export type SpriteInfos = {
   canvas: HTMLCanvasElement;
@@ -50,7 +65,32 @@ export const drawSprite = ({
   const sprite = spriteMap.get(entity.id)!;
   const { x, y } = entity;
 
-  // sprite.ctx.clearRect(0, 0, size, size);
+  const now = performance.now();
+  const newEffects = effects
+    .map(fx => {
+      const computedMeta = fx.meta?.(entity);
+      return fx.when(entity, computedMeta)
+        ? {
+            ...fx,
+            meta: computedMeta,
+            insertedAt: now
+          }
+        : null;
+    })
+    .filter(isDefined);
+
+  sprite.effects = uniqBy(
+    sprite.effects
+      .concat(newEffects)
+      .filter(fx => now - fx.duration < fx.insertedAt),
+    fx => fx.id
+  );
+
+  sprite.ctx.clearRect(0, 0, size, size);
+
+  sprite.effects.forEach(fx => {
+    pushPop(sprite.ctx, () => fx.preRender?.(sprite, now - fx.insertedAt, fx));
+  });
 
   sprite.ctx.drawImage(
     assetMap.canvas,
@@ -61,26 +101,8 @@ export const drawSprite = ({
     size
   );
 
-  const now = performance.now();
-  const newFx = effects
-    .map(fx =>
-      fx.when(entity)
-        ? {
-            ...fx,
-            insertedAt: now
-          }
-        : null
-    )
-    .filter(isDefined);
-  sprite.effects = uniqBy(
-    sprite.effects
-      .concat(newFx)
-      .filter(fx => now - fx.duration < fx.insertedAt),
-    fx => fx.id
-  );
-
   sprite.effects.forEach(fx => {
-    pushPop(sprite.ctx, () => fx.draw(sprite, now - fx.insertedAt));
+    pushPop(sprite.ctx, () => fx.postRender?.(sprite, now - fx.insertedAt, fx));
   });
 
   pushPop(ctx, () => {
@@ -101,5 +123,8 @@ export const drawSprite = ({
       size,
       size
     );
+  });
+  sprite.effects.forEach(fx => {
+    pushPop(sprite.ctx, () => fx.postDraw?.(sprite, now - fx.insertedAt, fx));
   });
 };

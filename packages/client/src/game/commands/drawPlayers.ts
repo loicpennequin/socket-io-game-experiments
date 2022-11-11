@@ -13,12 +13,14 @@ import {
 } from '@game/shared-domain';
 import {
   pointCircleCollision,
+  randomInRange,
   type Coordinates,
   type Dimensions
 } from '@game/shared-utils';
 import type { AssetMap } from '../factories/assetMap';
 import { drawStatBar } from './drawStatBar';
 import { drawSprite } from './drawSprite';
+import { Bezier } from 'bezier-js';
 
 type DrawPlayersOptions = {
   ctx: CanvasRenderingContext2D;
@@ -143,22 +145,66 @@ export const drawPlayersSprites = (
         effects: [
           {
             id: 'ATTACKED',
-            when: () => {
-              return (
-                player.stats.hp > 0 &&
-                player.triggeredBehaviors.some(b => b.key === 'ATTACKED')
-              );
+            meta: () => ({
+              trigger: player.triggeredBehaviors.find(
+                behavior => behavior.key === 'ATTACKED'
+              ),
+              curve: new Bezier(
+                {
+                  x: player.x,
+                  y:
+                    player.y -
+                    ENTITY_STAT_BAR_OFFSET -
+                    ENTITY_STAT_BAR_HEIGHT -
+                    40
+                },
+                {
+                  x: player.x,
+                  y:
+                    player.y -
+                    ENTITY_STAT_BAR_OFFSET -
+                    ENTITY_STAT_BAR_HEIGHT -
+                    90
+                },
+                {
+                  x: player.x + randomInRange({ min: -50, max: 50 }),
+                  y:
+                    player.y -
+                    ENTITY_STAT_BAR_OFFSET -
+                    ENTITY_STAT_BAR_HEIGHT -
+                    40
+                }
+              )
+            }),
+            when: (_, meta) => {
+              return player.stats.hp > 0 && meta.trigger;
             },
-            duration: 300,
-            draw(sprite, elapsed) {
-              if (elapsed % 100 < 50) {
-                sprite.ctx.clearRect(
-                  0,
-                  0,
-                  sprite.canvas.width,
-                  sprite.canvas.height
-                );
-              }
+            duration: 400,
+            postRender(sprite, elapsed) {
+              const fx = createCanvas({ w: size, h: size });
+              fx.ctx.globalAlpha = elapsed % 100;
+              fx.ctx.drawImage(sprite.canvas, 0, 0);
+              sprite.ctx.clearRect(
+                0,
+                0,
+                sprite.canvas.width,
+                sprite.canvas.height
+              );
+              sprite.ctx.drawImage(fx.canvas, 0, 0);
+            },
+            postDraw(_, elapsed, fx) {
+              pushPop(ctx, () => {
+                ctx.globalAlpha = elapsed / 100;
+                ctx.font = 'normal 900 20px sans-serif';
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = COLORS.entityHitText();
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 1;
+                const pos = fx.meta.curve.get(elapsed / 400);
+                ctx.fillText(fx.meta.trigger.meta.power, pos.x, pos.y);
+                ctx.strokeText(fx.meta.trigger.meta.power, pos.x, pos.y);
+              });
             }
           },
           {
@@ -167,9 +213,7 @@ export const drawPlayersSprites = (
               return player.stats.hp <= 0;
             },
             duration: Infinity,
-            draw(sprite) {
-              // if (player.stats.hp > 0) return;
-
+            postRender(sprite) {
               const fx = createCanvas({ w: size, h: size });
               fx.ctx.drawImage(sprite.canvas, 0, 0);
               fx.ctx.globalCompositeOperation = 'multiply';
