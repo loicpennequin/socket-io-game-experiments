@@ -1,14 +1,18 @@
 import { ProjectileDto, PROJECTILE_LIFESPAN } from '@game/shared-domain';
-import { clamp, mixinBuilder, rectRectCollision } from '@game/shared-utils';
+import { mixinBuilder, rectRectCollision } from '@game/shared-utils';
+import {
+  AttackableEvents,
+  ATTACKABLE_BEHAVIOR
+} from '../mixins/withAttackable';
 import { withMapAwareness } from '../mixins/withMapAwareness';
 import { withMovement } from '../mixins/withMovement';
-import { isPlayer } from '../utils';
 import { Entity, EntityOptions } from './Entity';
 
 const mixins = mixinBuilder(Entity).add(withMovement).add(withMapAwareness);
 export class Projectile extends mixins.build() {
   private lifeSpan = PROJECTILE_LIFESPAN;
   private collidedEntities = new Set<string>();
+  power = 10;
 
   constructor(opts: EntityOptions) {
     super(opts);
@@ -18,8 +22,8 @@ export class Projectile extends mixins.build() {
 
   private handlePlayerCollision() {
     this.world.getEntitiesList().forEach(entity => {
-      if (!isPlayer(entity)) return;
       if (entity.id === this.parent?.id) return;
+      if (entity.id === this.id) return;
       if (this.collidedEntities.has(entity.id)) return;
 
       const isColliding = rectRectCollision(
@@ -27,10 +31,12 @@ export class Projectile extends mixins.build() {
         { ...entity.position, ...entity.dimensions }
       );
       if (isColliding) {
-        entity.stats.hp = clamp(entity.stats.hp - 10, {
-          min: 0,
-          max: entity.stats.maxHp
-        });
+        this.collidedEntities.add(entity.id);
+        entity.triggerBehavior(
+          ATTACKABLE_BEHAVIOR,
+          AttackableEvents.ATTACKED,
+          this
+        );
       }
     });
   }

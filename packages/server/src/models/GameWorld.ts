@@ -1,18 +1,22 @@
 import { TICK_RATE } from '@game/shared-domain';
 import {
   AnyFunction,
+  Constructor,
   createTaskQueue,
   EmptyClass,
   mixinBuilder,
   Nullable
 } from '@game/shared-utils';
-import { withLifeCycle } from '../mixins/withLifecycle';
+import { withEmitter } from '../mixins/withEmitter';
+import { LifecycleEvents, withLifeCycle } from '../mixins/withLifecycle';
 import { Entity } from '../models/Entity';
 import { GameMap } from './GameMap';
 
 export type EntityMap = Map<string, Entity>;
 
-const mixins = mixinBuilder(EmptyClass).add(withLifeCycle);
+const mixins = mixinBuilder(EmptyClass)
+  .add(withEmitter<Constructor<EmptyClass>, LifecycleEvents>)
+  .add(withLifeCycle);
 export class GameWorld extends mixins.build() {
   private actionsQueue = createTaskQueue();
 

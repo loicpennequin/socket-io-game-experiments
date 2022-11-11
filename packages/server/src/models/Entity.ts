@@ -1,15 +1,20 @@
 import { v4 as uuid } from 'uuid';
 import { EntityDto, EntityType, FieldOfView } from '@game/shared-domain';
 import {
+  AnyConstructor,
   AnyObject,
+  Constructor,
   Coordinates,
   Dimensions,
   EmptyClass,
+  mixinBuilder,
   Nullable
 } from '@game/shared-utils';
 import { GameMapGridItem } from './GameMap';
 import { GameWorld } from './GameWorld';
-import { withLifeCycle } from '../mixins/withLifecycle';
+import { LifecycleEvents, withLifeCycle } from '../mixins/withLifecycle';
+import { withBehaviors } from '../mixins/withBehaviors';
+import { withEmitter } from '../mixins/withEmitter';
 
 export type EntityOptions = {
   id?: string;
@@ -21,7 +26,12 @@ export type EntityOptions = {
   parent: Nullable<Entity>;
   meta?: AnyObject;
 };
-export class Entity extends withLifeCycle(EmptyClass) {
+
+const mixins = mixinBuilder(EmptyClass)
+  .add(withEmitter<Constructor<EmptyClass>, LifecycleEvents>)
+  .add(withBehaviors)
+  .add(withLifeCycle);
+export class Entity extends mixins.build() {
   gridItem: GameMapGridItem;
 
   id: string;

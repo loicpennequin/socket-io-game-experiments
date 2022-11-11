@@ -1,5 +1,5 @@
-import { EntityType, PlayerDto, PlayerMeta } from '@game/shared-domain';
-import { mixinBuilder, Override } from '@game/shared-utils';
+import { PlayerDto, PlayerMeta } from '@game/shared-domain';
+import { mixinBuilder } from '@game/shared-utils';
 import { Entity, EntityOptions } from './Entity';
 import { withMapAwareness } from '../mixins/withMapAwareness';
 import { withMovement } from '../mixins/withMovement';
@@ -7,13 +7,15 @@ import { withKeyboardMovement } from '../mixins/withKeyboardMovement';
 import { withShooting } from '../mixins/withShooting';
 import { withCreature } from '../mixins/withCreature';
 import { jobsData } from '../data/jobs';
+import { withAttackable } from '../mixins/withAttackable';
 
 const mixins = mixinBuilder(Entity)
   .add(withMovement)
   .add(withKeyboardMovement)
   .add(withMapAwareness)
   .add(withCreature)
-  .add(withShooting);
+  .add(withShooting)
+  .add(withAttackable);
 
 export type PlayerOptions = EntityOptions & {
   speed: number;

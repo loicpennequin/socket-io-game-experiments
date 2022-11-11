@@ -1,7 +1,6 @@
 import { Coordinates } from '@game/shared-utils';
 import { PROJECTILE_SPEED } from '@game/shared-domain';
 import { createProjectile } from '../factories/projectile';
-import { Projectile } from '../models/Projectile';
 import { MapAware } from './withMapAwareness';
 import { Creature } from './withCreature';
 

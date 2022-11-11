@@ -70,6 +70,7 @@
   display: grid;
   grid-auto-columns: auto;
   gap: 0.5rem;
+  pointer-events: none;
 }
 
 .minimap:deep(canvas) {
@@ -86,6 +87,7 @@
 
 .controls {
   font-size: 0.9em;
+  pointer-events: none;
 }
 .controls > li {
   display: flex;

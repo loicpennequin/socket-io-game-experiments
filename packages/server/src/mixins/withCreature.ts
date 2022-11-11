@@ -1,10 +1,9 @@
 import { CreatureStats, TICK_RATE } from '@game/shared-domain';
 import { clamp, Constructor } from '@game/shared-utils';
 import { Entity } from '../models/Entity';
+import { LifeCyclable } from './withLifecycle';
 
-export const withCreature = <TBase extends Constructor<Entity>>(
-  Base: TBase
-) => {
+export const withCreature = <TBase extends LifeCyclable>(Base: TBase) => {
   return class Creature extends Base {
     stats!: CreatureStats;
 

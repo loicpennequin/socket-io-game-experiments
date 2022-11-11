@@ -22,13 +22,9 @@ export const createMatrix = <T>(
   dimensions: Dimensions,
   initialValue: (coords: Coordinates) => T
 ): Matrix<T> =>
-  Array.from({ length: dimensions.w })
-    .fill(undefined)
-    .map((_, x) =>
-      Array.from({ length: dimensions.h })
-        .fill(undefined)
-        .map((_, y) => initialValue({ x, y }))
-    );
+  Array.from({ length: dimensions.w }, (_, x) =>
+    Array.from({ length: dimensions.h }, (_, y) => initialValue({ x, y }))
+  );
 
 export const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
   func: F,
