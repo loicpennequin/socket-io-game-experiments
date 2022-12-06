@@ -1,9 +1,6 @@
 /* eslint-disable camelcase */
 import type { Boundaries, Coordinates, Range } from './types';
 
-export const smootherStep = (x: number) =>
-  6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-
 export const clamp = (num: number, { min, max }: Range) =>
   Math.min(Math.max(num, min), max);
 
@@ -16,9 +13,11 @@ export const mapRange = (num: number, inRange: Range, outRange: Range) => {
   return clamp(mapped, { min: outRange.min, max: outRange.max });
 };
 
+export const smootherStep = (x: number) =>
+  6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
+
 export const lerp = (num: number, { min, max }: Range) => {
   return min + smootherStep(num) * (max - min);
-  // return mapRange(smootherStep(num), { min: 0, max: 1 }, range);
 };
 
 export const sat = (num: number) => clamp(num, { min: 0, max: 1 });
